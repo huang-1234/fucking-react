@@ -1,0 +1,25 @@
+{
+  "name": "fucking-react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@types/node": "^22.13.10",
+    "typescript": "^5.6.3",
+    "eslint": "^8.57.0",
+    "ts-node": "^10.9.2",
+    "vitest": "^2.1.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
