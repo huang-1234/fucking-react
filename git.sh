@@ -11,7 +11,7 @@ echo "当前分支名: $branch"
 
 # git ci
 ciAction="feat: "
-ciMessage="init react-app in react-19"
+ciMessage="init vue-app in vue-3"
 git add .
 
 git ci -m "$ciAction $ciMessage"
