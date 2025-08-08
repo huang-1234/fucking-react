@@ -75,7 +75,9 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'jsx' }) 
         remarkPlugins={[remarkGfm]}
         components={{
           code(props) {
-            const { children, className, node, ...rest } = props
+            const { children, className, node, ...rest } = props || {}
+
+            console.log('props', props, 'children', children, 'className', className, 'node', node);
             const match = /language-(\w+)/.exec(className || '')
             return match ? (
               <SyntaxHighlighter

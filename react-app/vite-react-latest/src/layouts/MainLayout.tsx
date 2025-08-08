@@ -23,7 +23,7 @@ const MainLayout = () => {
         background: '#fff',
         boxShadow: '0 2px 8px rgba(16, 15, 15, 0.06)'
       }}>
-        <div className="logo" style={{ width: 120, position: 'relative' }}>
+        <div className="logo" style={{ width: 120, position: 'relative', display: 'flex', alignItems: 'center' }}>
           <Image preview={false} src={logo} alt="logo" style={{
             // position: 'absolute',
             // left: 16,
