@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Divider, Card, Space, Button, Alert } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { react15Code, react16Code } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -17,37 +18,7 @@ const FragmentsDemo: React.FC = () => {
     setTimeout(() => setShowError(false), 3000);
   };
 
-  // React 15 中的代码示例
-  const react15Code = `// React 15 中必须有一个根元素
-render() {
-  return (
-    <div> {/* 必须的包装元素 */}
-      <h1>标题</h1>
-      <p>段落</p>
-    </div>
-  );
-}`;
-
-  // React 16+ 中的代码示例
-  const react16Code = `// React 16+ 中可以使用 Fragment
-render() {
-  return (
-    <React.Fragment>
-      <h1>标题</h1>
-      <p>段落</p>
-    </React.Fragment>
-  );
-}
-
-// 或使用简写语法
-render() {
-  return (
-    <>
-      <h1>标题</h1>
-      <p>段落</p>
-    </>
-  );
-}`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="fragments-demo">

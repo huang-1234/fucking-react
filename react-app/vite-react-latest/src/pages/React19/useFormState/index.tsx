@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Typography, Divider, Card, Space, Button, Alert, Form, Input, Select, Spin, Result } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { codeuseFormState, traditionalFormCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
@@ -33,7 +34,7 @@ const UseFormStateDemo: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   // 模拟表单提交处理函数
-  const submitAction = async (prevState: any, formData: FormData) => {
+  const submitAction = async (_prevState: any, formData: FormData) => {
     // 模拟网络请求
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -85,115 +86,7 @@ const UseFormStateDemo: React.FC = () => {
     }
   }, [formState]);
 
-  // useFormState代码示例
-  const useFormStateCode = `// React 19中的useFormState Hook
-import { useFormState } from 'react';
 
-// 服务器端操作函数
-async function createUser(prevState, formData) {
-  'use server'; // 标记为服务器操作
-
-  const username = formData.get('username');
-  const email = formData.get('email');
-
-  // 验证
-  if (username.length < 3) {
-    return { error: '用户名至少需要3个字符' };
-  }
-
-  // 处理表单提交
-  try {
-    await db.users.create({ username, email });
-    return { success: true };
-  } catch (error) {
-    return { error: '创建用户失败' };
-  }
-}
-
-// 客户端组件
-function SignupForm() {
-  // 使用useFormState连接表单和服务器操作
-  const [state, formAction] = useFormState(createUser, {});
-
-  return (
-    <form action={formAction}>
-      {state.error && <p className="error">{state.error}</p>}
-      {state.success && <p className="success">用户创建成功!</p>}
-
-      <input name="username" placeholder="用户名" />
-      <input name="email" type="email" placeholder="邮箱" />
-      <button type="submit">创建用户</button>
-    </form>
-  );
-}`;
-
-  // 传统表单处理代码示例
-  const traditionalFormCode = `// 传统的React表单处理
-import { useState } from 'react';
-
-function SignupForm() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess(false);
-
-    // 客户端验证
-    if (username.length < 3) {
-      setError('用户名至少需要3个字符');
-      return;
-    }
-
-    // 提交表单
-    try {
-      setIsSubmitting(true);
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || '创建用户失败');
-      }
-
-      setSuccess(true);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">用户创建成功!</p>}
-
-      <input
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="用户名"
-      />
-      <input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        type="email"
-        placeholder="邮箱"
-      />
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? '提交中...' : '创建用户'}
-      </button>
-    </form>
-  );
-}`;
 
   return (
     <div className="use-form-state-demo">
@@ -284,7 +177,7 @@ function SignupForm() {
           <Divider orientation="left">代码对比</Divider>
 
           <Card title="使用useFormState">
-            <CodeBlock code={useFormStateCode} />
+            <CodeBlock code={codeuseFormState} />
 
             <Alert
               message="优势"

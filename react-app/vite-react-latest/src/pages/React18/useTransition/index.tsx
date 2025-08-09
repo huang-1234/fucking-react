@@ -1,6 +1,8 @@
-import React, { useState, useTransition, useDeferredValue, useEffect } from 'react';
+import React, { useState, useTransition, useDeferredValue, useEffect, useMemo } from 'react';
 import { Typography, Divider, Card, Space, Input, List, Switch, Slider, Tag } from 'antd';
-import { CodeBlock } from '../../../components/CodeBlock';
+import { CodeBlock } from '@/components/CodeBlock';
+import { debounce } from 'lodash-es';
+import { useTransitionCode, useDeferredValueCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -109,9 +111,8 @@ const UseTransitionDemo: React.FC = () => {
     filterItemsWithDeferred();
   }, [deferredValue, delay]);
 
-  // 处理输入变化
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  // 处理输入变化的实际函数
+  const handleInputChangeImpl = (value: string) => {
     if (useTransitionFilter) {
       setTransitionFilterText(value);
     } else {
@@ -119,73 +120,43 @@ const UseTransitionDemo: React.FC = () => {
     }
   };
 
-  // 处理延迟输入变化
-  const handleDeferredInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDeferredFilterText(e.target.value);
+  // 使用useMemo和debounce创建防抖处理的输入函数
+  const debouncedInputChange = useMemo(
+    () => debounce(handleInputChangeImpl, 300),
+    [useTransitionFilter]
+  );
+
+  // 处理延迟输入变化的实际函数
+  const handleDeferredInputChangeImpl = (value: string) => {
+    setDeferredFilterText(value);
   };
 
-  // useTransition代码示例
-  const useTransitionCode = String.raw`// React 18中的useTransition Hook
-import { useState, useTransition } from 'react';
+  // 使用useMemo和debounce创建防抖处理的延迟输入函数
+  const debouncedDeferredInputChange = useMemo(
+    () => debounce(handleDeferredInputChangeImpl, 300),
+    []
+  );
 
-function SearchResults() {
-  const [isPending, startTransition] = useTransition();
-  const [filterText, setFilterText] = useState('');
-  const [results, setResults] = useState([]);
+  // 组件卸载时取消防抖函数的执行
+  useEffect(() => {
+    return () => {
+      debouncedInputChange.cancel();
+      debouncedDeferredInputChange.cancel();
+    };
+  }, [debouncedInputChange, debouncedDeferredInputChange]);
 
-  function handleChange(e) {
-    // 立即更新输入值，保持UI响应
+  // 处理输入变化
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setFilterText(value);
+    debouncedInputChange(value);
+  };
 
-    // 将耗时的状态更新标记为过渡
-    startTransition(() => {
-      // 这个更新被视为非紧急，可以被中断
-      setResults(filterItems(value));
-    });
-  }
+  // 处理延迟输入变化
+  const handleDeferredInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedDeferredInputChange(e.target.value);
+  };
 
-  return (
-    <>
-      <input value={filterText} onChange={handleChange} />
-
-      {/* 显示加载状态 */}
-      {isPending && <Spinner />}
-
-      {/* 显示结果 */}
-      <List items={results} />
-    </>
-  );
-}`;
-
-  // useDeferredValue代码示例
-  const useDeferredValueCode = String.raw`
-  // React 18中的useDeferredValue Hook
-import { useState, useDeferredValue } from 'react';
-
-function SearchResults() {
-  const [filterText, setFilterText] = useState('');
-  // 创建一个延迟版本的值
-  const deferredText = useDeferredValue(filterText);
-  const isStale = deferredText !== filterText;
-
-  function handleChange(e) {
-    // 立即更新输入值
-    setFilterText(e.target.value);
-    // deferredText会在空闲时自动更新
-  }
-
-  return (
-    <>
-      <input value={filterText} onChange={handleChange} />
-
-      {/* 使用延迟值渲染列表 */}
-      <div style={{ opacity: isStale ? 0.8 : 1 }}>
-        <List items={filterItems(deferredText)} />
-      </div>
-    </>
-  );
-}`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="use-transition-demo">

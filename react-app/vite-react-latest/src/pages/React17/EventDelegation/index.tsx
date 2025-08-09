@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Typography, Divider, Card, Space, Button, Alert, Switch } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { react16EventCode, react17EventCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -39,53 +40,7 @@ const EventDelegationDemo: React.FC = () => {
     };
   }, []);
 
-  // React 16事件委托代码示例
-  const react16EventCode = `// React 16中的事件委托
-// React将所有事件处理器附加到document上
-
-// 简化的内部实现示意
-document.addEventListener('click', e => {
-  // React的事件系统处理点击
-  const reactEvent = createReactEvent(e);
-
-  // 查找事件路径上的React组件
-  const path = getEventPath(e);
-
-  // 调用组件的事件处理器
-  for (const element of path) {
-    const clickHandler = findClickHandler(element);
-    if (clickHandler) {
-      clickHandler(reactEvent);
-    }
-  }
-});
-
-// 组件中的使用方式没有变化
-<button onClick={handleClick}>点击我</button>`;
-
-  // React 17事件委托代码示例
-  const react17EventCode = `// React 17中的事件委托
-// React将事件处理器附加到React渲染树的根DOM容器上
-
-// 简化的内部实现示意
-rootNode.addEventListener('click', e => {
-  // React的事件系统处理点击
-  const reactEvent = createReactEvent(e);
-
-  // 查找事件路径上的React组件
-  const path = getEventPath(e);
-
-  // 调用组件的事件处理器
-  for (const element of path) {
-    const clickHandler = findClickHandler(element);
-    if (clickHandler) {
-      clickHandler(reactEvent);
-    }
-  }
-});
-
-// 组件中的使用方式没有变化
-<button onClick={handleClick}>点击我</button>`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="event-delegation-demo" ref={containerRef}>

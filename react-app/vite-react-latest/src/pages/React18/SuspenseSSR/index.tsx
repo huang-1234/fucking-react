@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Divider, Card, Space, Button, Alert, Tabs, Skeleton } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { react17SSRCode, react18SSRCode, selectiveHydrationCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 const { TabPane } = Tabs;
@@ -27,107 +28,6 @@ const SuspenseSSRDemo: React.FC = () => {
     setIsLoading(false);
     setShowContent(false);
   };
-
-  // React 17 SSR代码示例
-  const react17SSRCode = `// React 17中的SSR
-import ReactDOMServer from 'react-dom/server';
-import App from './App';
-
-// 服务器端
-function handleRequest(req, res) {
-  // 生成整个应用的HTML
-  const html = ReactDOMServer.renderToString(<App />);
-
-  // 发送完整HTML给客户端
-  res.send(\`
-    <!DOCTYPE html>
-    <html>
-      <head><title>My App</title></head>
-      <body>
-        <div id="root">\${html}</div>
-        <script src="/bundle.js"></script>
-      </body>
-    </html>
-  \`);
-}
-
-// 客户端
-import ReactDOM from 'react-dom';
-import App from './App';
-
-// 水合整个应用
-ReactDOM.hydrate(<App />, document.getElementById('root'));
-
-// 问题: 必须等待所有数据加载完成才能发送HTML
-// 如果某个组件数据获取很慢，整个页面都会被阻塞`;
-
-  // React 18 SSR代码示例
-  const react18SSRCode = `// React 18中的SSR与Suspense
-import { renderToPipeableStream } from 'react-dom/server';
-import App from './App';
-
-// 服务器端
-function handleRequest(req, res) {
-  // 创建可流式传输的渲染
-  const { pipe } = renderToPipeableStream(
-    <App />,
-    {
-      bootstrapScripts: ['/bundle.js'],
-      onShellReady() {
-        // 当Shell准备好后立即开始流式传输
-        res.setHeader('content-type', 'text/html');
-        pipe(res);
-      }
-    }
-  );
-}
-
-// 客户端
-import { hydrateRoot } from 'react-dom/client';
-import App from './App';
-
-// 选择性水合
-hydrateRoot(document.getElementById('root'), <App />);
-
-// 应用中的Suspense组件
-function MyComponent() {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <Comments />
-    </Suspense>
-  );
-}`;
-
-  // 选择性注水代码示例
-  const selectiveHydrationCode = `// React 18选择性注水示例
-import { Suspense, lazy } from 'react';
-
-// 懒加载组件
-const Comments = lazy(() => import('./Comments'));
-const RelatedPosts = lazy(() => import('./RelatedPosts'));
-
-function BlogPost() {
-  return (
-    <article>
-      <h1>文章标题</h1>
-      <section>文章内容...</section>
-
-      {/* 重要但不紧急的内容 */}
-      <Suspense fallback={<p>加载评论...</p>}>
-        <Comments />
-      </Suspense>
-
-      {/* 次要内容 */}
-      <Suspense fallback={<p>加载相关文章...</p>}>
-        <RelatedPosts />
-      </Suspense>
-    </article>
-  );
-}
-
-// 服务器会先发送带有占位符的HTML
-// 然后在组件准备好时流式传输实际内容
-// 客户端会根据用户交互优先注水`;
 
   return (
     <div className="suspense-ssr-demo">

@@ -14,7 +14,7 @@ const React15PropTypes = lazy(() => import('../pages/React15/PropTypes'));
 
 // React 16 组件
 const React16Page = lazy(() => import('../pages/React16'));
-const React16Hooks = lazy(() => import('../pages/React16/Hooks'));
+const React16Hooks = lazy(() => import('../pages/React16/hooks'));
 const React16ErrorBoundaries = lazy(() => import('../pages/React16/ErrorBoundaries'));
 
 // React 17 组件
@@ -31,6 +31,9 @@ const React18Transitions = lazy(() => import('../pages/React18/useTransition'));
 const React19Page = lazy(() => import('../pages/React19'));
 const React19Compiler = lazy(() => import('../pages/React19/ReactCompiler'));
 const React19FormState = lazy(() => import('../pages/React19/useFormState'));
+
+// 技术文档组件
+const MDXDemoPage = lazy(() => import('../pages/Tech/MDXDemo'));
 
 // 加载中组件
 const LoadingComponent = () => <div>加载中...</div>;
@@ -199,6 +202,20 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <React19FormState />
+              </Suspense>
+            )
+          }
+        ]
+      },
+      // 技术文档路由
+      {
+        path: 'tech',
+        children: [
+          {
+            path: 'mdx-demo',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <MDXDemoPage />
               </Suspense>
             )
           }

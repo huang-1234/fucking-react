@@ -1,0 +1,53 @@
+@import '../../styles/variables.less';
+
+.skillCard {
+  width: 100%;
+  margin-bottom: @spacing-md;
+  border-radius: @border-radius-base;
+  box-shadow: @box-shadow-base;
+  transition: all @transition-duration @transition-ease;
+
+  &:hover {
+    box-shadow: @box-shadow-hover;
+    transform: translateY(-2px);
+  }
+}
+
+.skillHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: @spacing-sm;
+}
+
+.skillIcon {
+  font-size: 24px;
+  margin-right: @spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: @background-color-light;
+  color: @primary-color;
+}
+
+.skillInfo {
+  flex: 1;
+}
+
+.skillName {
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: @spacing-xs;
+}
+
+.skillDescription {
+  margin: @spacing-md 0;
+  color: @text-color-secondary;
+  font-size: 14px;
+}
+
+.skillTags {
+  margin-top: @spacing-md;
+}

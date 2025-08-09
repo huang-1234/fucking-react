@@ -1,0 +1,66 @@
+.hotRecommendations {
+  padding: 12px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.title .icon {
+  color: #f5222d;
+  margin-right: 8px;
+}
+.collapseButton {
+  color: rgba(0, 0, 0, 0.45);
+}
+.collapseButton:hover {
+  color: #1890ff;
+}
+.card {
+  margin-bottom: 16px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.card :global(.ant-card-head) {
+  padding: 8px 12px;
+  min-height: auto;
+}
+.card :global(.ant-card-body) {
+  padding: 12px;
+}
+.collapsedView {
+  padding: 24px 0;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+.collapsedView:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.collapsedView .icon {
+  font-size: 24px;
+  color: #f5222d;
+}
+.collapsedView .text {
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.65);
+}
+.listItem {
+  padding: 4px 0;
+}
+.listItem .itemTitle {
+  margin-bottom: 4px;
+}
+.listItem .itemMeta {
+  display: flex;
+  justify-content: space-between;
+}
+.listItem .tags {
+  margin-top: 4px;
+}
