@@ -11,7 +11,7 @@ echo "当前分支名: $branch"
 
 # git ci
 ciAction="feat: "
-ciMessage="ac vue3 api and lifecycle"
+ciMessage="ac readme.md"
 git add .
 
 git ci -m "$ciAction $ciMessage"
