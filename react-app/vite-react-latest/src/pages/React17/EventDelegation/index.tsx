@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Typography, Divider, Card, Space, Button, Alert, Switch } from 'antd';
-import { CodeBlock } from '../../../components/CodeBlock';
+import { Typography, Divider, Card, Space, Button, Alert, Switch, Tabs } from 'antd';
+import { CodeBlock } from '@/components/CodeBlock';
 import { react16EventCode, react17EventCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
+
+const { TabPane } = Tabs;
 
 /**
  * React 17 Event Delegation 示例组件
@@ -288,66 +290,6 @@ const EventDelegationDemo: React.FC = () => {
   );
 };
 
-// 添加Tabs组件
-const { TabPane } = Tabs;
-function Tabs({ children, defaultActiveKey }: { children: React.ReactNode; defaultActiveKey: string }) {
-  const [activeKey, setActiveKey] = useState(defaultActiveKey);
 
-  return (
-    <div className="custom-tabs">
-      <div className="tabs-nav">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(
-              child as React.ReactElement<{ tab: string; key: string }>,
-              {
-                active: child.key === activeKey,
-                onClick: () => setActiveKey(child.key as string)
-              }
-            );
-          }
-          return null;
-        })}
-      </div>
-      <div className="tabs-content">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && child.key === activeKey) {
-            return child.props.children;
-          }
-          return null;
-        })}
-      </div>
-    </div>
-  );
-}
-
-// 添加TabPane组件
-// function TabPane({
-//   children,
-//   tab,
-//   active,
-//   onClick
-// }: {
-//   children: React.ReactNode;
-//   tab: string;
-//   active?: boolean;
-//   onClick?: () => void;
-// }) {
-//   return (
-//     <div
-//       className={`tab-pane ${active ? 'active' : ''}`}
-//       onClick={onClick}
-//       style={{
-//         padding: '8px 16px',
-//         cursor: 'pointer',
-//         borderBottom: active ? '2px solid #1890ff' : '2px solid transparent',
-//         display: 'inline-block',
-//         marginRight: 16
-//       }}
-//     >
-//       {tab}
-//     </div>
-//   );
-// }
 
 export default EventDelegationDemo;

@@ -1,3 +1,8 @@
+// export {
+//   MarkdownRender as CodeBlock
+// } from './MarkdownRender';
+import MonacoReact from './MonacaReact';
+
 export {
-  MarkdownRender as CodeBlock
-} from './MarkdownRender'
+  MonacoReact as CodeBlock
+};

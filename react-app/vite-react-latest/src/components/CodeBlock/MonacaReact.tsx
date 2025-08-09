@@ -60,6 +60,8 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [copied, setCopied] = useState<boolean>(false);
   const editorRef = useRef<any>(null);
+  // useState shouldWordWrap
+  const [shouldWordWrap, setShouldWordWrap] = useState<boolean>(wordWrap);
 
   // 当外部代码变化时更新编辑器内容
   useEffect(() => {
@@ -73,6 +75,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
       onChange(value);
     }
   };
+  console.log('editorValue', editorRef, editorValue);
 
   // 处理编辑器加载完成
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
@@ -159,11 +162,11 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
 
       {/* 编辑器 */}
       <div className={styles.editorContainer} style={{ height }}>
-        {isLoading && (
+        {/* {isLoading && (
           <div className={styles.loadingOverlay}>
             <Spin tip="加载编辑器..." />
           </div>
-        )}
+        )} */}
         <Editor
           height="100%"
           width="100%"
@@ -179,6 +182,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
             tabSize: 2,
             automaticLayout: true
           }}
+          loading={<Spin tip="加载编辑器..." />}
         />
       </div>
 
@@ -213,10 +217,11 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
             <span className={styles.optionLabel}>自动换行:</span>
             <Switch
               size="small"
-              checked={wordWrap}
+              checked={shouldWordWrap}
               onChange={(checked) => {
                 if (editorRef.current) {
                   editorRef.current.updateOptions({ wordWrap: checked ? 'on' : 'off' });
+                  setShouldWordWrap(checked);
                 }
               }}
             />
@@ -227,4 +232,4 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
   );
 };
 
-export default MonacoReact;
+export default React.memo(MonacoReact);
