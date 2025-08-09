@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import CodeEditor from '../../components/CodeEditor.vue'
+import SimpleCodeEditor from '../../components/SimpleCodeEditor.vue'
 import { usePlayground, createPreviewHtml, compileVueCode } from './Playground'
 import {
   Typography,
@@ -116,7 +116,7 @@ onMounted(() => {
     <Row :gutter="[16, 16]">
       <Col :xs="24" :lg="12">
         <Card title="代码编辑器" class="editor-card">
-          <CodeEditor
+          <SimpleCodeEditor
             v-model:code="vueCode"
             language="vue"
             height="500px"

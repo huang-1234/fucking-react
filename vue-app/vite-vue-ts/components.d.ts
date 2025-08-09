@@ -9,9 +9,15 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
+    AdvancedCodeEditor: typeof import('./src/components/AdvancedCodeEditor.vue')['default']
+    CodeComparison: typeof import('./src/components/CodeComparison.vue')['default']
     CodeEditor: typeof import('./src/components/CodeEditor.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SimpleCodeComparison: typeof import('./src/components/SimpleCodeComparison.vue')['default']
+    SimpleCodeEditor: typeof import('./src/components/SimpleCodeEditor.vue')['default']
+    VueCodeEditor: typeof import('./src/components/VueCodeEditor.vue')['default']
+    VueExampleBlock: typeof import('./src/components/VueExampleBlock.vue')['default']
   }
 }

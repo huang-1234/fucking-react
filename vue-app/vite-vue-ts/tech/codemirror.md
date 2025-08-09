@@ -15,7 +15,7 @@ pnpm install vue-codemirror6@1.3.22 @codemirror/lang-javascript@6.2.4 @codemirro
 #### 2. **组件引入**
 ```vue
 <script setup>
-import { Codemirror } from 'vue-codemirror6';
+import Codemirror from 'vue-codemirror6'
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { ref } from 'vue';

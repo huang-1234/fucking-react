@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import Codemirror  from 'vue-codemirror6'
-import { javascript } from '@codemirror/lang-javascript'
-import { oneDark } from '@codemirror/theme-one-dark'
-import { EditorView } from '@codemirror/view'
 import { useAppStore } from '../stores'
 
 interface Props {
@@ -37,9 +33,10 @@ watch(() => props.code, (newValue) => {
 })
 
 // 监听编辑器内容变化
-const handleChange = (value: string) => {
-  editorValue.value = value
-  emit('update:code', value)
+const handleChange = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement
+  editorValue.value = target.value
+  emit('update:code', target.value)
 }
 
 // 运行代码
@@ -50,87 +47,34 @@ const runCode = () => {
 // 根据当前主题选择编辑器主题
 const isDarkMode = computed(() => appStore.currentTheme === 'dark')
 
-// 自定义亮色主题
-const lightTheme = EditorView.theme({
-  '&': {
-    backgroundColor: '#ffffff',
-    color: '#333333'
-  },
-  '.cm-content': {
-    fontFamily: 'SFMono-Regular, Consolas, monospace',
-    fontSize: '14px'
-  },
-  '.cm-gutters': {
-    backgroundColor: '#f5f5f5',
-    color: '#999',
-    border: 'none'
-  },
-  '.cm-activeLine': {
-    backgroundColor: 'rgba(66, 184, 131, 0.1)'
-  },
-  '.cm-activeLineGutter': {
-    backgroundColor: 'rgba(66, 184, 131, 0.1)'
-  },
-  '.cm-selectionMatch': {
-    backgroundColor: 'rgba(66, 184, 131, 0.2)'
-  }
-}, { dark: false })
-
-// 根据语言获取扩展
-const getLanguageExtension = (lang: string) => {
-  switch (lang.toLowerCase()) {
-    case 'javascript':
-    case 'js':
-      return javascript()
-    case 'typescript':
-    case 'ts':
-      return javascript({ typescript: true })
-    case 'jsx':
-      return javascript({ jsx: true })
-    case 'tsx':
-      return javascript({ jsx: true, typescript: true })
-    case 'vue':
-      // Vue文件特殊处理，使用javascript但添加Vue特定语法支持
-      return javascript({ jsx: true, typescript: true })
-    default:
-      return javascript()
-  }
-}
-
-// 编辑器扩展配置
-const extensions = computed(() => {
-  const langExtension = getLanguageExtension(props.language)
-  const themeExtension = isDarkMode.value ? oneDark : lightTheme
-
-  const baseExtensions = [
-    langExtension,
-    themeExtension,
-    EditorView.lineWrapping,
-    EditorView.editable.of(!props.readOnly)
-  ]
-
-  return baseExtensions
+// 语言类名
+const languageClass = computed(() => {
+  return `language-${props.language}`
 })
 </script>
 
 <template>
-  <div class="code-editor-container" :class="{ 'dark-theme': isDarkMode }">
+  <div class="simple-code-editor" :class="{ 'dark-theme': isDarkMode }">
     <div class="editor-toolbar">
       <span class="language-label">{{ language }}</span>
       <button v-if="!readOnly" class="run-button" @click="runCode">运行</button>
     </div>
     <div class="editor-content" :style="{ height }">
-      <Codemirror
-        v-model:value="editorValue"
-        :extensions="extensions"
-        @change="handleChange"
-      />
+      <textarea
+        v-if="!readOnly"
+        :value="editorValue"
+        @input="handleChange"
+        class="code-textarea"
+        :class="languageClass"
+        :spellcheck="false"
+      ></textarea>
+      <pre v-else class="code-pre" :class="languageClass"><code>{{ editorValue }}</code></pre>
     </div>
   </div>
 </template>
 
 <style scoped>
-.code-editor-container {
+.simple-code-editor {
   border-radius: var(--border-radius-md);
   overflow: hidden;
   border: 1px solid var(--border-color);
@@ -185,52 +129,89 @@ const extensions = computed(() => {
 
 .editor-content {
   width: 100%;
+  position: relative;
 }
 
-/* 覆盖CodeMirror默认样式 */
-:deep(.cm-editor) {
+.code-textarea, .code-pre {
+  width: 100%;
   height: 100%;
-}
-
-:deep(.cm-scroller) {
+  margin: 0;
+  padding: 12px;
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 14px;
   line-height: 1.5;
+  color: #333;
+  background-color: #ffffff;
+  border: none;
+  resize: none;
+  overflow: auto;
 }
 
-:deep(.cm-gutters) {
-  border-right: none;
+.dark-theme .code-textarea, .dark-theme .code-pre {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.code-pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 语言特定样式 - 简单版本 */
+.language-javascript .keyword,
+.language-typescript .keyword,
+.language-vue .keyword {
+  color: #569cd6;
+}
+
+.language-javascript .string,
+.language-typescript .string,
+.language-vue .string {
+  color: #ce9178;
+}
+
+.language-javascript .comment,
+.language-typescript .comment,
+.language-vue .comment {
+  color: #6a9955;
 }
 
 /* 自定义滚动条 */
-:deep(.cm-scroller::-webkit-scrollbar) {
+.code-textarea::-webkit-scrollbar,
+.code-pre::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-:deep(.cm-scroller::-webkit-scrollbar-track) {
+.code-textarea::-webkit-scrollbar-track,
+.code-pre::-webkit-scrollbar-track {
   background: #f0f2f5;
 }
 
-:deep(.cm-scroller::-webkit-scrollbar-thumb) {
+.code-textarea::-webkit-scrollbar-thumb,
+.code-pre::-webkit-scrollbar-thumb {
   background-color: #bfbfbf;
   border-radius: 4px;
 }
 
-:deep(.cm-scroller::-webkit-scrollbar-thumb:hover) {
+.code-textarea::-webkit-scrollbar-thumb:hover,
+.code-pre::-webkit-scrollbar-thumb:hover {
   background-color: #999;
 }
 
 /* 暗黑模式滚动条 */
-.dark-theme :deep(.cm-scroller::-webkit-scrollbar-track) {
+.dark-theme .code-textarea::-webkit-scrollbar-track,
+.dark-theme .code-pre::-webkit-scrollbar-track {
   background: #1f1f1f;
 }
 
-.dark-theme :deep(.cm-scroller::-webkit-scrollbar-thumb) {
+.dark-theme .code-textarea::-webkit-scrollbar-thumb,
+.dark-theme .code-pre::-webkit-scrollbar-thumb {
   background-color: #434343;
 }
 
-.dark-theme :deep(.cm-scroller::-webkit-scrollbar-thumb:hover) {
+.dark-theme .code-textarea::-webkit-scrollbar-thumb:hover,
+.dark-theme .code-pre::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
 </style>

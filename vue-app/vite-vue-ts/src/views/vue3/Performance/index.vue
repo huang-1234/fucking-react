@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CodeEditor from '@/components/CodeEditor.vue'
-import { usePerformance } from './Performance'
+import { usePerformance, useComparisonData } from './Performance'
 import {
   Typography,
   Card,
@@ -15,7 +15,7 @@ import {
   List
 } from 'ant-design-vue'
 
-const { Title, Paragraph, Text } = Typography
+const { Title, Paragraph } = Typography
 const { TabPane } = Tabs
 
 const {
@@ -23,75 +23,11 @@ const {
   patchFlagCode,
   cacheHandlersCode,
   performanceTips,
-  performanceData,
   improvements
 } = usePerformance()
 
-// 性能对比表格数据
-const comparisonColumns = [
-  {
-    title: '性能指标',
-    dataIndex: 'metric',
-    key: 'metric',
-    width: '25%',
-  },
-  {
-    title: 'Vue2',
-    dataIndex: 'vue2',
-    key: 'vue2',
-    width: '25%',
-  },
-  {
-    title: 'Vue3',
-    dataIndex: 'vue3',
-    key: 'vue3',
-    width: '25%',
-  },
-  {
-    title: '提升',
-    dataIndex: 'improvement',
-    key: 'improvement',
-    width: '25%',
-  },
-]
-
-const comparisonData = [
-  {
-    key: '1',
-    metric: '初始渲染时间',
-    vue2: `${performanceData.vue2.renderTime}ms`,
-    vue3: `${performanceData.vue3.renderTime}ms`,
-    improvement: <Tag color="green">{improvements.renderTime}%</Tag>,
-  },
-  {
-    key: '2',
-    metric: '内存占用',
-    vue2: `${performanceData.vue2.memoryUsage}MB`,
-    vue3: `${performanceData.vue3.memoryUsage}MB`,
-    improvement: <Tag color="green">{improvements.memoryUsage}%</Tag>,
-  },
-  {
-    key: '3',
-    metric: '更新性能',
-    vue2: `${performanceData.vue2.updateTime}ms`,
-    vue3: `${performanceData.vue3.updateTime}ms`,
-    improvement: <Tag color="green">{improvements.updateTime}%</Tag>,
-  },
-  {
-    key: '4',
-    metric: 'Tree-Shaking支持',
-    vue2: '有限',
-    vue3: '完全支持',
-    improvement: <Tag color="green">更小的包体积</Tag>,
-  },
-  {
-    key: '5',
-    metric: 'SSR性能',
-    vue2: '中等',
-    vue3: '显著提升',
-    improvement: <Tag color="green">~2-3倍</Tag>,
-  },
-]
+// 从Performance.ts导入比较数据
+const { comparisonColumns, comparisonData } = useComparisonData()
 </script>
 
 <template>
@@ -165,8 +101,8 @@ const comparisonData = [
         <Title :level="3">2. 编译优化</Title>
       </Typography>
 
-      <Tabs type="card">
-        <TabPane key="1" tab="静态树提升 (Static Hoisting)">
+      <Tabs default-active-key="1" class="feature-tabs">
+        <TabPane key="1" tab="静态树提升">
           <Card class="code-card">
             <Paragraph>
               静态内容只会被创建一次，并在每次渲染时重用，减少内存占用和提高渲染性能。
@@ -254,7 +190,13 @@ const comparisonData = [
           :pagination="false"
           :bordered="true"
           size="middle"
-        />
+        >
+          <template #bodyCell="{ column, text }">
+            <template v-if="column.dataIndex === 'improvement'">
+              <Tag color="green">{{ text }}</Tag>
+            </template>
+          </template>
+        </Table>
       </Card>
     </section>
   </div>
@@ -271,18 +213,17 @@ const comparisonData = [
 
 .stat-card {
   text-align: center;
-  border-radius: var(--border-radius-md);
   height: 100%;
+  border-radius: var(--border-radius-md);
 }
 
 .code-card {
   border-radius: var(--border-radius-md);
-  margin-top: 16px;
 }
 
 .tip-card {
-  border-radius: var(--border-radius-md);
   height: 100%;
+  border-radius: var(--border-radius-md);
 }
 
 .comparison-card {
@@ -290,7 +231,26 @@ const comparisonData = [
 }
 
 :deep(.ant-typography) {
-  margin-bottom: 0;
+  margin-bottom: 16px;
+}
+
+:deep(.ant-tabs-nav) {
+  margin-bottom: 16px;
+}
+
+:deep(.ant-statistic-title) {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+:deep(.ant-statistic-content) {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+:deep(.ant-progress-text) {
+  color: var(--primary-color) !important;
 }
 
 :deep(.ant-card-head) {
@@ -301,26 +261,6 @@ const comparisonData = [
   padding: 8px 0;
 }
 
-:deep(.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab) {
-  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
-}
-
-:deep(.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active) {
-  border-bottom-color: #fff;
-}
-
-:deep(.ant-statistic-title) {
-  margin-bottom: 8px;
-}
-
-:deep(.ant-statistic-content) {
-  font-size: 24px;
-}
-
-:deep(.ant-progress-text) {
-  color: var(--primary-color) !important;
-}
-
 :deep(.ant-table) {
   border-radius: var(--border-radius-sm);
 }
@@ -329,18 +269,18 @@ const comparisonData = [
   background-color: var(--primary-color-light);
 }
 
-:deep(.ant-list-item) {
-  padding: 0;
-}
-
 /* 响应式调整 */
 @media (max-width: 768px) {
   :deep(.ant-card-body) {
     padding: 12px;
   }
 
-  :deep(.ant-tabs-tab) {
-    padding: 8px 12px;
+  :deep(.ant-statistic-title) {
+    font-size: 14px;
+  }
+
+  :deep(.ant-statistic-content) {
+    font-size: 20px;
   }
 }
 </style>

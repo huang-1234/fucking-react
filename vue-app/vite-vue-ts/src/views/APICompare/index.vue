@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CodeEditor from '@/components/CodeEditor.vue'
+import SimpleCodeComparison from '@/components/SimpleCodeComparison.vue'
 import { useAPICompare } from './APICompare'
 import {
   Typography,
@@ -8,12 +8,7 @@ import {
   Divider,
   Space,
   Table,
-  Row,
-  Col,
-  Tag,
-  Badge,
   Steps,
-  Carousel
 } from 'ant-design-vue'
 
 const { Title, Paragraph, Text } = Typography
@@ -136,41 +131,14 @@ const differenceData = [
         {{ examples[currentExample].title }}
       </Title>
 
-      <Row :gutter="[16, 16]">
-        <Col :xs="24" :md="11">
-          <Card title="Options API (Vue2)" class="code-card">
-            <Badge.Ribbon text="Vue2" color="#41B883">
-              <CodeEditor
-                :code="examples[currentExample].vue2"
-                language="vue"
-                :readOnly="true"
-                height="500px"
-              />
-            </Badge.Ribbon>
-          </Card>
-        </Col>
-
-        <Col :xs="24" :md="2">
-          <div class="comparison-divider">
-            <div class="divider-line"></div>
-            <div class="vs-badge">VS</div>
-            <div class="divider-line"></div>
-          </div>
-        </Col>
-
-        <Col :xs="24" :md="11">
-          <Card title="Composition API (Vue3)" class="code-card">
-            <Badge.Ribbon text="Vue3" color="#41B883">
-              <CodeEditor
-                :code="examples[currentExample].vue3"
-                language="vue"
-                :readOnly="true"
-                height="500px"
-              />
-            </Badge.Ribbon>
-          </Card>
-        </Col>
-      </Row>
+      <SimpleCodeComparison
+        :title="examples[currentExample].title"
+        :leftCode="examples[currentExample].vue2"
+        :rightCode="examples[currentExample].vue3"
+        leftLabel="Options API (Vue2)"
+        rightLabel="Composition API (Vue3)"
+        height="500px"
+      />
     </section>
 
     <Divider />

@@ -17,6 +17,7 @@ import {
   Alert
 } from 'ant-design-vue'
 import CodeEditor from '@/components/CodeEditor.vue'
+import { h } from 'vue'
 
 const { Title, Paragraph, Text } = Typography
 const {
@@ -31,6 +32,10 @@ const {
   addNewProperty
 } = useReactiveSystem()
 const { comparisonColumns, comparisonData, proxyAdvantages } = useStaticData()
+
+    const headerContent = h('div', { style: 'font-weight: 500' },
+      'Vue3 Proxy响应式系统的优势'
+    );
 </script>
 
 <template>
@@ -59,18 +64,19 @@ const { comparisonColumns, comparisonData, proxyAdvantages } = useStaticData()
         />
 
         <List
-          header={<div style="font-weight: 500">Vue3 Proxy响应式系统的优势</div>}
-          bordered
-          dataSource={proxyAdvantages}
-          renderItem={(item) => (
+          :header="headerContent"
+          :bordered="true"
+          :data-source="proxyAdvantages"
+          style="margin-bottom: 16px"
+        >
+          <template #renderItem="{ item }">
             <List.Item>
               <Typography.Text>
-                <Text code>✓</Text> {item}
+                <Text code>✓</Text> {{ item }}
               </Typography.Text>
             </List.Item>
-          )}
-          style="margin-bottom: 16px"
-        />
+          </template>
+        </List>
 
         <Card title="Proxy响应式系统简化实现" size="small">
           <CodeEditor :code="reactiveCode" language="javascript" :readOnly="true" height="300px" />
