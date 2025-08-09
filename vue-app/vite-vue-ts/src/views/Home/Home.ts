@@ -4,7 +4,7 @@ import {
   CodeOutlined,
   ThunderboltOutlined,
   HistoryOutlined,
-  CompareOutlined,
+  AppstoreOutlined,
   RocketOutlined,
   BoxPlotOutlined,
   ToolOutlined,
@@ -37,7 +37,7 @@ export function useHome() {
       title: 'API对比',
       description: '对比Vue2与Vue3的API差异和使用方式',
       path: '/api-compare',
-      icon: () => h(CompareOutlined, { style: { fontSize: '32px', color: '#42b883' } })
+      icon: () => h(AppstoreOutlined, { style: { fontSize: '32px', color: '#42b883' } })
     }
   ]
 

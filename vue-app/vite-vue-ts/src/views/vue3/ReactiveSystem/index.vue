@@ -1,6 +1,24 @@
 <script setup lang="ts">
-import { useReactiveSystem } from './ReactiveSystem'
+import { useReactiveSystem, useStaticData } from './ReactiveSystem'
+import {
+  Typography,
+  Card,
+  Button,
+  Input,
+  InputNumber,
+  Divider,
+  Space,
+  Table,
+  Row,
+  Col,
+  Tag,
+  List,
+  Timeline,
+  Alert
+} from 'ant-design-vue'
+import CodeEditor from '@/components/CodeEditor.vue'
 
+const { Title, Paragraph, Text } = Typography
 const {
   user,
   counter,
@@ -12,348 +30,269 @@ const {
   removeHobby,
   addNewProperty
 } = useReactiveSystem()
+const { comparisonColumns, comparisonData, proxyAdvantages } = useStaticData()
 </script>
 
 <template>
   <div class="reactive-system">
-    <h1>Vue3 响应式系统</h1>
+    <Typography>
+      <Title :level="2">Vue3 响应式系统</Title>
+      <Paragraph>
+        Vue3的响应式系统是基于ES6 Proxy实现的，相比Vue2的Object.defineProperty有很多优势。
+      </Paragraph>
+    </Typography>
+
+    <Divider />
 
     <section class="example-section">
-      <h2>1. Proxy 响应式原理</h2>
-      <div class="example-card">
-        <div class="example-content">
-          <p>Vue3使用ES6 Proxy实现响应式系统，相比Vue2的Object.defineProperty有以下优势：</p>
-          <ul>
-            <li>可以拦截更多操作（如删除属性、in操作符等）</li>
-            <li>可以直接监听整个对象，而不是特定属性</li>
-            <li>可以监听数组索引和长度变化</li>
-            <li>可以监听动态添加的属性</li>
-            <li>性能更好（惰性监听，按需代理）</li>
-          </ul>
+      <Typography>
+        <Title :level="3">1. Proxy 响应式原理</Title>
+      </Typography>
 
-          <div class="code-block">
-            <pre><code>{{ reactiveCode }}</code></pre>
-          </div>
-        </div>
-      </div>
+      <Card class="example-card">
+        <Alert
+          message="Vue3使用ES6 Proxy实现响应式系统"
+          description="Proxy提供了对象操作的元编程能力，可以拦截并自定义对象的基本操作。"
+          type="info"
+          showIcon
+          style="margin-bottom: 16px"
+        />
+
+        <List
+          header={<div style="font-weight: 500">Vue3 Proxy响应式系统的优势</div>}
+          bordered
+          dataSource={proxyAdvantages}
+          renderItem={(item) => (
+            <List.Item>
+              <Typography.Text>
+                <Text code>✓</Text> {item}
+              </Typography.Text>
+            </List.Item>
+          )}
+          style="margin-bottom: 16px"
+        />
+
+        <Card title="Proxy响应式系统简化实现" size="small">
+          <CodeEditor :code="reactiveCode" language="javascript" :readOnly="true" height="300px" />
+        </Card>
+      </Card>
     </section>
 
+    <Divider />
+
     <section class="example-section">
-      <h2>2. 响应式演示</h2>
-      <div class="example-card">
-        <div class="example-demo">
-          <div class="demo-panel">
-            <h3>基础类型响应式 (ref)</h3>
-            <div class="demo-row">
-              <span>计数器:</span>
-              <div class="control-group">
-                <input type="number" v-model.number="counter" />
-                <button @click="counter++">+1</button>
-                <button @click="counter--">-1</button>
-              </div>
-            </div>
-            <div class="demo-row">
-              <span>双倍值:</span>
-              <span>{{ doubleCounter }}</span>
-            </div>
-            <div class="demo-row">
-              <span>消息:</span>
-              <input v-model="message" />
-            </div>
-          </div>
+      <Typography>
+        <Title :level="3">2. 响应式演示</Title>
+      </Typography>
 
-          <div class="demo-panel">
-            <h3>对象响应式 (reactive)</h3>
-            <div class="demo-row">
-              <span>姓名:</span>
-              <input v-model="user.name" />
-            </div>
-            <div class="demo-row">
-              <span>年龄:</span>
-              <input type="number" v-model.number="user.age" />
-            </div>
-            <div class="demo-row">
-              <span>城市:</span>
-              <input v-model="user.address.city" />
-            </div>
-            <div class="demo-row">
-              <span>区域:</span>
-              <input v-model="user.address.district" />
-            </div>
-            <button @click="addNewProperty">添加新属性</button>
-          </div>
-
-          <div class="demo-panel">
-            <h3>数组响应式</h3>
-            <div class="demo-row">
-              <span>爱好:</span>
-              <div class="hobby-list">
-                <div v-for="(hobby, index) in user.hobbies" :key="hobby" class="hobby-item">
-                  {{ hobby }}
-                  <button @click="removeHobby(index)" class="remove-btn">×</button>
+      <Row :gutter="[16, 16]">
+        <Col :xs="24" :md="8">
+          <Card title="基础类型响应式 (ref)" class="demo-card">
+            <Space direction="vertical" style="width: 100%">
+              <div class="demo-row">
+                <Text strong>计数器:</Text>
+                <div class="control-group">
+                  <InputNumber v-model:value="counter" :min="0" :max="100" />
+                  <Button type="primary" size="small" @click="counter++">+1</Button>
+                  <Button danger size="small" @click="counter--">-1</Button>
                 </div>
-                <button @click="addHobby" class="add-btn">添加爱好</button>
+              </div>
+
+              <div class="demo-row">
+                <Text strong>双倍值:</Text>
+                <Tag color="blue">{{ doubleCounter }}</Tag>
+              </div>
+
+              <div class="demo-row">
+                <Text strong>消息:</Text>
+                <Input v-model:value="message" placeholder="输入消息" />
+              </div>
+            </Space>
+          </Card>
+        </Col>
+
+        <Col :xs="24" :md="8">
+          <Card title="对象响应式 (reactive)" class="demo-card">
+            <Space direction="vertical" style="width: 100%">
+              <div class="demo-row">
+                <Text strong>姓名:</Text>
+                <Input v-model:value="user.name" placeholder="输入姓名" />
+              </div>
+
+              <div class="demo-row">
+                <Text strong>年龄:</Text>
+                <InputNumber v-model:value="user.age" :min="0" :max="120" />
+              </div>
+
+              <div class="demo-row">
+                <Text strong>城市:</Text>
+                <Input v-model:value="user.address.city" placeholder="输入城市" />
+              </div>
+
+              <div class="demo-row">
+                <Text strong>区域:</Text>
+                <Input v-model:value="user.address.district" placeholder="输入区域" />
+              </div>
+
+              <Button type="primary" @click="addNewProperty">
+                添加新属性
+              </Button>
+            </Space>
+          </Card>
+        </Col>
+
+        <Col :xs="24" :md="8">
+          <Card title="数组响应式" class="demo-card">
+            <div class="demo-row">
+              <Text strong>爱好:</Text>
+              <div class="hobby-list">
+                <Space wrap>
+                  <Tag
+                    v-for="(hobby, index) in user.hobbies"
+                    :key="hobby"
+                    :color="['blue', 'green', 'purple', 'cyan'][index % 4]"
+                    closable
+                    @close="removeHobby(index)"
+                  >
+                    {{ hobby }}
+                  </Tag>
+                  <Button type="dashed" size="small" @click="addHobby">
+                    + 添加爱好
+                  </Button>
+                </Space>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </Card>
+        </Col>
+      </Row>
     </section>
 
-    <section class="example-section">
-      <h2>3. 响应式变化日志</h2>
-      <div class="example-card">
-        <div class="logs-panel">
-          <div v-for="(log, index) in logs" :key="index" class="log-item">
-            {{ log }}
-          </div>
-          <div v-if="logs.length === 0" class="empty-log">
-            尝试修改上面的值，这里会显示变化日志
-          </div>
-        </div>
-      </div>
-    </section>
+    <Divider />
 
     <section class="example-section">
-      <h2>4. Vue2 vs Vue3 响应式系统对比</h2>
-      <div class="comparison-table">
-        <table>
-          <thead>
-            <tr>
-              <th>特性</th>
-              <th>Vue2 (Object.defineProperty)</th>
-              <th>Vue3 (Proxy)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>动态添加属性</td>
-              <td>需要使用 Vue.set</td>
-              <td>直接支持</td>
-            </tr>
-            <tr>
-              <td>删除属性</td>
-              <td>需要使用 Vue.delete</td>
-              <td>直接支持 delete 操作符</td>
-            </tr>
-            <tr>
-              <td>数组索引变化</td>
-              <td>不能检测</td>
-              <td>可以检测</td>
-            </tr>
-            <tr>
-              <td>数组长度变化</td>
-              <td>不能检测</td>
-              <td>可以检测</td>
-            </tr>
-            <tr>
-              <td>Map/Set支持</td>
-              <td>不支持</td>
-              <td>完全支持</td>
-            </tr>
-            <tr>
-              <td>性能</td>
-              <td>初始化时递归遍历所有属性</td>
-              <td>访问时惰性递归，性能更好</td>
-            </tr>
-            <tr>
-              <td>浏览器兼容性</td>
-              <td>IE9+</td>
-              <td>需要现代浏览器</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <Typography>
+        <Title :level="3">3. 响应式变化日志</Title>
+      </Typography>
+
+      <Card class="example-card">
+        <Timeline>
+          <Timeline.Item
+            v-for="(log, index) in logs"
+            :key="index"
+            :color="['blue', 'green', 'red'][index % 3]"
+          >
+            <Text code>{{ log }}</Text>
+          </Timeline.Item>
+          <Timeline.Item v-if="logs.length === 0" color="gray">
+            <Text type="secondary">尝试修改上面的值，这里会显示变化日志</Text>
+          </Timeline.Item>
+        </Timeline>
+      </Card>
+    </section>
+
+    <Divider />
+
+    <section class="example-section">
+      <Typography>
+        <Title :level="3">4. Vue2 vs Vue3 响应式系统对比</Title>
+      </Typography>
+
+      <Card class="example-card">
+        <Table
+          :columns="comparisonColumns"
+          :dataSource="comparisonData"
+          :pagination="false"
+          :bordered="true"
+          size="middle"
+        />
+      </Card>
     </section>
   </div>
 </template>
 
 <style scoped>
 .reactive-system {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-h1 {
-  color: #42b883;
-  margin-bottom: 2rem;
+  width: 100%;
 }
 
 .example-section {
-  margin-bottom: 3rem;
-}
-
-.example-section h2 {
-  border-bottom: 2px solid #42b883;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .example-card {
-  background-color: var(--header-bg);
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.example-content {
-  padding: 1.5rem;
-}
-
-.example-content ul {
-  margin-bottom: 1.5rem;
-}
-
-.example-content li {
-  margin-bottom: 0.5rem;
-}
-
-.code-block {
-  background-color: #2d2d2d;
-  border-radius: 4px;
-  padding: 1.5rem;
-  overflow-x: auto;
-}
-
-.code-block pre {
-  margin: 0;
-}
-
-.code-block code {
-  color: #f8f8f2;
-  font-family: 'Fira Code', monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.example-demo {
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.demo-panel {
-  background-color: var(--bg-color);
-  padding: 1.5rem;
-  border-radius: 8px;
-}
-
-.demo-panel h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #42b883;
+.demo-card {
+  height: 100%;
+  border-radius: var(--border-radius-sm);
 }
 
 .demo-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.demo-row > span:first-child {
-  width: 80px;
-  font-weight: 500;
+  margin-bottom: 16px;
 }
 
 .control-group {
   display: flex;
-  gap: 0.5rem;
-}
-
-input {
-  background-color: var(--header-bg);
-  border: 1px solid var(--border-color);
-  padding: 0.5rem;
-  border-radius: 4px;
-  color: var(--text-color);
-}
-
-button {
-  background-color: #42b883;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button:hover {
-  background-color: #3ca576;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .hobby-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  margin-top: 8px;
 }
 
-.hobby-item {
-  display: flex;
-  align-items: center;
-  background-color: rgba(66, 184, 131, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+:deep(.ant-typography) {
+  margin-bottom: 0;
 }
 
-.remove-btn {
-  background: none;
-  color: #ff6b6b;
-  padding: 0;
-  margin-left: 0.5rem;
-  font-size: 1.2rem;
-  line-height: 1;
+:deep(.ant-card-head) {
+  min-height: 40px;
 }
 
-.add-btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.9rem;
+:deep(.ant-card-head-title) {
+  padding: 8px 0;
 }
 
-.logs-panel {
-  padding: 1.5rem;
-  max-height: 200px;
-  overflow-y: auto;
+:deep(.ant-input), :deep(.ant-input-number) {
+  border-radius: var(--border-radius-sm);
 }
 
-.log-item {
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
-  font-family: monospace;
+:deep(.ant-btn) {
+  border-radius: var(--border-radius-sm);
 }
 
-.log-item:last-child {
-  border-bottom: none;
+:deep(.ant-table) {
+  border-radius: var(--border-radius-sm);
 }
 
-.empty-log {
-  color: #999;
-  text-align: center;
-  padding: 2rem;
+:deep(.ant-table-thead > tr > th) {
+  background-color: var(--primary-color-light);
 }
 
-.comparison-table {
-  overflow-x: auto;
+:deep(.ant-tag) {
+  border-radius: var(--border-radius-sm);
+  margin-right: 8px;
+  margin-bottom: 8px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+:deep(.ant-timeline-item-tail) {
+  border-left-style: dashed;
 }
 
-th, td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
-}
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .example-card {
+    border-radius: var(--border-radius-sm);
+  }
 
-th {
-  background-color: rgba(66, 184, 131, 0.1);
-  color: #42b883;
-}
+  :deep(.ant-card-body) {
+    padding: 12px;
+  }
 
-tr:hover {
-  background-color: rgba(66, 184, 131, 0.05);
+  .control-group {
+    flex-wrap: wrap;
+  }
 }
 </style>

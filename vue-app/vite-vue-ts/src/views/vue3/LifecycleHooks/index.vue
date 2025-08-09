@@ -2,6 +2,23 @@
 import { ref, onMounted, onUpdated, onBeforeUnmount, onUnmounted, onBeforeMount } from 'vue'
 import CodeEditor from '@/components/CodeEditor.vue'
 import { useLifecycleCode } from './LifecycleHooks'
+import {
+  Typography,
+  Card,
+  Button,
+  Divider,
+  Space,
+  Table,
+  Row,
+  Col,
+  Tag,
+  Timeline,
+  Alert,
+  Statistic,
+  Badge
+} from 'ant-design-vue'
+
+const { Title, Paragraph, Text } = Typography
 
 // 生命周期演示
 const count = ref(0)
@@ -50,127 +67,104 @@ onUnmounted(() => {
   addLog('onUnmounted 触发: 组件已卸载')
 })
 
-// 生命周期钩子代码示例
-
 // Vue2与Vue3生命周期对比
-const lifecycleComparison = [
-  { vue2: 'beforeCreate', vue3: 'setup()' },
-  { vue2: 'created', vue3: 'setup()' },
-  { vue2: 'beforeMount', vue3: 'onBeforeMount' },
-  { vue2: 'mounted', vue3: 'onMounted' },
-  { vue2: 'beforeUpdate', vue3: 'onBeforeUpdate' },
-  { vue2: 'updated', vue3: 'onUpdated' },
-  { vue2: 'beforeDestroy', vue3: 'onBeforeUnmount' },
-  { vue2: 'destroyed', vue3: 'onUnmounted' },
-  { vue2: 'errorCaptured', vue3: 'onErrorCaptured' },
-  { vue2: '无', vue3: 'onRenderTracked' },
-  { vue2: '无', vue3: 'onRenderTriggered' }
+const lifecycleComparisonColumns = [
+  {
+    title: 'Vue2 Options API',
+    dataIndex: 'vue2',
+    key: 'vue2',
+    width: '25%',
+  },
+  {
+    title: 'Vue3 Composition API',
+    dataIndex: 'vue3',
+    key: 'vue3',
+    width: '25%',
+  },
+  {
+    title: '说明',
+    dataIndex: 'description',
+    key: 'description',
+    width: '50%',
+  },
 ]
-</script>
 
-<template>
-  <div class="lifecycle-hooks">
-    <h1>Vue3 生命周期钩子</h1>
+const lifecycleComparisonData = [
+  {
+    key: '1',
+    vue2: 'beforeCreate',
+    vue3: 'setup()',
+    description: 'setup函数在beforeCreate之前执行',
+  },
+  {
+    key: '2',
+    vue2: 'created',
+    vue3: 'setup()',
+    description: 'setup函数包含了created的功能',
+  },
+  {
+    key: '3',
+    vue2: 'beforeMount',
+    vue3: 'onBeforeMount',
+    description: '功能相同，使用方式不同',
+  },
+  {
+    key: '4',
+    vue2: 'mounted',
+    vue3: 'onMounted',
+    description: '功能相同，使用方式不同',
+  },
+  {
+    key: '5',
+    vue2: 'beforeUpdate',
+    vue3: 'onBeforeUpdate',
+    description: '功能相同，使用方式不同',
+  },
+  {
+    key: '6',
+    vue2: 'updated',
+    vue3: 'onUpdated',
+    description: '功能相同，使用方式不同',
+  },
+  {
+    key: '7',
+    vue2: 'beforeDestroy',
+    vue3: 'onBeforeUnmount',
+    description: '名称变更，功能相同',
+  },
+  {
+    key: '8',
+    vue2: 'destroyed',
+    vue3: 'onUnmounted',
+    description: '名称变更，功能相同',
+  },
+  {
+    key: '9',
+    vue2: 'errorCaptured',
+    vue3: 'onErrorCaptured',
+    description: '功能相同，使用方式不同',
+  },
+  {
+    key: '10',
+    vue2: '无',
+    vue3: 'onRenderTracked',
+    description: 'Vue3新增的调试钩子',
+  },
+  {
+    key: '11',
+    vue2: '无',
+    vue3: 'onRenderTriggered',
+    description: 'Vue3新增的调试钩子',
+  },
+]
 
-    <section class="example-section">
-      <h2>1. 生命周期演示</h2>
-      <div class="example-card">
-        <div class="demo-container">
-          <div class="demo-panel">
-            <h3>交互式演示</h3>
-            <p>当前时间: {{ currentTime }}</p>
-            <p>计数器: {{ count }}</p>
-            <div class="button-group">
-              <button @click="count++">增加计数</button>
-              <button @click="count = 0">重置</button>
-            </div>
-            <p class="hint">尝试点击按钮，观察右侧生命周期日志</p>
-          </div>
-
-          <div class="logs-panel">
-            <h3>生命周期日志</h3>
-            <div class="logs-container">
-              <div v-for="(log, index) in logs" :key="index" class="log-item">
-                {{ log }}
-              </div>
-              <div v-if="logs.length === 0" class="empty-log">
-                等待生命周期事件...
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="example-section">
-      <h2>2. 生命周期钩子函数</h2>
-      <div class="example-card">
-        <div class="code-container">
-          <CodeEditor
-            :code="lifecycleCode"
-            language="vue"
-            :readOnly="true"
-            height="400px"
-          />
-        </div>
-      </div>
-    </section>
-
-    <section class="example-section">
-      <h2>3. Vue2 与 Vue3 生命周期对比</h2>
-      <div class="comparison-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Vue2 Options API</th>
-              <th>Vue3 Composition API</th>
-              <th>说明</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in lifecycleComparison" :key="index">
-              <td>{{ item.vue2 }}</td>
-              <td>{{ item.vue3 }}</td>
-              <td>
-                <template v-if="index === 0">
-                  setup函数在beforeCreate之前执行
-                </template>
-                <template v-else-if="index === 1">
-                  setup函数包含了created的功能
-                </template>
-                <template v-else-if="index === 6 || index === 7">
-                  名称变更，功能相同
-                </template>
-                <template v-else-if="index > 8">
-                  Vue3新增的调试钩子
-                </template>
-                <template v-else>
-                  功能相同，使用方式不同
-                </template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="example-section">
-      <h2>4. 生命周期最佳实践</h2>
-      <div class="example-card">
-        <div class="best-practices">
-          <div class="practice-item">
-            <h3>1. 资源获取</h3>
-            <p>在<code>onMounted</code>中进行API请求、DOM操作等</p>
-            <pre><code>onMounted(async () => {
+// 生命周期最佳实践代码示例
+const resourceFetchingCode = `onMounted(async () => {
   const data = await fetchData()
   results.value = data
-})</code></pre>
-          </div>
+})`
 
-          <div class="practice-item">
-            <h3>2. 清理副作用</h3>
-            <p>在<code>onBeforeUnmount</code>中清理定时器、事件监听器等</p>
-            <pre><code>onMounted(() => {
+const cleanupCode = `onMounted(() => {
   const timer = setInterval(() => {
     // 定时操作
   }, 1000)
@@ -178,13 +172,9 @@ const lifecycleComparison = [
   onBeforeUnmount(() => {
     clearInterval(timer) // 清理定时器
   })
-})</code></pre>
-          </div>
+})`
 
-          <div class="practice-item">
-            <h3>3. 组合式函数中使用</h3>
-            <p>在自定义组合函数中使用生命周期钩子</p>
-            <pre><code>export function useMousePosition() {
+const composableCode = `export function useMousePosition() {
   const x = ref(0)
   const y = ref(0)
 
@@ -202,184 +192,244 @@ const lifecycleComparison = [
   })
 
   return { x, y }
-}</code></pre>
-          </div>
-        </div>
-      </div>
+}`
+</script>
+
+<template>
+  <div class="lifecycle-hooks">
+    <Typography>
+      <Title :level="2">Vue3 生命周期钩子</Title>
+      <Paragraph>
+        生命周期钩子允许你在组件的不同阶段执行代码，Vue3的Composition API提供了一套全新的生命周期钩子函数。
+      </Paragraph>
+    </Typography>
+
+    <Divider />
+
+    <section class="example-section">
+      <Typography>
+        <Title :level="3">1. 生命周期演示</Title>
+      </Typography>
+
+      <Card class="example-card">
+        <Row :gutter="[16, 16]">
+          <Col :xs="24" :md="12">
+            <Card title="交互式演示" size="small" class="demo-card">
+              <Space direction="vertical" style="width: 100%">
+                <Statistic
+                  title="当前时间"
+                  :value="currentTime"
+                  :value-style="{ color: '#42b883' }"
+                />
+
+                <Statistic
+                  title="计数器"
+                  :value="count"
+                  :precision="0"
+                />
+
+                <Space>
+                  <Button type="primary" @click="count++">增加计数</Button>
+                  <Button @click="count = 0">重置</Button>
+                </Space>
+
+                <Alert
+                  message="尝试点击按钮，观察右侧生命周期日志"
+                  type="info"
+                  showIcon
+                />
+              </Space>
+            </Card>
+          </Col>
+
+          <Col :xs="24" :md="12">
+            <Card title="生命周期日志" size="small" class="demo-card">
+              <div class="logs-container">
+                <Timeline>
+                  <Timeline.Item
+                    v-for="(log, index) in logs"
+                    :key="index"
+                    :color="log.includes('onMounted') ? 'green' :
+                            log.includes('onUpdated') ? 'blue' :
+                            log.includes('onBeforeUnmount') ? 'orange' :
+                            log.includes('onUnmounted') ? 'red' : 'gray'"
+                  >
+                    <Text code>{{ log }}</Text>
+                  </Timeline.Item>
+                  <Timeline.Item v-if="logs.length === 0" color="gray">
+                    <Text type="secondary">等待生命周期事件...</Text>
+                  </Timeline.Item>
+                </Timeline>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </Card>
+    </section>
+
+    <Divider />
+
+    <section class="example-section">
+      <Typography>
+        <Title :level="3">2. 生命周期钩子函数</Title>
+      </Typography>
+
+      <Card class="example-card">
+        <CodeEditor
+          :code="lifecycleCode"
+          language="vue"
+          :readOnly="true"
+          height="400px"
+        />
+      </Card>
+    </section>
+
+    <Divider />
+
+    <section class="example-section">
+      <Typography>
+        <Title :level="3">3. Vue2 与 Vue3 生命周期对比</Title>
+      </Typography>
+
+      <Card class="example-card">
+        <Table
+          :columns="lifecycleComparisonColumns"
+          :dataSource="lifecycleComparisonData"
+          :pagination="false"
+          :bordered="true"
+          size="middle"
+        />
+      </Card>
+    </section>
+
+    <Divider />
+
+    <section class="example-section">
+      <Typography>
+        <Title :level="3">4. 生命周期最佳实践</Title>
+      </Typography>
+
+      <Row :gutter="[16, 16]">
+        <Col :xs="24" :lg="8">
+          <Card title="资源获取" class="practice-card">
+            <Paragraph>
+              在<Text code>onMounted</Text>中进行API请求、DOM操作等
+            </Paragraph>
+            <CodeEditor
+              :code="resourceFetchingCode"
+              language="javascript"
+              :readOnly="true"
+              height="120px"
+            />
+          </Card>
+        </Col>
+
+        <Col :xs="24" :lg="8">
+          <Card title="清理副作用" class="practice-card">
+            <Paragraph>
+              在<Text code>onBeforeUnmount</Text>中清理定时器、事件监听器等
+            </Paragraph>
+            <CodeEditor
+              :code="cleanupCode"
+              language="javascript"
+              :readOnly="true"
+              height="180px"
+            />
+          </Card>
+        </Col>
+
+        <Col :xs="24" :lg="8">
+          <Card title="组合式函数中使用" class="practice-card">
+            <Paragraph>
+              在自定义组合函数中使用生命周期钩子
+            </Paragraph>
+            <CodeEditor
+              :code="composableCode"
+              language="javascript"
+              :readOnly="true"
+              height="240px"
+            />
+          </Card>
+        </Col>
+      </Row>
     </section>
   </div>
 </template>
 
 <style scoped>
 .lifecycle-hooks {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-h1 {
-  color: #42b883;
-  margin-bottom: 2rem;
+  width: 100%;
 }
 
 .example-section {
-  margin-bottom: 3rem;
-}
-
-.example-section h2 {
-  border-bottom: 2px solid #42b883;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .example-card {
-  background-color: var(--header-bg);
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.demo-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .demo-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-.demo-panel, .logs-panel {
-  background-color: var(--bg-color);
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.demo-panel h3, .logs-panel h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #42b883;
-}
-
-.button-group {
-  display: flex;
-  gap: 0.5rem;
-  margin: 1rem 0;
-}
-
-button {
-  background-color: #42b883;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button:hover {
-  background-color: #3ca576;
-}
-
-.hint {
-  font-size: 0.9rem;
-  color: #888;
-  margin-top: 1rem;
+.demo-card {
+  height: 100%;
+  border-radius: var(--border-radius-sm);
 }
 
 .logs-container {
-  height: 200px;
+  height: 300px;
   overflow-y: auto;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--header-bg);
+  padding-right: 8px;
 }
 
-.log-item {
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-  font-family: monospace;
-  font-size: 0.9rem;
+.practice-card {
+  height: 100%;
+  border-radius: var(--border-radius-sm);
 }
 
-.log-item:last-child {
-  border-bottom: none;
-}
-
-.empty-log {
-  color: #888;
-  text-align: center;
-  padding: 2rem;
-}
-
-.code-container {
-  padding: 1.5rem;
-}
-
-.comparison-table {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
-}
-
-th {
-  background-color: rgba(66, 184, 131, 0.1);
-  color: #42b883;
-}
-
-tr:hover {
-  background-color: rgba(66, 184, 131, 0.05);
-}
-
-.best-practices {
-  padding: 1.5rem;
-}
-
-.practice-item {
-  margin-bottom: 2rem;
-}
-
-.practice-item:last-child {
+:deep(.ant-typography) {
   margin-bottom: 0;
 }
 
-.practice-item h3 {
-  color: #42b883;
-  margin-bottom: 0.5rem;
+:deep(.ant-card-head) {
+  min-height: 40px;
 }
 
-.practice-item p {
-  margin-bottom: 1rem;
+:deep(.ant-card-head-title) {
+  padding: 8px 0;
 }
 
-.practice-item code {
-  background-color: rgba(66, 184, 131, 0.1);
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-family: monospace;
+:deep(.ant-statistic-title) {
+  margin-bottom: 4px;
 }
 
-.practice-item pre {
-  background-color: #2d2d2d;
-  padding: 1rem;
-  border-radius: 4px;
-  overflow-x: auto;
+:deep(.ant-statistic-content) {
+  font-size: 20px;
 }
 
-.practice-item pre code {
-  color: #f8f8f2;
-  background-color: transparent;
-  padding: 0;
+:deep(.ant-timeline-item-tail) {
+  border-left-style: dashed;
+}
+
+:deep(.ant-table) {
+  border-radius: var(--border-radius-sm);
+}
+
+:deep(.ant-table-thead > tr > th) {
+  background-color: var(--primary-color-light);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .example-card {
+    border-radius: var(--border-radius-sm);
+  }
+
+  :deep(.ant-card-body) {
+    padding: 12px;
+  }
+
+  .logs-container {
+    height: 200px;
+  }
 }
 </style>

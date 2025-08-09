@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, h } from 'vue'
+import { computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAppStore } from '../stores'
 import {
   Layout,
   Menu,
   Button,
-  theme as antTheme
+  theme as antTheme,
+  Affix
 } from 'ant-design-vue'
 import {
   HomeOutlined,
@@ -18,7 +19,6 @@ import {
 } from '@ant-design/icons-vue'
 
 const { Header, Content, Footer } = Layout
-const { useToken } = antTheme
 
 const router = useRouter()
 const route = useRoute()
@@ -68,33 +68,42 @@ const toggleTheme = () => {
 <template>
   <a-config-provider :theme="{
     algorithm: appStore.currentTheme === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+    token: {
+      colorPrimary: '#42b883',
+      borderRadius: 8
+    }
   }">
     <Layout class="layout">
-      <Header class="header">
-        <div class="logo">
-          <img src="../assets/vue.svg" alt="Vue Logo" class="vue-logo" />
-          <h1>Vue3 学习平台</h1>
-        </div>
-        <div class="header-right">
-          <Menu
-            v-model:selectedKeys="selectedKeys"
-            mode="horizontal"
-            :items="menuItems"
-            class="main-menu"
-          />
-          <Button
-            type="text"
-            class="theme-toggle"
-            @click="toggleTheme"
-          >
-            <BulbOutlined v-if="appStore.currentTheme === 'light'" />
-            <BulbFilled v-else />
-          </Button>
-        </div>
-      </Header>
+      <Affix>
+        <Header class="header">
+          <div class="logo">
+            <img src="../assets/vue.svg" alt="Vue Logo" class="vue-logo" />
+            <h1>Vue3 学习平台</h1>
+          </div>
+          <div class="header-right">
+            <Menu
+              v-model:selectedKeys="selectedKeys"
+              mode="horizontal"
+              :items="menuItems"
+              class="main-menu"
+            />
+            <Button
+              type="primary"
+              shape="circle"
+              class="theme-toggle"
+              @click="toggleTheme"
+            >
+              <BulbOutlined v-if="appStore.currentTheme === 'light'" />
+              <BulbFilled v-else />
+            </Button>
+          </div>
+        </Header>
+      </Affix>
 
       <Content class="main-content">
-        <router-view />
+        <div class="content-container">
+          <router-view />
+        </div>
       </Content>
 
       <Footer class="footer">
@@ -113,27 +122,29 @@ const toggleTheme = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  height: 64px;
-  line-height: 64px;
-  background-color: #fff;
+  padding: 0 16px;
+  height: 60px;
+  line-height: 60px;
+  background-color: var(--component-bg);
+  box-shadow: var(--box-shadow);
+  z-index: 1000;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .vue-logo {
-  height: 32px;
+  height: 28px;
 }
 
 .logo h1 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
-  color: #42b883;
+  color: var(--primary-color);
 }
 
 .header-right {
@@ -142,74 +153,82 @@ const toggleTheme = () => {
 }
 
 .main-menu {
-  margin-right: 20px;
+  margin-right: 16px;
   border-bottom: none;
 }
 
 .theme-toggle {
-  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
 }
 
 .main-content {
-  padding: 24px;
-  background-color: #f0f2f5;
+  padding: 16px;
+  background-color: var(--bg-color);
+  min-height: calc(100vh - 60px - 48px); /* 减去header和footer的高度 */
+}
+
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: var(--component-bg);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow);
+  padding: 16px;
+  min-height: calc(100vh - 60px - 48px - 32px); /* 减去内外边距 */
 }
 
 .footer {
   text-align: center;
-  padding: 16px;
-  color: rgba(0, 0, 0, 0.45);
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-color-tertiary);
+  background-color: var(--component-bg);
 }
 
-:deep(.ant-layout-sider-children) {
-  display: flex;
-  flex-direction: column;
+:deep(.ant-menu-horizontal) {
+  border-bottom: none;
 }
 
-:deep(.ant-menu-item-selected) {
-  background-color: #e6f7ff !important;
+:deep(.ant-menu-item) {
+  border-radius: var(--border-radius-sm);
+  margin: 0 4px;
 }
 
 :deep(.ant-menu-item:hover) {
-  color: #42b883 !important;
+  color: var(--primary-color) !important;
+  background-color: var(--primary-color-light);
 }
 
 :deep(.ant-menu-item-selected) {
-  color: #42b883 !important;
+  color: var(--primary-color) !important;
+  background-color: var(--primary-color-light) !important;
 }
 
 :deep(.ant-menu-item-selected::after) {
-  border-right-color: #42b883 !important;
+  display: none !important;
 }
 
-:deep(.ant-layout-header) {
-  background-color: #fff;
-}
-
-:deep(.ant-layout-footer) {
-  background-color: #f0f2f5;
-}
-
-/* 暗黑模式样式 */
-:deep([data-theme='dark']) {
-  .ant-layout-header {
-    background-color: #141414;
-  }
-
-  .ant-layout-content {
-    background-color: #1f1f1f;
-  }
-
-  .ant-layout-footer {
-    background-color: #141414;
-    color: rgba(255, 255, 255, 0.65);
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 12px;
   }
 
   .logo h1 {
-    color: #42b883;
+    display: none;
+  }
+
+  .main-content {
+    padding: 12px;
+  }
+
+  .content-container {
+    padding: 12px;
   }
 }
 </style>

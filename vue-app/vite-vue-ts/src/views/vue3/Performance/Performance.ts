@@ -149,6 +149,79 @@ export const improvements = computed(() => {
   }
 })
 
+// 比较表格数据
+export function useComparisonData() {
+  const comparisonColumns = [
+    {
+      title: '性能指标',
+      dataIndex: 'metric',
+      key: 'metric',
+      width: '25%',
+    },
+    {
+      title: 'Vue2',
+      dataIndex: 'vue2',
+      key: 'vue2',
+      width: '25%',
+    },
+    {
+      title: 'Vue3',
+      dataIndex: 'vue3',
+      key: 'vue3',
+      width: '25%',
+    },
+    {
+      title: '提升',
+      dataIndex: 'improvement',
+      key: 'improvement',
+      width: '25%',
+    },
+  ]
+
+  const comparisonData = [
+    {
+      key: '1',
+      metric: '初始渲染时间',
+      vue2: `${performanceData.vue2.renderTime}ms`,
+      vue3: `${performanceData.vue3.renderTime}ms`,
+      improvement: `${improvements.value.renderTime}%`,
+    },
+    {
+      key: '2',
+      metric: '内存占用',
+      vue2: `${performanceData.vue2.memoryUsage}MB`,
+      vue3: `${performanceData.vue3.memoryUsage}MB`,
+      improvement: `${improvements.value.memoryUsage}%`,
+    },
+    {
+      key: '3',
+      metric: '更新性能',
+      vue2: `${performanceData.vue2.updateTime}ms`,
+      vue3: `${performanceData.vue3.updateTime}ms`,
+      improvement: `${improvements.value.updateTime}%`,
+    },
+    {
+      key: '4',
+      metric: 'Tree-Shaking支持',
+      vue2: '有限',
+      vue3: '完全支持',
+      improvement: '更小的包体积',
+    },
+    {
+      key: '5',
+      metric: 'SSR性能',
+      vue2: '中等',
+      vue3: '显著提升',
+      improvement: '~2-3倍',
+    },
+  ]
+
+  return {
+    comparisonColumns,
+    comparisonData
+  }
+}
+
 // 导出组合函数
 export function usePerformance() {
   return {

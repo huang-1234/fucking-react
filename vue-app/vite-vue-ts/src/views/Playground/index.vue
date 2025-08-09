@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import CodeEditor from '../components/CodeEditor.vue'
+import { ref, onMounted } from 'vue'
+import CodeEditor from '../../components/CodeEditor.vue'
+import { usePlayground, createPreviewHtml, compileVueCode } from './Playground'
 import {
   Typography,
   Card,
@@ -20,57 +21,16 @@ import {
 const { Title, Paragraph, Text } = Typography
 const { TabPane } = Tabs
 
-// 示例代码
-const vueCode = ref(`<script setup>
-import { ref, computed } from 'vue'
+// 使用hooks获取状态
+const {
+  vueCode,
+  previewLoading,
+  consoleOutput,
+  activeTab
+} = usePlayground()
 
-// 响应式状态
-const count = ref(0)
-
-// 计算属性
-const doubleCount = computed(() => count.value * 2)
-
-// 方法
-function increment() {
-  count.value++
-}
-<\/script>
-
-<template>
-  <div class="counter-app">
-    <h2>Vue3 计数器</h2>
-    <p>当前计数: {{ count }}</p>
-    <p>双倍值: {{ doubleCount }}</p>
-    <button @click="increment">增加</button>
-  </div>
-</template>
-
-<style>
-.counter-app {
-  text-align: center;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  max-width: 300px;
-  margin: 0 auto;
-}
-
-button {
-  background-color: #42b883;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-</style>`)
-
-// 预览相关
-const previewSrc = ref('')
-const previewLoading = ref(false)
-const consoleOutput = ref<string[]>([])
+// 沙箱iframe引用
 const sandboxFrame = ref<HTMLIFrameElement | null>(null)
-const activeTab = ref('1')
 
 // 运行代码
 function runCode() {
@@ -105,167 +65,6 @@ function runCode() {
   }
 }
 
-// 创建预览HTML
-function createPreviewHtml(code: string) {
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vue3 Playground</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"><\/script>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 16px;
-    }
-  </style>
-</head>
-<body>
-  <div id="app"></div>
-
-  <script type="module">
-    // 捕获控制台输出
-    const originalConsole = console;
-    console = {
-      ...originalConsole,
-      log: (...args) => {
-        originalConsole.log(...args);
-        window.parent.postMessage({
-          type: 'console',
-          method: 'log',
-          args: args.map(arg => String(arg))
-        }, '*');
-      },
-      error: (...args) => {
-        originalConsole.error(...args);
-        window.parent.postMessage({
-          type: 'console',
-          method: 'error',
-          args: args.map(arg => String(arg))
-        }, '*');
-      },
-      warn: (...args) => {
-        originalConsole.warn(...args);
-        window.parent.postMessage({
-          type: 'console',
-          method: 'warn',
-          args: args.map(arg => String(arg))
-        }, '*');
-      }
-    };
-
-    try {
-      ${compileVueCode(code)}
-    } catch (error) {
-      console.error(error);
-    }
-  <\/script>
-</body>
-</html>
-  `
-}
-
-// 编译Vue单文件组件代码
-function compileVueCode(code: string) {
-  // 简易解析Vue SFC
-  const scriptMatch = code.match(/<script.*?>([\s\S]*?)<\/script>/i)
-  const templateMatch = code.match(/<template>([\s\S]*?)<\/template>/i)
-  const styleMatch = code.match(/<style.*?>([\s\S]*?)<\/style>/i)
-
-  let scriptContent = scriptMatch ? scriptMatch[1].trim() : ''
-  const templateContent = templateMatch ? templateMatch[1].trim() : ''
-  const styleContent = styleMatch ? styleMatch[1].trim() : ''
-
-  // 检查是否使用了setup语法
-  const isSetupScript = scriptMatch && scriptMatch[0].includes('setup')
-
-  // 构建组件选项
-  let componentOptions = ''
-
-  if (isSetupScript) {
-    // 提取setup内容，但移除script标签
-    scriptContent = scriptContent.replace(/^import\s+.*?['"].*?['"]/gm, (match) => {
-      // 将import语句转换为CDN引用
-      return '// ' + match + ' - 请使用CDN引用外部库'
-    })
-
-    componentOptions = `
-    // 使用setup语法
-    const { setup } = Vue
-
-    // 创建组件
-    const component = {
-      ${templateContent ? `template: \`${templateContent}\`` : ''},
-      setup() {
-        ${scriptContent}
-
-        // 自动返回所有定义的变量
-        return { ${extractSetupVariables(scriptContent)} }
-      }
-    }
-    `
-  } else {
-    // 常规组件选项API
-    componentOptions = `
-    // 创建组件
-    const component = {
-      ${templateContent ? `template: \`${templateContent}\`` : ''},
-      ${scriptContent}
-    }
-    `
-  }
-
-  // 添加样式
-  const styleInjection = styleContent ? `
-  // 添加样式
-  const style = document.createElement('style')
-  style.textContent = \`${styleContent}\`
-  document.head.appendChild(style)
-  ` : ''
-
-  // 创建并挂载应用
-  return `
-  ${styleInjection}
-
-  ${componentOptions}
-
-  // 创建并挂载应用
-  const app = Vue.createApp(component)
-  app.mount('#app')
-
-  console.log('Vue应用已成功挂载')
-  `
-}
-
-// 从setup脚本中提取变量名
-function extractSetupVariables(script: string) {
-  // 这是一个简化的实现，仅用于演示
-  // 实际项目中可能需要更复杂的解析
-  const constRegex = /const\s+(\w+)\s*=/g
-  const letRegex = /let\s+(\w+)\s*=/g
-  const functionRegex = /function\s+(\w+)\s*\(/g
-
-  const variables: string[] = []
-  let match
-
-  while ((match = constRegex.exec(script)) !== null) {
-    variables.push(match[1])
-  }
-
-  while ((match = letRegex.exec(script)) !== null) {
-    variables.push(match[1])
-  }
-
-  while ((match = functionRegex.exec(script)) !== null) {
-    variables.push(match[1])
-  }
-
-  return variables.join(', ')
-}
-
 // 设置控制台输出捕获
 function setupConsoleCapture(window: Window) {
   const messageHandler = (event: MessageEvent) => {
@@ -288,19 +87,19 @@ function setupConsoleCapture(window: Window) {
   window.addEventListener('message', messageHandler)
 }
 
-// 组件挂载时运行代码
-onMounted(() => {
-  setTimeout(() => {
-    runCode()
-  }, 500)
-})
-
 // 获取控制台项目的类型
 function getConsoleItemType(log: string): 'success' | 'warning' | 'error' | 'processing' {
   if (log.startsWith('🔴')) return 'error'
   if (log.startsWith('🟠')) return 'warning'
   return 'processing'
 }
+
+// 组件挂载时运行代码
+onMounted(() => {
+  setTimeout(() => {
+    runCode()
+  }, 500)
+})
 </script>
 
 <template>
@@ -327,7 +126,6 @@ function getConsoleItemType(log: string): 'success' | 'warning' | 'error' | 'pro
             <Button
               type="primary"
               size="large"
-              icon="code-sandbox"
               @click="runCode"
             >
               运行代码

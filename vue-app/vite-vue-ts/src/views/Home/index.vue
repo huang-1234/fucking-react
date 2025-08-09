@@ -7,10 +7,11 @@ import {
   Row,
   Col,
   Space,
-  Divider
+  Divider,
+  Avatar
 } from 'ant-design-vue'
 
-const { Title, Paragraph } = Typography
+const { Title, Paragraph, Text } = Typography
 const { features, benefits, navigateTo } = useHome()
 </script>
 
@@ -25,6 +26,7 @@ const { features, benefits, navigateTo } = useHome()
         <Button
           type="primary"
           size="large"
+          shape="round"
           @click="navigateTo('/vue3/composition-api')"
           class="primary-button"
         >
@@ -32,6 +34,7 @@ const { features, benefits, navigateTo } = useHome()
         </Button>
         <Button
           size="large"
+          shape="round"
           @click="navigateTo('/playground')"
         >
           在线编辑器
@@ -45,7 +48,7 @@ const { features, benefits, navigateTo } = useHome()
       <Typography>
         <Title :level="2" class="section-title">核心特性</Title>
       </Typography>
-      <Row :gutter="[24, 24]">
+      <Row :gutter="[16, 16]">
         <Col
           v-for="feature in features"
           :key="feature.title"
@@ -59,13 +62,16 @@ const { features, benefits, navigateTo } = useHome()
             hoverable
             class="feature-card"
             @click="navigateTo(feature.path)"
+            :bodyStyle="{ padding: '16px' }"
           >
             <div class="feature-icon">
-              <component :is="feature.icon" />
+              <Avatar :size="48" class="feature-avatar">
+                <component :is="feature.icon" />
+              </Avatar>
             </div>
             <Typography>
-              <Title :level="4">{{ feature.title }}</Title>
-              <Paragraph>{{ feature.description }}</Paragraph>
+              <Title :level="4" class="feature-title">{{ feature.title }}</Title>
+              <Paragraph class="feature-desc">{{ feature.description }}</Paragraph>
             </Typography>
           </Card>
         </Col>
@@ -78,7 +84,7 @@ const { features, benefits, navigateTo } = useHome()
       <Typography>
         <Title :level="2" class="section-title">为什么选择Vue3?</Title>
       </Typography>
-      <Row :gutter="[24, 24]">
+      <Row :gutter="[16, 16]">
         <Col
           v-for="benefit in benefits"
           :key="benefit.title"
@@ -88,12 +94,17 @@ const { features, benefits, navigateTo } = useHome()
           :lg="6"
           :xl="6"
         >
-          <Card class="benefit-card">
+          <Card
+            class="benefit-card"
+            :bodyStyle="{ padding: '16px' }"
+          >
             <div class="benefit-header">
-              <component :is="benefit.icon" />
-              <Title :level="4">{{ benefit.title }}</Title>
+              <Avatar :size="40" class="benefit-avatar">
+                <component :is="benefit.icon" />
+              </Avatar>
+              <Title :level="4" class="benefit-title">{{ benefit.title }}</Title>
             </div>
-            <Paragraph>{{ benefit.description }}</Paragraph>
+            <Paragraph class="benefit-desc">{{ benefit.description }}</Paragraph>
           </Card>
         </Col>
       </Row>
@@ -103,76 +114,122 @@ const { features, benefits, navigateTo } = useHome()
 
 <style scoped>
 .home-container {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 16px;
 }
 
 .hero {
   text-align: center;
-  padding: 48px 0;
+  padding: 32px 0;
 }
 
 .hero-title {
-  color: #42b883 !important;
-  margin-bottom: 16px !important;
+  color: var(--primary-color) !important;
+  margin-bottom: 12px !important;
+  font-size: 2.5rem !important;
 }
 
 .subtitle {
-  font-size: 18px;
-  margin-bottom: 32px !important;
+  font-size: 16px;
+  margin-bottom: 24px !important;
+  opacity: 0.8;
 }
 
 .primary-button {
-  background-color: #42b883 !important;
-  border-color: #42b883 !important;
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
 }
 
 .section-title {
   text-align: center;
-  margin-bottom: 32px !important;
+  margin-bottom: 24px !important;
+  font-size: 1.75rem !important;
 }
 
 .features-section,
 .benefits-section {
-  padding: 24px 0;
+  padding: 16px 0;
 }
 
 .feature-card {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  transition: transform 0.2s;
+  border-radius: var(--border-radius-md);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-hover);
 }
 
 .feature-icon {
-  font-size: 32px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   display: flex;
-  align-items: center;
+}
+
+.feature-avatar {
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
+}
+
+.feature-title {
+  font-size: 16px !important;
+  margin-bottom: 8px !important;
+}
+
+.feature-desc {
+  font-size: 14px;
+  margin-bottom: 0 !important;
+  color: var(--text-color-secondary);
 }
 
 .benefit-card {
   height: 100%;
+  border-radius: var(--border-radius-md);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.benefit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-hover);
 }
 
 .benefit-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
-.benefit-header h4 {
-  margin: 0 !important;
+.benefit-avatar {
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
 }
 
-:deep(.ant-typography) {
-  margin-bottom: 0;
+.benefit-title {
+  margin: 0 !important;
+  font-size: 16px !important;
+}
+
+.benefit-desc {
+  font-size: 14px;
+  margin: 0 !important;
+  color: var(--text-color-secondary);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .hero {
+    padding: 24px 0;
+  }
+
+  .hero-title {
+    font-size: 2rem !important;
+  }
+
+  .section-title {
+    font-size: 1.5rem !important;
+  }
 }
 </style>

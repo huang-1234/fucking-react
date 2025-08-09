@@ -154,3 +154,87 @@ export function useReactiveSystem() {
     addLog
   }
 }
+
+
+export function useStaticData() {
+  // 比较表格数据
+const comparisonColumns = [
+  {
+    title: '特性',
+    dataIndex: 'feature',
+    key: 'feature',
+    width: '25%',
+  },
+  {
+    title: 'Vue2 (Object.defineProperty)',
+    dataIndex: 'vue2',
+    key: 'vue2',
+    width: '37.5%',
+  },
+  {
+    title: 'Vue3 (Proxy)',
+    dataIndex: 'vue3',
+    key: 'vue3',
+    width: '37.5%',
+  },
+]
+
+const comparisonData = [
+  {
+    key: '1',
+    feature: '动态添加属性',
+    vue2: '需要使用 Vue.set',
+    vue3: '直接支持',
+  },
+  {
+    key: '2',
+    feature: '删除属性',
+    vue2: '需要使用 Vue.delete',
+    vue3: '直接支持 delete 操作符',
+  },
+  {
+    key: '3',
+    feature: '数组索引变化',
+    vue2: '不能检测',
+    vue3: '可以检测',
+  },
+  {
+    key: '4',
+    feature: '数组长度变化',
+    vue2: '不能检测',
+    vue3: '可以检测',
+  },
+  {
+    key: '5',
+    feature: 'Map/Set支持',
+    vue2: '不支持',
+    vue3: '完全支持',
+  },
+  {
+    key: '6',
+    feature: '性能',
+    vue2: '初始化时递归遍历所有属性',
+    vue3: '访问时惰性递归，性能更好',
+  },
+  {
+    key: '7',
+    feature: '浏览器兼容性',
+    vue2: 'IE9+',
+    vue3: '需要现代浏览器',
+  },
+]
+
+const proxyAdvantages = [
+  '可以拦截更多操作（如删除属性、in操作符等）',
+  '可以直接监听整个对象，而不是特定属性',
+  '可以监听数组索引和长度变化',
+  '可以监听动态添加的属性',
+  '性能更好（惰性监听，按需代理）'
+]
+  return {
+    comparisonColumns,
+    comparisonData,
+    proxyAdvantages,
+    reactiveCode
+  }
+}

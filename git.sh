@@ -11,7 +11,7 @@ echo "当前分支名: $branch"
 
 # git ci
 ciAction="feat: "
-ciMessage="use ant-design-vue"
+ciMessage="fix style to be better"
 git add .
 
 git ci -m "$ciAction $ciMessage"

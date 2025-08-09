@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Layout, Menu } from 'ant-design-vue'
+import { Layout, Menu, Card } from 'ant-design-vue'
 import {
   CodeOutlined,
   ThunderboltOutlined,
@@ -54,7 +54,7 @@ const menuItems = [
 
 <template>
   <Layout class="vue3-layout">
-    <Sider width="250" class="sidebar">
+    <Sider width="220" class="sidebar" :theme="'light'" breakpoint="lg" collapsible>
       <div class="sidebar-header">
         <h3>Vue3 学习模块</h3>
       </div>
@@ -66,73 +66,97 @@ const menuItems = [
       />
     </Sider>
     <Content class="content">
-      <router-view />
+      <Card class="content-card" :bordered="false">
+        <router-view />
+      </Card>
     </Content>
   </Layout>
 </template>
 
 <style scoped>
 .vue3-layout {
-  min-height: 100%;
-  background-color: #fff;
+  min-height: calc(100vh - 60px - 48px - 32px);
+  background-color: var(--component-bg);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
 }
 
 .sidebar {
-  background-color: #fff;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  background-color: var(--component-bg);
+  border-right: 1px solid var(--border-color);
 }
 
 .sidebar-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-header h3 {
   margin: 0;
-  font-size: 16px;
-  color: #42b883;
+  font-size: 15px;
+  color: var(--primary-color);
   font-weight: 600;
 }
 
 .sidebar-menu {
   border-right: none;
+  padding: 8px 0;
 }
 
 .content {
-  padding: 24px;
-  background-color: #fff;
+  padding: 12px;
+  background-color: var(--bg-color);
+}
+
+.content-card {
+  border-radius: var(--border-radius-md);
+  min-height: calc(100vh - 60px - 48px - 32px - 24px);
+}
+
+:deep(.ant-menu-item) {
+  margin: 4px 8px;
+  padding-left: 16px !important;
+  border-radius: var(--border-radius-sm);
+  height: 40px;
+  line-height: 40px;
 }
 
 :deep(.ant-menu-item-selected) {
-  background-color: #e6f7ff !important;
+  background-color: var(--primary-color-light) !important;
 }
 
 :deep(.ant-menu-item:hover) {
-  color: #42b883 !important;
+  color: var(--primary-color) !important;
 }
 
 :deep(.ant-menu-item-selected) {
-  color: #42b883 !important;
+  color: var(--primary-color) !important;
 }
 
 :deep(.ant-menu-item-selected::after) {
-  border-right-color: #42b883 !important;
+  display: none !important;
 }
 
-/* 暗黑模式适配 */
-:deep([data-theme='dark']) {
-  .vue3-layout,
-  .sidebar,
+:deep(.ant-layout-sider-trigger) {
+  background-color: var(--primary-color);
+}
+
+:deep(.ant-card-body) {
+  padding: 16px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
   .content {
-    background-color: #1f1f1f;
+    padding: 8px;
   }
 
-  .sidebar-header {
-    border-bottom-color: #303030;
+  .content-card {
+    border-radius: var(--border-radius-sm);
   }
 
-  .sidebar-header h3 {
-    color: #42b883;
+  :deep(.ant-card-body) {
+    padding: 12px;
   }
 }
 </style>
