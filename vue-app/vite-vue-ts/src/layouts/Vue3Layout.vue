@@ -1,82 +1,138 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, h } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { Layout, Menu } from 'ant-design-vue'
+import {
+  CodeOutlined,
+  ThunderboltOutlined,
+  HistoryOutlined,
+  RocketOutlined
+} from '@ant-design/icons-vue'
 
+const { Sider, Content } = Layout
 const router = useRouter()
+const route = useRoute()
 
-const subMenuItems = [
-  { name: 'Composition API', path: '/vue3/composition-api' },
-  { name: '响应式系统', path: '/vue3/reactive-system' },
-  { name: '生命周期钩子', path: '/vue3/lifecycle-hooks' },
-  { name: '性能优化', path: '/vue3/performance' }
+// 计算当前选中的菜单项
+const selectedKeys = computed(() => {
+  const path = route.path
+  if (path.includes('composition-api')) return ['composition-api']
+  if (path.includes('reactive-system')) return ['reactive-system']
+  if (path.includes('lifecycle-hooks')) return ['lifecycle-hooks']
+  if (path.includes('performance')) return ['performance']
+  return ['composition-api'] // 默认选中
+})
+
+// 菜单项配置
+const menuItems = [
+  {
+    key: 'composition-api',
+    icon: () => h(CodeOutlined),
+    label: 'Composition API',
+    onClick: () => router.push('/vue3/composition-api')
+  },
+  {
+    key: 'reactive-system',
+    icon: () => h(ThunderboltOutlined),
+    label: '响应式系统',
+    onClick: () => router.push('/vue3/reactive-system')
+  },
+  {
+    key: 'lifecycle-hooks',
+    icon: () => h(HistoryOutlined),
+    label: '生命周期钩子',
+    onClick: () => router.push('/vue3/lifecycle-hooks')
+  },
+  {
+    key: 'performance',
+    icon: () => h(RocketOutlined),
+    label: '性能优化',
+    onClick: () => router.push('/vue3/performance')
+  }
 ]
 </script>
 
 <template>
-  <div class="vue3-layout">
-    <aside class="sidebar">
-      <h3>Vue3 学习模块</h3>
-      <nav class="sub-nav">
-        <ul>
-          <li v-for="item in subMenuItems" :key="item.path">
-            <router-link :to="item.path">{{ item.name }}</router-link>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-
-    <div class="content">
+  <Layout class="vue3-layout">
+    <Sider width="250" class="sidebar">
+      <div class="sidebar-header">
+        <h3>Vue3 学习模块</h3>
+      </div>
+      <Menu
+        v-model:selectedKeys="selectedKeys"
+        mode="inline"
+        :items="menuItems"
+        class="sidebar-menu"
+      />
+    </Sider>
+    <Content class="content">
       <router-view />
-    </div>
-  </div>
+    </Content>
+  </Layout>
 </template>
 
 <style scoped>
 .vue3-layout {
-  display: flex;
   min-height: 100%;
+  background-color: #fff;
 }
 
 .sidebar {
-  width: 250px;
-  padding: 1.5rem;
-  border-right: 1px solid var(--border-color);
+  background-color: #fff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
 }
 
-.sidebar h3 {
-  margin-top: 0;
+.sidebar-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 16px;
   color: #42b883;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
 }
 
-.sub-nav ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 1.5rem;
-}
-
-.sub-nav li {
-  margin-bottom: 0.75rem;
-}
-
-.sub-nav a {
-  display: block;
-  padding: 0.5rem;
-  color: var(--text-color);
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.sub-nav a:hover,
-.sub-nav a.router-link-active {
-  background-color: rgba(66, 184, 131, 0.1);
-  color: #42b883;
+.sidebar-menu {
+  border-right: none;
 }
 
 .content {
-  flex: 1;
-  padding: 1.5rem;
+  padding: 24px;
+  background-color: #fff;
+}
+
+:deep(.ant-menu-item-selected) {
+  background-color: #e6f7ff !important;
+}
+
+:deep(.ant-menu-item:hover) {
+  color: #42b883 !important;
+}
+
+:deep(.ant-menu-item-selected) {
+  color: #42b883 !important;
+}
+
+:deep(.ant-menu-item-selected::after) {
+  border-right-color: #42b883 !important;
+}
+
+/* 暗黑模式适配 */
+:deep([data-theme='dark']) {
+  .vue3-layout,
+  .sidebar,
+  .content {
+    background-color: #1f1f1f;
+  }
+
+  .sidebar-header {
+    border-bottom-color: #303030;
+  }
+
+  .sidebar-header h3 {
+    color: #42b883;
+  }
 }
 </style>

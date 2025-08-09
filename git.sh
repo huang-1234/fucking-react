@@ -11,7 +11,7 @@ echo "当前分支名: $branch"
 
 # git ci
 ciAction="feat: "
-ciMessage="ac vue-app in vue-3"
+ciMessage="use ant-design-vue"
 git add .
 
 git ci -m "$ciAction $ciMessage"
