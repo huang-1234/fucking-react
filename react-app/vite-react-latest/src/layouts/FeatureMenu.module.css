@@ -1,0 +1,30 @@
+.menu {
+  height: 100%;
+  border-right: 0;
+}
+.menu :global(.ant-menu-item) {
+  margin: 0;
+  border-radius: 0;
+}
+.menu :global(.ant-menu-item):hover {
+  color: #1890ff;
+}
+.menu :global(.ant-menu-item-selected) {
+  font-weight: 500;
+}
+.menu :global(.ant-menu-item-selected)::after {
+  border-right: 3px solid #1890ff;
+}
+.menu :global(.ant-menu-submenu-title) {
+  margin: 0;
+}
+.menu :global(.ant-menu-submenu-title):hover {
+  color: #1890ff;
+}
+.menu :global(.ant-menu-submenu-selected) > :global(.ant-menu-submenu-title) {
+  color: #1890ff;
+  font-weight: 500;
+}
+.menu :global(.ant-menu-inline) {
+  border-right: none;
+}

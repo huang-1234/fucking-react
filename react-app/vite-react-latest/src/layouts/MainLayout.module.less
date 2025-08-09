@@ -1,0 +1,51 @@
+@import '../styles/variables.less';
+
+.mainLayout {
+  background: @background-color;
+  width: 100vw;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 @spacing-xl;
+  background: @component-background;
+  box-shadow: 0 2px 8px rgba(16, 15, 15, 0.06);
+  height: 64px;
+  position: relative;
+  z-index: 10;
+}
+
+.logo {
+  width: 120px;
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.content {
+  padding: @spacing-md;
+  min-height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.sider {
+  background: @component-background;
+  box-shadow: 0 2px 8px rgba(16, 15, 15, 0.03);
+
+  :global(.ant-layout-sider-children) {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 64px);
+  }
+}
+
+.rightSider {
+  composes: sider;
+}

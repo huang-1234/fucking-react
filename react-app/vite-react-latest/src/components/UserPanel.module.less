@@ -1,0 +1,47 @@
+@import '../styles/variables.less';
+
+.userPanel {
+  display: flex;
+  align-items: center;
+}
+
+.notificationBtn {
+  background: transparent;
+  border: none;
+  padding: @spacing-xs;
+  margin-right: @spacing-lg;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    color: @primary-color;
+  }
+
+  :global(.ant-badge-count) {
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px #fff;
+  }
+}
+
+.userDropdown {
+  display: flex;
+  align-items: center;
+  color: @heading-color;
+  cursor: pointer;
+  padding: @spacing-xs @spacing-sm;
+  border-radius: @border-radius-base;
+  transition: background-color @transition-duration @transition-ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+
+  .avatar {
+    margin-right: @spacing-sm;
+  }
+
+  .username {
+    margin-right: @spacing-xs;
+    font-weight: 500;
+  }
+}

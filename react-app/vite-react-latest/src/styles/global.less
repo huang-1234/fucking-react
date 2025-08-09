@@ -1,0 +1,126 @@
+@import './variables.less';
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: @background-color;
+  color: @text-color;
+}
+
+a {
+  font-weight: 500;
+  color: @primary-color;
+  text-decoration: none;
+  transition: color @transition-duration @transition-ease;
+
+  &:hover {
+    color: lighten(@primary-color, 10%);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: @heading-color;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+button {
+  border-radius: @border-radius-base;
+  border: 1px solid transparent;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all @transition-duration @transition-ease;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// 美化滚动条
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+// 全局卡片样式优化
+.ant-card {
+  border-radius: @border-radius-base;
+  overflow: hidden;
+
+  .ant-card-head {
+    border-bottom-color: #f0f0f0;
+  }
+}
+
+// 全局按钮样式优化
+.ant-btn {
+  border-radius: @border-radius-base;
+
+  &.ant-btn-sm {
+    border-radius: @border-radius-sm;
+  }
+
+  &.ant-btn-lg {
+    border-radius: @border-radius-lg;
+  }
+}
+
+// 全局输入框样式优化
+.ant-input, .ant-input-affix-wrapper {
+  border-radius: @border-radius-base;
+
+  &:hover, &:focus {
+    border-color: @primary-color;
+  }
+
+  &.ant-input-sm {
+    border-radius: @border-radius-sm;
+  }
+
+  &.ant-input-lg {
+    border-radius: @border-radius-lg;
+  }
+}
+
+// 全局下拉菜单样式优化
+.ant-dropdown-menu {
+  border-radius: @border-radius-base;
+  box-shadow: @box-shadow-base;
+}
+
+// 全局标签样式优化
+.ant-tag {
+  border-radius: @border-radius-sm;
+}

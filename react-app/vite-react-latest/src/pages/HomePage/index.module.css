@@ -1,0 +1,73 @@
+.homePage .header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.homePage .header .title {
+  margin-bottom: 12px;
+}
+.homePage .header .subtitle {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.45);
+}
+.homePage .dividerWrapper {
+  margin: 24px 0;
+}
+.homePage .dividerWrapper .dividerContent {
+  display: flex;
+  align-items: center;
+}
+.homePage .dividerWrapper .dividerContent .dividerIcon {
+  margin-right: 4px;
+}
+.homePage .versionCard {
+  height: 100%;
+  border-radius: 6px;
+  transition: transform 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+.homePage .versionCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.homePage .versionCard .cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.homePage .versionCard .featureList {
+  padding-left: 24px;
+  margin-bottom: 0;
+}
+.homePage .versionCard .featureList li {
+  margin-bottom: 4px;
+}
+.homePage .versionCard .featureList li:last-child {
+  margin-bottom: 0;
+}
+.homePage .featureCard {
+  border-radius: 6px;
+  height: 100%;
+}
+.homePage .featureCard .cardTitle {
+  display: flex;
+  align-items: center;
+}
+.homePage .featureCard .cardTitle .titleIcon {
+  margin-right: 8px;
+}
+.homePage .featureCard .cardContent {
+  margin-bottom: 16px;
+}
+.homePage .featureCard .cardFooter {
+  text-align: right;
+}
+.homePage .codeExampleSection {
+  margin-top: 24px;
+}
+.homePage .codeExampleSection .exampleTitle {
+  margin-bottom: 12px;
+}
+.homePage .footer {
+  text-align: center;
+  margin-top: 24px;
+  color: rgba(0, 0, 0, 0.45);
+}

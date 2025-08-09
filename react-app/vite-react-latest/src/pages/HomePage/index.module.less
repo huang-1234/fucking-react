@@ -1,0 +1,97 @@
+@import '../../styles/variables.less';
+
+.homePage {
+  .header {
+    text-align: center;
+    margin-bottom: @spacing-xl;
+
+    .title {
+      margin-bottom: @spacing-md;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: @text-color-secondary;
+    }
+  }
+
+  .dividerWrapper {
+    margin: @spacing-xl 0;
+
+    .dividerContent {
+      display: flex;
+      align-items: center;
+
+      .dividerIcon {
+        margin-right: @spacing-xs;
+      }
+    }
+  }
+
+  .versionCard {
+    height: 100%;
+    border-radius: @border-radius-base;
+    transition: transform @transition-duration @transition-ease,
+                box-shadow @transition-duration @transition-ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: @box-shadow-hover;
+    }
+
+    .cardHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .featureList {
+      padding-left: @spacing-xl;
+      margin-bottom: 0;
+
+      li {
+        margin-bottom: @spacing-xs;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  .featureCard {
+    border-radius: @border-radius-base;
+    height: 100%;
+
+    .cardTitle {
+      display: flex;
+      align-items: center;
+
+      .titleIcon {
+        margin-right: @spacing-sm;
+      }
+    }
+
+    .cardContent {
+      margin-bottom: @spacing-lg;
+    }
+
+    .cardFooter {
+      text-align: right;
+    }
+  }
+
+  .codeExampleSection {
+    margin-top: @spacing-xl;
+
+    .exampleTitle {
+      margin-bottom: @spacing-md;
+    }
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: @spacing-xl;
+    color: @text-color-secondary;
+  }
+}

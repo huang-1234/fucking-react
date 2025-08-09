@@ -1,0 +1,38 @@
+.userPanel {
+  display: flex;
+  align-items: center;
+}
+.notificationBtn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  margin-right: 16px;
+  cursor: pointer;
+  position: relative;
+}
+.notificationBtn:hover {
+  color: #1890ff;
+}
+.notificationBtn :global(.ant-badge-count) {
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px #fff;
+}
+.userDropdown {
+  display: flex;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+.userDropdown:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+.userDropdown .avatar {
+  margin-right: 8px;
+}
+.userDropdown .username {
+  margin-right: 4px;
+  font-weight: 500;
+}

@@ -1,0 +1,42 @@
+@import '../styles/variables.less';
+
+.menu {
+  height: 100%;
+  border-right: 0;
+
+  :global(.ant-menu-item) {
+    margin: 0;
+    border-radius: 0;
+
+    &:hover {
+      color: @primary-color;
+    }
+  }
+
+  :global(.ant-menu-item-selected) {
+    font-weight: 500;
+
+    &::after {
+      border-right: 3px solid @primary-color;
+    }
+  }
+
+  :global(.ant-menu-submenu-title) {
+    margin: 0;
+
+    &:hover {
+      color: @primary-color;
+    }
+  }
+
+  :global(.ant-menu-submenu-selected) {
+    > :global(.ant-menu-submenu-title) {
+      color: @primary-color;
+      font-weight: 500;
+    }
+  }
+
+  :global(.ant-menu-inline) {
+    border-right: none;
+  }
+}

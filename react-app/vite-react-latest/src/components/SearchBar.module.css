@@ -1,0 +1,35 @@
+.searchBar {
+  width: 300px;
+  position: relative;
+}
+.searchBar :global(.ant-input) {
+  border-radius: 6px;
+  padding-right: 30px;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+.searchBar :global(.ant-input):focus {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+.searchBar :global(.ant-input-suffix) {
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+}
+.searchBar :global(.ant-input-suffix):hover {
+  color: #1890ff;
+}
+.optionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+}
+.optionItem .optionText {
+  flex: 1;
+  margin: 0 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.optionItem .optionTag {
+  flex-shrink: 0;
+}

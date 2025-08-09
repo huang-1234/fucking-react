@@ -1,0 +1,33 @@
+@import '../styles/variables.less';
+
+.codeBlockWrapper {
+  background-color: #f5f5f5;
+  padding: @spacing-lg;
+  border-radius: @border-radius-base;
+  overflow-x: auto;
+  margin-bottom: @spacing-md;
+  box-shadow: @box-shadow-base;
+  transition: box-shadow @transition-duration @transition-ease;
+
+  &:hover {
+    box-shadow: @box-shadow-hover;
+  }
+
+  pre {
+    margin: 0;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 14px;
+  }
+
+  code {
+    font-family: inherit;
+  }
+}
+
+.fallbackBlock {
+  composes: codeBlockWrapper;
+
+  pre {
+    margin: 0;
+  }
+}

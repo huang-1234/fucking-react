@@ -1,0 +1,44 @@
+@import '../styles/variables.less';
+
+.searchBar {
+  width: 300px;
+  position: relative;
+
+  :global(.ant-input) {
+    border-radius: @border-radius-base;
+    padding-right: 30px;
+    transition: all @transition-duration @transition-ease;
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+
+  :global(.ant-input-suffix) {
+    cursor: pointer;
+    color: @text-color-secondary;
+
+    &:hover {
+      color: @primary-color;
+    }
+  }
+}
+
+.optionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: @spacing-xs @spacing-sm;
+
+  .optionText {
+    flex: 1;
+    margin: 0 @spacing-md;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .optionTag {
+    flex-shrink: 0;
+  }
+}

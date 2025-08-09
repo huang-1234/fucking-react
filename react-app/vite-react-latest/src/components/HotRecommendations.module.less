@@ -1,0 +1,84 @@
+@import '../styles/variables.less';
+
+.hotRecommendations {
+  padding: @spacing-md;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: @spacing-lg;
+}
+
+.title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+
+  .icon {
+    color: @error-color;
+    margin-right: @spacing-sm;
+  }
+}
+
+.collapseButton {
+  color: @text-color-secondary;
+
+  &:hover {
+    color: @primary-color;
+  }
+}
+
+.card {
+  margin-bottom: @spacing-lg;
+  border-radius: @border-radius-base;
+  overflow: hidden;
+
+  :global(.ant-card-head) {
+    padding: @spacing-sm @spacing-md;
+    min-height: auto;
+  }
+
+  :global(.ant-card-body) {
+    padding: @spacing-md;
+  }
+}
+
+.collapsedView {
+  padding: @spacing-xl 0;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color @transition-duration @transition-ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .icon {
+    font-size: 24px;
+    color: @error-color;
+  }
+
+  .text {
+    margin-top: @spacing-sm;
+    color: @text-color;
+  }
+}
+
+.listItem {
+  padding: @spacing-xs 0;
+
+  .itemTitle {
+    margin-bottom: @spacing-xs;
+  }
+
+  .itemMeta {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .tags {
+    margin-top: @spacing-xs;
+  }
+}

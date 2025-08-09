@@ -1,0 +1,50 @@
+@import '../styles/variables.less';
+
+.versionCard {
+  width: 100%;
+  border-radius: @border-radius-base;
+  overflow: hidden;
+  box-shadow: @box-shadow-base;
+  transition: box-shadow @transition-duration @transition-ease;
+
+  &:hover {
+    box-shadow: @box-shadow-hover;
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: @spacing-md;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  margin-right: @spacing-md;
+}
+
+.badge {
+  margin-left: @spacing-sm;
+  font-size: 12px;
+  border-radius: @border-radius-sm;
+  padding: 2px @spacing-sm;
+}
+
+.description {
+  margin-bottom: @spacing-lg;
+  color: @text-color-secondary;
+}
+
+.divider {
+  margin: @spacing-md 0;
+}
+
+.content {
+  padding: @spacing-md 0;
+}

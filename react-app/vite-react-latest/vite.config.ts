@@ -9,5 +9,16 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src')
     }
+  },
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+        additionalData: '@import "./src/styles/variables.less";'
+      }
+    },
+    modules: {
+      localsConvention: 'camelCase'
+    }
   }
 })

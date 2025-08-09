@@ -1,0 +1,40 @@
+.versionCard {
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+.versionCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+}
+.titleWrapper {
+  display: flex;
+  align-items: center;
+}
+.title {
+  margin: 0;
+  margin-right: 12px;
+}
+.badge {
+  margin-left: 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+.description {
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.45);
+}
+.divider {
+  margin: 12px 0;
+}
+.content {
+  padding: 12px 0;
+}
