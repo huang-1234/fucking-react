@@ -1,79 +1,185 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* 主题色变量 */
+  --primary-color: #42b883;
+  --primary-color-hover: #3ca576;
+  --primary-color-active: #35945f;
+  --primary-color-light: rgba(66, 184, 131, 0.1);
+  --primary-color-outline: rgba(66, 184, 131, 0.2);
+
+  /* 中性色变量 */
+  --bg-color: #f5f7fa;
+  --component-bg: #ffffff;
+  --text-color: #333333;
+  --text-color-secondary: #666666;
+  --text-color-tertiary: #999999;
+  --border-color: #e8e8e8;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --box-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  /* 间距变量 */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* 暗黑模式变量 */
+[data-theme='dark'] {
+  --bg-color: #1f1f1f;
+  --component-bg: #141414;
+  --text-color: #f0f0f0;
+  --text-color-secondary: #d0d0d0;
+  --text-color-tertiary: #a0a0a0;
+  --border-color: #303030;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --box-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
-a:hover {
-  color: #535bf2;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+a {
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-.card {
-  padding: 2em;
+a:hover {
+  color: var(--primary-color-hover);
 }
 
-#app {
-  max-width: 1280px;
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  color: var(--text-color);
+  margin: 0;
+}
+
+/* 自定义Ant Design Vue样式 */
+.ant-card {
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--box-shadow);
+}
+
+.ant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.ant-btn {
+  border-radius: var(--border-radius-md);
+  transition: all 0.2s;
+}
+
+.ant-btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: var(--primary-color-hover);
+  border-color: var(--primary-color-hover);
+}
+
+.ant-layout {
+  background-color: var(--bg-color);
+}
+
+.ant-layout-header,
+.ant-layout-footer,
+.ant-layout-content {
+  transition: background-color 0.3s;
+}
+
+.ant-layout-header {
+  background-color: var(--component-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ant-layout-footer {
+  background-color: var(--component-bg);
+}
+
+.ant-menu {
+  background-color: transparent;
+}
+
+.ant-menu-item:hover {
+  color: var(--primary-color) !important;
+}
+
+.ant-menu-item-selected {
+  color: var(--primary-color) !important;
+}
+
+.ant-menu-item-selected::after {
+  border-right-color: var(--primary-color) !important;
+}
+
+.ant-divider {
+  border-color: var(--border-color);
+}
+
+/* 容器样式 */
+.container {
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0 var(--space-md);
 }
 
-@media (prefers-color-scheme: light) {
+/* 卡片样式 */
+.modern-card {
+  background-color: var(--component-bg);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow);
+  padding: var(--space-md);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.modern-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --space-lg: 16px;
+    --space-xl: 24px;
   }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+
+  .container {
+    padding: 0 var(--space-sm);
   }
 }

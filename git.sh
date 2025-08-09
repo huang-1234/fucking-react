@@ -11,7 +11,8 @@ echo "当前分支名: $branch"
 
 # git ci
 ciAction="feat: "
-ciMessage="init readme.md"
+
+ciMessage="ac readme.md"
 git add .
 
 git ci -m "$ciAction $ciMessage"
