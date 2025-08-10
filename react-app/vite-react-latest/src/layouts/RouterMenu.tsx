@@ -2,7 +2,8 @@ import { lazy } from 'react';
 import {
   HomeOutlined,
   AppstoreOutlined,
-  LayoutOutlined
+  LayoutOutlined,
+  CloudServerOutlined
 } from '@ant-design/icons';
 import { reactVersionMenuItems } from './ReactVersionMenu';
 
@@ -14,6 +15,9 @@ const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
 
 // 画布面板
 const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
+
+// SSR页面
+const SSRPage = lazy(() => import('../pages/SSR/SSRPage'));
 
 export interface IMenu {
   key: string;
@@ -42,5 +46,11 @@ export const menuItems: IMenu[] = [
     label: '画布面板',
     icon: <LayoutOutlined />,
     component: CanvasPanelPage
+  },
+  {
+    key: '/ssr',
+    label: 'React SSR',
+    icon: <CloudServerOutlined />,
+    component: SSRPage
   }
 ];

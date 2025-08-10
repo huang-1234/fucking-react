@@ -14,11 +14,13 @@
   },
   "dependencies": {
     "@ant-design/icons": "6.0.0",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@mdx-js/react": "^3.1.0",
     "@mdx-js/rollup": "^3.1.0",
     "@monaco-editor/react": "^4.7.0",
     "antd": "5.26.7",
     "axios": "1.11.0",
+    "d3": "^7.9.0",
     "dayjs": "1.11.13",
     "js-cookie": "3.0.5",
     "loadable-components": "2.2.3",
@@ -37,6 +39,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@types/loadable__component": "5.13.10",
     "@types/lodash-es": "4.17.12",
     "@types/react": "19.1.8",

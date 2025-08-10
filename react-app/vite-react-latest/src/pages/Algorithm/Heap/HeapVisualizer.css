@@ -1,0 +1,84 @@
+.heap-visualizer {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.heap-visualizer svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* 连接线样式 */
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+  transition: stroke 0.3s ease;
+}
+
+/* 节点样式 */
+.node {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.node:hover {
+  transform: scale(1.05);
+}
+
+.node-circle {
+  fill: #4caf50;
+  stroke: #2e7d32;
+  stroke-width: 2px;
+  transition: fill 0.3s ease, stroke 0.3s ease, r 0.3s ease;
+}
+
+.node-circle.highlighted {
+  fill: #ff9800;
+  stroke: #f57c00;
+  animation: pulse 1s infinite alternate;
+}
+
+.node-text {
+  font-size: 14px;
+  font-weight: bold;
+  fill: white;
+  user-select: none;
+}
+
+.node-id {
+  font-size: 10px;
+  fill: #666;
+  user-select: none;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* 交换动画 */
+.swapping {
+  animation: swap-highlight 0.5s ease;
+}
+
+@keyframes swap-highlight {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

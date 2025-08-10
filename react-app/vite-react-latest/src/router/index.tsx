@@ -36,6 +36,9 @@ const React19Page = lazy(() => import('../pages/React19'));
 const React19Compiler = lazy(() => import('../pages/React19/ReactCompiler'));
 const React19FormState = lazy(() => import('../pages/React19/useFormState'));
 
+// SSR组件
+const SSRPage = lazy(() => import('../pages/SSR/SSRPage'));
+
 // 技术文档组件
 const MDXDemoPage = lazy(() => import('../pages/Tech/MDXDemo'));
 
@@ -242,6 +245,15 @@ const routerBrowser = createBrowserRouter([
         element: (
           <Suspense fallback={<LoadingComponent />}>
             <ComponentsApplyPage />
+          </Suspense>
+        )
+      },
+      // SSR路由
+      {
+        path: 'ssr',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <SSRPage />
           </Suspense>
         )
       }

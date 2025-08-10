@@ -1,4 +1,5 @@
 import React from 'react';
+// https://ant.design/docs/react/v5-for-19
 import { Typography, Divider, List, Card } from 'antd';
 import { Link } from 'react-router-dom';
 
