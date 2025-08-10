@@ -2,28 +2,31 @@
 
 .resize-window {
   box-sizing: border-box;
-  overflow: visible; // 修改为visible，确保内容不会被裁剪
+  overflow: hidden; // 改回hidden，防止内容溢出
   transition: none; // 移除过渡效果，确保拖动时立即响应
   display: flex; // 添加flex布局
   flex-direction: column; // 垂直方向布局
+  position: relative; // 确保定位正确
 
   &.resizing {
-    user-select: none;
+    user-select: none; // 禁止用户选择内容
     pointer-events: auto !important; // 确保拖动时不会丢失鼠标事件
   }
 
-  // 确保内容区域可以填充整个容器
+      // 确保内容区域可以填充整个容器
   .resize-content {
+    flex: 1; // 让内容区域填充剩余空间
     min-height: 0; // 防止flex布局中的最小高度问题
-    width: 100%;
+    // width: 100% !important; // 强制宽度100%
     display: flex;
     flex-direction: column;
 
     // 确保子元素能够填充整个内容区域
     & > * {
       min-height: 0;
-      width: 100%;
-      height: 100%;
+      min-width: 0;
+      // width: 100% !important; // 强制子元素宽度100%
+      // height: 100%; // 确保高度填充
     }
   }
 
@@ -73,27 +76,27 @@
   // 右侧手柄
   .resize-handle-right {
     top: 0;
-    right: 0;
+    right: -3px; // 向右偏移，增加可点击区域
     bottom: 0;
-    width: 5px;
+    width: 8px;
     cursor: ew-resize;
   }
 
   // 底部手柄
   .resize-handle-bottom {
-    bottom: 0;
+    bottom: -3px;
     left: 0;
     right: 0;
-    height: 5px;
+    height: 8px;
     cursor: ns-resize;
   }
 
   // 左侧手柄
   .resize-handle-left {
     top: 0;
-    left: 0;
+    left: -3px; // 向左偏移，增加可点击区域
     bottom: 0;
-    width: 5px;
+    width: 8px;
     cursor: ew-resize;
   }
 
@@ -126,10 +129,10 @@
 
   // 右下角手柄
   .resize-handle-bottomRight {
-    bottom: 0;
-    right: 0;
-    width: 10px;
-    height: 10px;
+    bottom: -3px;
+    right: -3px;
+    width: 14px;
+    height: 14px;
     cursor: nwse-resize;
   }
 }

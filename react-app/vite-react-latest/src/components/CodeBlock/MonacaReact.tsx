@@ -41,6 +41,7 @@ interface MonacoReactProps {
   minHeight?: number; // 最小高度
   maxHeight?: number; // 最大高度
 }
+const resizeBuffer = 8
 
 /**
  * Monaco编辑器React组件
@@ -58,7 +59,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
   minimap = true,
   wordWrap = false,
   resizable = true,
-  minHeight = 100,
+  minHeight = 200,
   maxHeight = 800
 }) => {
   const [editorValue, setEditorValue] = useState<string>(code);
@@ -129,11 +130,15 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
   };
 
     // 处理尺寸变化
-  const handleResize = (_width: number, height: number) => {
+  const handleResize = (_width: number, _height: number) => {
     // 只有当高度真正变化时才更新状态，防止抖动
-    if (Math.abs(currentHeight - height) > 8) {
-      console.log('Resize height changed:', height);
-      setCurrentHeight(height);
+    if (Math.abs(currentHeight - _height) > resizeBuffer) {
+      console.log('Resize height changed:', _height);
+      setCurrentHeight(_height);
+    }
+    if (Math.abs(currentWidth - _width) > resizeBuffer) {
+      console.log('Resize width changed:', _width);
+      setCurrentWidth(_width);
     }
 
   };
@@ -150,9 +155,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
       onResize={handleResize}
       style={{ display: 'flex', flexDirection: 'column' }}
     >
-      <div className={styles.toolbar} style={{
-        height:  40
-      }}>
+      <div className={styles.toolbar} >
         <div className={styles.toolbarLeft}>
           <Select
             value={selectedLanguage}

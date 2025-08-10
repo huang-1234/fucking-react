@@ -40,9 +40,12 @@ export const ResizeWindow: React.FC<ResizeWindowProps> = ({
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [activeDirection, setActiveDirection] = useState<ResizeDirection | null>(null);
   const [dimensions, setDimensions] = useState({
-    width: typeof width === 'number' ? width : '100%',
+    width: typeof width === 'number' ? width : 800,
     height: typeof height === 'number' ? height : 300
   });
+
+  // 确保在挂载时获取实际宽度
+  const initialWidthRef = useRef<number | null>(null);
 
     // 处理拖拽开始
   const handleResizeStart = useCallback((e: React.MouseEvent, direction: ResizeDirection) => {
@@ -88,7 +91,7 @@ export const ResizeWindow: React.FC<ResizeWindowProps> = ({
         direction === 'bottomLeft'
       ) {
         const deltaX = startX - e.clientX;
-        newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + deltaX));
+        newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth - deltaX));
       }
 
       if (
@@ -161,11 +164,17 @@ export const ResizeWindow: React.FC<ResizeWindowProps> = ({
   useEffect(() => {
     // 只在组件挂载时更新一次初始尺寸
     if (containerRef.current) {
+      const actualWidth = containerRef.current.offsetWidth;
+      const actualHeight = containerRef.current.offsetHeight;
+
+      // 保存初始实际宽度，用于后续计算
+      initialWidthRef.current = actualWidth;
+
       const newDimensions = {
-        width: typeof width === 'number' ? width : containerRef.current.offsetWidth,
-        height: typeof height === 'number' ? height : containerRef.current.offsetHeight
+        width: typeof width === 'number' ? width : actualWidth,
+        height: typeof height === 'number' ? height : actualHeight
       };
-      // console.log('Initial dimensions:', newDimensions);
+      console.log('ResizeWindow initial dimensions:', newDimensions, 'Actual:', actualWidth, actualHeight);
       setDimensions(newDimensions);
     }
   }, []); // 空依赖数组，只在挂载时执行
@@ -187,18 +196,23 @@ export const ResizeWindow: React.FC<ResizeWindowProps> = ({
   // 监听窗口调整
   useEffect(() => {
     const handleWindowResize = () => {
-      if (containerRef.current && typeof dimensions.width !== 'number') {
+      if (containerRef.current && typeof width !== 'number') {
         // 只在宽度不是固定数值时才根据窗口调整更新
-        setDimensions(prev => ({
-          ...prev,
-          width: containerRef.current?.offsetWidth || prev.width
-        }));
+        const currentWidth = containerRef.current.offsetWidth;
+
+        // 如果宽度发生变化，更新状态
+        if (Math.abs(currentWidth - (typeof dimensions.width === 'number' ? dimensions.width : currentWidth)) > 5) {
+          setDimensions(prev => ({
+            ...prev,
+            width: currentWidth
+          }));
+        }
       }
     };
 
     window.addEventListener('resize', handleWindowResize);
     return () => window.removeEventListener('resize', handleWindowResize);
-  }, [dimensions.width]);
+  }, [dimensions.width, width]);
 
   // 当尺寸变化时调用onResize回调
   useEffect(() => {
@@ -230,6 +244,9 @@ export const ResizeWindow: React.FC<ResizeWindowProps> = ({
     ));
   };
 
+  // 调试用，输出当前尺寸
+  console.log('ResizeWindow dimensions:', dimensions)
+
   return (
     <div
       ref={containerRef}
@@ -238,13 +255,21 @@ export const ResizeWindow: React.FC<ResizeWindowProps> = ({
         ...style,
         width: dimensions.width,
         height: dimensions.height,
-        position: 'relative',
+        // position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden' // 容器本身保持hidden，但内容可以溢出
+        overflow: 'hidden', // 容器本身保持hidden，但内容可以溢出
+        boxSizing: 'border-box' // 确保边框不会增加总宽度
       }}
     >
-      <div className="resize-content" style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
+      <div className="resize-content" style={{
+        flex: 1,
+        minHeight: 0,
+        // position: 'relative',
+        overflow: 'hidden',
+        // width: '100%', // 确保内容宽度撑满容器
+        boxSizing: 'border-box' // 确保边框不会增加总宽度
+      }}>
         {children}
       </div>
       {renderHandles()}
