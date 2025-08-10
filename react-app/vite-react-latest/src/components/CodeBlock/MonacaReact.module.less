@@ -1,0 +1,87 @@
+@import '../../styles/variables.less';
+
+.monacoReactWrapper {
+  border-radius: @border-radius-base;
+  overflow: hidden;
+  border: 1px solid @border-color-base;
+  margin-bottom: @spacing-md;
+  box-shadow: @box-shadow-base;
+  transition: box-shadow @transition-duration @transition-ease;
+  width: 100% !important; // 确保宽度始终为100%
+  max-width: 100%; // 最大宽度不超过容器
+
+  &:hover {
+    box-shadow: @box-shadow-hover;
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: @spacing-xs @spacing-sm;
+    background-color: @background-color-light;
+    border-bottom: 1px solid @border-color-split;
+
+    .toolbarLeft {
+      display: flex;
+      align-items: center;
+      gap: @spacing-sm;
+    }
+
+    .toolbarRight {
+      display: flex;
+      align-items: center;
+      gap: @spacing-xs;
+    }
+  }
+
+  .editorContainer {
+    position: relative;
+    flex: 1; // 让编辑器容器自动填充剩余空间
+    min-height: 0; // 防止flex布局中的最小高度问题
+    width: 100% !important; // 确保编辑器容器宽度撑满
+
+    .loadingOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-start;
+    padding: @spacing-xs @spacing-sm;
+    background-color: @background-color-light;
+    border-top: 1px solid @border-color-split;
+
+    .footerOption {
+      display: flex;
+      align-items: center;
+      margin-right: @spacing-md;
+
+      .optionLabel {
+        margin-right: @spacing-xs;
+        color: @text-color-secondary;
+      }
+    }
+  }
+}
+
+// 暗色主题下的样式调整
+:global(.ant-theme-dark) {
+  .monacoReactWrapper {
+    border-color: @border-color-base;
+
+    .toolbar, .footer {
+      background-color: @background-color-base;
+    }
+  }
+}

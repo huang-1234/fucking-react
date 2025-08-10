@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Typography, Divider, Card, Space, Button, Alert, Switch } from 'antd';
-import { CodeBlock } from '../../../components/CodeBlock';
+import { Typography, Divider, Card, Space, Button, Alert, Switch, Tabs } from 'antd';
+import { CodeBlock } from '@/components/CodeBlock';
+import { react16EventCode, react17EventCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
+
+const { TabPane } = Tabs;
 
 /**
  * React 17 Event Delegation 示例组件
@@ -39,53 +42,7 @@ const EventDelegationDemo: React.FC = () => {
     };
   }, []);
 
-  // React 16事件委托代码示例
-  const react16EventCode = `// React 16中的事件委托
-// React将所有事件处理器附加到document上
-
-// 简化的内部实现示意
-document.addEventListener('click', e => {
-  // React的事件系统处理点击
-  const reactEvent = createReactEvent(e);
-
-  // 查找事件路径上的React组件
-  const path = getEventPath(e);
-
-  // 调用组件的事件处理器
-  for (const element of path) {
-    const clickHandler = findClickHandler(element);
-    if (clickHandler) {
-      clickHandler(reactEvent);
-    }
-  }
-});
-
-// 组件中的使用方式没有变化
-<button onClick={handleClick}>点击我</button>`;
-
-  // React 17事件委托代码示例
-  const react17EventCode = `// React 17中的事件委托
-// React将事件处理器附加到React渲染树的根DOM容器上
-
-// 简化的内部实现示意
-rootNode.addEventListener('click', e => {
-  // React的事件系统处理点击
-  const reactEvent = createReactEvent(e);
-
-  // 查找事件路径上的React组件
-  const path = getEventPath(e);
-
-  // 调用组件的事件处理器
-  for (const element of path) {
-    const clickHandler = findClickHandler(element);
-    if (clickHandler) {
-      clickHandler(reactEvent);
-    }
-  }
-});
-
-// 组件中的使用方式没有变化
-<button onClick={handleClick}>点击我</button>`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="event-delegation-demo" ref={containerRef}>
@@ -275,10 +232,10 @@ rootNode.addEventListener('click', e => {
 
             <Tabs defaultActiveKey="1">
               <TabPane tab="React 16" key="1">
-                <CodeBlock code={react16EventCode} />
+                <CodeBlock code={react16EventCode} width="100%" />
               </TabPane>
               <TabPane tab="React 17" key="2">
-                <CodeBlock code={react17EventCode} />
+                <CodeBlock code={react17EventCode} width="100%" />
               </TabPane>
             </Tabs>
           </Card>
@@ -333,66 +290,6 @@ rootNode.addEventListener('click', e => {
   );
 };
 
-// 添加Tabs组件
-const { TabPane } = Tabs;
-function Tabs({ children, defaultActiveKey }: { children: React.ReactNode; defaultActiveKey: string }) {
-  const [activeKey, setActiveKey] = useState(defaultActiveKey);
 
-  return (
-    <div className="custom-tabs">
-      <div className="tabs-nav">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(
-              child as React.ReactElement<{ tab: string; key: string }>,
-              {
-                active: child.key === activeKey,
-                onClick: () => setActiveKey(child.key as string)
-              }
-            );
-          }
-          return null;
-        })}
-      </div>
-      <div className="tabs-content">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && child.key === activeKey) {
-            return child.props.children;
-          }
-          return null;
-        })}
-      </div>
-    </div>
-  );
-}
-
-// 添加TabPane组件
-// function TabPane({
-//   children,
-//   tab,
-//   active,
-//   onClick
-// }: {
-//   children: React.ReactNode;
-//   tab: string;
-//   active?: boolean;
-//   onClick?: () => void;
-// }) {
-//   return (
-//     <div
-//       className={`tab-pane ${active ? 'active' : ''}`}
-//       onClick={onClick}
-//       style={{
-//         padding: '8px 16px',
-//         cursor: 'pointer',
-//         borderBottom: active ? '2px solid #1890ff' : '2px solid transparent',
-//         display: 'inline-block',
-//         marginRight: 16
-//       }}
-//     >
-//       {tab}
-//     </div>
-//   );
-// }
 
 export default EventDelegationDemo;

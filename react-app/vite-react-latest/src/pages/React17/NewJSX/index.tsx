@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Divider, Card, Alert, Tabs } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { oldJSXCode, newJSXCode, autoImportCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 const { TabPane } = Tabs;
@@ -10,81 +11,7 @@ const { TabPane } = Tabs;
  * 演示React 17引入的新JSX转换
  */
 const NewJSXDemo: React.FC = () => {
-  // React 17之前的JSX代码示例
-  const oldJSXCode = `// React 17之前的JSX转换
-import React from 'react';  // 必须导入React
-
-function App() {
-  return (
-    <div>
-      <h1>Hello World</h1>
-      <p>Welcome to React</p>
-    </div>
-  );
-}
-
-// 转换后的代码:
-import React from 'react';
-
-function App() {
-  return React.createElement(
-    'div',
-    null,
-    React.createElement('h1', null, 'Hello World'),
-    React.createElement('p', null, 'Welcome to React')
-  );
-}`;
-
-  // React 17的新JSX代码示例
-  const newJSXCode = `// React 17的新JSX转换
-// 不再需要导入React
-function App() {
-  return (
-    <div>
-      <h1>Hello World</h1>
-      <p>Welcome to React</p>
-    </div>
-  );
-}
-
-// 转换后的代码:
-// 自动导入特定的函数
-import { jsx as _jsx } from 'react/jsx-runtime';
-import { jsxs as _jsxs } from 'react/jsx-runtime';
-
-function App() {
-  return _jsxs(
-    'div',
-    {
-      children: [
-        _jsx('h1', { children: 'Hello World' }),
-        _jsx('p', { children: 'Welcome to React' })
-      ]
-    }
-  );
-}`;
-
-  // 自动导入示例
-  const autoImportCode = `// 文件1: Button.js
-// 不需要导入React
-function Button() {
-  return <button>Click me</button>;
-}
-
-// 文件2: App.js
-// 只有当你需要使用React特定API时才需要导入React
-import { useState } from 'react';
-
-function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <h1>Count: {count}</h1>
-      <Button onClick={() => setCount(count + 1)} />
-    </div>
-  );
-}`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="new-jsx-demo">
@@ -108,7 +35,7 @@ function App() {
         <Tabs defaultActiveKey="1">
           <TabPane tab="旧JSX转换" key="1">
             <Card title="React 17之前的JSX转换">
-              <CodeBlock code={oldJSXCode} />
+              <CodeBlock code={oldJSXCode} width="100%" />
 
               <Alert
                 message="必须导入React"
@@ -122,7 +49,7 @@ function App() {
 
           <TabPane tab="新JSX转换" key="2">
             <Card title="React 17的新JSX转换">
-              <CodeBlock code={newJSXCode} />
+              <CodeBlock code={newJSXCode} width="100%" />
 
               <Alert
                 message="无需导入React"
@@ -136,7 +63,7 @@ function App() {
 
           <TabPane tab="实际应用" key="3">
             <Card title="实际开发中的应用">
-              <CodeBlock code={autoImportCode} />
+              <CodeBlock code={autoImportCode} width="100%" />
 
               <Alert
                 message="更简洁的导入"
@@ -181,6 +108,7 @@ function App() {
     }]
   ]
 }`}
+            width="100%"
           />
         </Card>
 

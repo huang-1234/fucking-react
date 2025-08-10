@@ -1,0 +1,115 @@
+@import '../../styles/variables.less';
+
+// 标题样式
+.mdxHeading1 {
+  margin-top: @spacing-xl;
+  margin-bottom: @spacing-lg;
+  font-weight: 600;
+}
+
+.mdxHeading2 {
+  margin-top: @spacing-lg;
+  margin-bottom: @spacing-md;
+  font-weight: 600;
+}
+
+.mdxHeading3 {
+  margin-top: @spacing-md;
+  margin-bottom: @spacing-sm;
+  font-weight: 500;
+}
+
+.mdxHeading4, .mdxHeading5 {
+  margin-top: @spacing-sm;
+  margin-bottom: @spacing-xs;
+  font-weight: 500;
+}
+
+// 段落和文本
+.mdxParagraph {
+  margin-bottom: @spacing-md;
+  line-height: 1.8;
+}
+
+.mdxStrong {
+  font-weight: 600;
+}
+
+.mdxEmphasis {
+  font-style: italic;
+}
+
+// 链接
+.mdxLink {
+  color: @primary-color;
+  text-decoration: none;
+  transition: color @transition-duration @transition-ease;
+
+  &:hover {
+    color: @primary-color-hover;
+    text-decoration: underline;
+  }
+}
+
+// 列表
+.mdxUnorderedList, .mdxOrderedList {
+  margin-bottom: @spacing-md;
+  padding-left: @spacing-lg;
+}
+
+.mdxListItem {
+  margin-bottom: @spacing-xs;
+  line-height: 1.8;
+}
+
+// 代码
+.mdxInlineCode {
+  background-color: @background-color-light;
+  border-radius: @border-radius-sm;
+  padding: 2px 4px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9em;
+  color: @primary-color;
+}
+
+.mdxPreBlock {
+  margin: @spacing-md 0;
+  overflow: hidden;
+}
+
+// 引用
+.mdxBlockquote {
+  margin: @spacing-md 0;
+  padding: @spacing-sm @spacing-md;
+  border-left: 4px solid @primary-color;
+  background-color: @background-color-light;
+  border-radius: @border-radius-base;
+}
+
+// 分割线
+.mdxDivider {
+  margin: @spacing-lg 0;
+}
+
+// 表格
+.mdxTable {
+  width: 100%;
+  margin-bottom: @spacing-md;
+  border-collapse: collapse;
+}
+
+.mdxTableHead {
+  background-color: @background-color-light;
+}
+
+.mdxTableHeader {
+  padding: @spacing-sm;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid @border-color-split;
+}
+
+.mdxTableCell {
+  padding: @spacing-sm;
+  border-bottom: 1px solid @border-color-split;
+}

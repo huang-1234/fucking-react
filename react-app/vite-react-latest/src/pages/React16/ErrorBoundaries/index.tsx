@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Divider, Card, Space, Button, Alert, Switch } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { errorBoundaryCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -67,49 +68,7 @@ class ErrorBoundary extends React.Component<
 const ErrorBoundariesDemo: React.FC = () => {
   const [enableErrorBoundary, setEnableErrorBoundary] = useState(true);
 
-  // 错误边界代码示例
-  const errorBoundaryCode = `// React 16+ 中的错误边界
-import React, { Component } from 'react';
-
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    // 更新状态，下次渲染时显示降级UI
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    // 可以将错误日志上报给服务器
-    console.log('错误信息:', error);
-    console.log('错误组件栈:', errorInfo.componentStack);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      // 自定义降级UI
-      return this.props.fallback || (
-        <div className="error-ui">
-          <h2>组件出错了</h2>
-          <p>{this.state.error?.message}</p>
-          <button onClick={() => this.setState({ hasError: false })}>
-            重试
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-// 使用方式
-<ErrorBoundary>
-  <MyComponent />
-</ErrorBoundary>`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="error-boundaries-demo">
@@ -159,7 +118,7 @@ class ErrorBoundary extends Component {
 
             <Divider />
 
-            <CodeBlock code={errorBoundaryCode} />
+            <CodeBlock code={errorBoundaryCode} width="100%" />
           </Space>
         </Card>
 

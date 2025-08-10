@@ -6,11 +6,11 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import styles from './CodeBlock.module.less';
+import styles from './MarkdownRender.module.less';
 
 const { Text } = Typography;
 
-interface CodeBlockProps {
+interface MarkdownRenderProps {
   code: string;
   language?: string;
 }
@@ -20,7 +20,7 @@ interface CodeBlockProps {
  * 使用 react-markdown 显示格式化的代码
  * 支持语法高亮和 Markdown 格式
  */
-export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'jsx' }) => {
+export const MarkdownRender: React.FC<MarkdownRenderProps> = ({ code, language = 'jsx' }) => {
   // 确保代码是字符串类型
   let safeCode = '';
 
@@ -58,7 +58,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'jsx' }) 
   const markdownCode = `\`\`\`${language}\n${safeCode}\n\`\`\``;
 
   return (
-    <div className={styles.codeBlockWrapper}>
+    <div className={styles.MarkdownRenderWrapper}>
       <ReactMarkdown
         rehypePlugins={[rehypeHighlight, rehypeRaw]}
         remarkPlugins={[remarkGfm]}

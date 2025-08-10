@@ -1,0 +1,106 @@
+/* 代码高亮样式 */
+@import './variables.less';
+
+/* 代码块容器 */
+pre {
+  background-color: #282a36; /* Dracula背景色 */
+  border-radius: @border-radius-base;
+  padding: @spacing-md;
+  overflow-x: auto;
+  margin: @spacing-md 0;
+}
+
+/* 行内代码 */
+:not(pre) > code {
+  background-color: rgba(40, 42, 54, 0.2);
+  color: #ff79c6; /* Dracula粉色 */
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9em;
+}
+
+/* 代码高亮颜色 - Dracula主题 */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6272a4; /* 注释蓝灰色 */
+}
+
+.token.punctuation {
+  color: #f8f8f2; /* 标点符号白色 */
+}
+
+.namespace {
+  opacity: 0.7;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #ff79c6; /* 属性粉色 */
+}
+
+.token.boolean,
+.token.number {
+  color: #bd93f9; /* 布尔值和数字紫色 */
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #50fa7b; /* 字符串绿色 */
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #f8f8f2; /* 操作符白色 */
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #ff79c6; /* 关键字粉色 */
+}
+
+.token.function,
+.token.class-name {
+  color: #8be9fd; /* 函数名青色 */
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #f1fa8c; /* 变量黄色 */
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+/* 行号样式 */
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid #44475a;
+}
+
+.line-numbers-rows > span:before {
+  color: #6272a4;
+}

@@ -3,8 +3,8 @@ import { RouterProvider } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import router from './router'
-import './App.css'
-
+// 使用自定义代码高亮样式
+import './styles/code-highlight.less'
 function App() {
   return (
     <ConfigProvider locale={zhCN}>

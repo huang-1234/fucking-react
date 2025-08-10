@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Divider, Card, Space, Button, Alert, Switch, Input } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { react15PropTypesCode, react16PropTypesCode } from '../hooks/react-text';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -20,52 +21,7 @@ const PropTypesDemo: React.FC = () => {
     setTimeout(() => setShowWarning(false), 3000);
   };
 
-  // React 15 中的PropTypes代码示例
-  const react15PropTypesCode = `// React 15 中，PropTypes内置在React包中
-import React, { Component, PropTypes } from 'react';
-
-class Greeting extends Component {
-  render() {
-    return <h1>Hello, {this.props.name}</h1>;
-  }
-}
-
-Greeting.propTypes = {
-  name: PropTypes.string.isRequired,
-  age: PropTypes.number,
-  address: PropTypes.shape({
-    street: PropTypes.string,
-    city: PropTypes.string
-  })
-};
-
-Greeting.defaultProps = {
-  age: 18
-};`;
-
-  // React 16+ 中的PropTypes代码示例
-  const react16PropTypesCode = `// React 16+ 中，PropTypes被移到单独的包中
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
-class Greeting extends Component {
-  render() {
-    return <h1>Hello, {this.props.name}</h1>;
-  }
-}
-
-Greeting.propTypes = {
-  name: PropTypes.string.isRequired,
-  age: PropTypes.number,
-  address: PropTypes.shape({
-    street: PropTypes.string,
-    city: PropTypes.string
-  })
-};
-
-Greeting.defaultProps = {
-  age: 18
-};`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="proptypes-demo">
@@ -77,13 +33,13 @@ Greeting.defaultProps = {
         </Paragraph>
 
         <Divider orientation="left">React 15 中的PropTypes</Divider>
-        <Card>
-          <CodeBlock code={react15PropTypesCode} language="jsx" />
+        <Card style={{ width: '100%' }}>
+          <CodeBlock code={react15PropTypesCode} language="jsx" width="100%" />
         </Card>
 
         <Divider orientation="left">React 16+ 中的PropTypes</Divider>
-        <Card>
-          <CodeBlock code={react16PropTypesCode} language="jsx" />
+        <Card style={{ width: '100%' }}>
+          <CodeBlock code={react16PropTypesCode} language="jsx" width="100%" />
         </Card>
 
         <Divider orientation="left">实时演示</Divider>

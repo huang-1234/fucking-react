@@ -18,7 +18,7 @@ const React19Page = lazy(() => import('../pages/React19'));
 // 各版本下的API详情页面
 const React15Fragments = lazy(() => import('../pages/React15/Fragments'));
 const React15PropTypes = lazy(() => import('../pages/React15/PropTypes'));
-const React16Hooks = lazy(() => import('../pages/React16/Hooks'));
+const React16Hooks = lazy(() => import('../pages/React16/hooks'));
 const React16ErrorBoundaries = lazy(() => import('../pages/React16/ErrorBoundaries'));
 const React17Events = lazy(() => import('../pages/React17/EventDelegation'));
 const React17JSX = lazy(() => import('../pages/React17/NewJSX'));

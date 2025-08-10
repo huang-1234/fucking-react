@@ -1,0 +1,47 @@
+@import './variables.less';
+
+// MDX内容容器
+.mdx-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: @spacing-lg;
+
+  // 重置一些默认样式
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: @border-radius-base;
+  }
+
+  // 自定义代码样式
+  .custom-code {
+    background: #2d2d2d;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #f8f8f2;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+
+  // 技术图标样式
+  .devicon-react-original.colored {
+    color: #61dafb;
+  }
+
+  .devicon-typescript-plain.colored {
+    color: #007acc;
+  }
+
+  .devicon-javascript-plain.colored {
+    color: #f7df1e;
+  }
+}
+
+// 暗色主题适配
+:global(.ant-theme-dark) {
+  .mdx-content {
+    .custom-code {
+      background: #1a1a1a;
+      color: #f8f8f2;
+    }
+  }
+}

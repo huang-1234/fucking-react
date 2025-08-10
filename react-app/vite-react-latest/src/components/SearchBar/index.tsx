@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Input, AutoComplete, Space, Tag } from 'antd';
 import { SearchOutlined, HistoryOutlined, FireOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash-es';
 
 const { Option } = AutoComplete;
 
@@ -28,10 +29,8 @@ const SearchBar: React.FC = () => {
     'useTransition'
   ];
 
-  // 处理搜索输入变化
-  const handleSearch = (searchText: string) => {
-    setValue(searchText);
-
+  // 处理搜索输入变化的实际函数
+  const handleSearchImpl = (searchText: string) => {
     // 根据输入生成建议选项
     if (!searchText) {
       // 如果搜索框为空，显示热门搜索和历史记录
@@ -61,6 +60,25 @@ const SearchBar: React.FC = () => {
 
       setOptions(filtered);
     }
+  };
+
+  // 使用useMemo和debounce创建防抖处理的搜索函数
+  const debouncedSearch = useMemo(
+    () => debounce(handleSearchImpl, 300),
+    [hotSearches, searchHistory]
+  );
+
+  // 组件卸载时取消防抖函数的执行
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // 处理搜索输入变化
+  const handleSearch = (searchText: string) => {
+    setValue(searchText);
+    debouncedSearch(searchText);
   };
 
   // 处理选择建议
@@ -99,7 +117,7 @@ const SearchBar: React.FC = () => {
     <div className="search-bar" style={{ width: 300 }}>
       <AutoComplete
         value={value}
-        options={options}
+        options={options.map(renderOption)}
         style={{ width: '100%' }}
         onSearch={handleSearch}
         onSelect={handleSelect}

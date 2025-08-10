@@ -1,0 +1,123 @@
+import SkillCard from '../components/SkillCard';
+import CodePreview from '../components/CodePreview';
+import { Card, Button, Space, Divider, Alert } from 'antd';
+
+# React 技能展示
+
+这是一个使用 MDX 展示 React 技能的示例文档。MDX 允许我们在 Markdown 中直接使用 React 组件。
+
+## 核心技能
+
+<SkillCard
+  name="React 高级开发"
+  level={5}
+  icon="react"
+  tags={["Hooks", "Context API", "性能优化"]}
+  description="精通React核心概念和高级特性，包括Hooks、Context API、性能优化等"
+/>
+
+<SkillCard
+  name="TypeScript"
+  level={4}
+  icon="typescript"
+  tags={["类型系统", "泛型", "类型推断"]}
+  description="熟练使用TypeScript进行类型安全的React开发，提高代码质量和可维护性"
+/>
+
+## 代码示例
+
+### SkillCard 组件实现
+
+<CodePreview lang="tsx">
+{`import React from 'react';
+import { Card, Rate, Tag, Space } from 'antd';
+import { CodeOutlined, CheckOutlined } from '@ant-design/icons';
+
+interface SkillCardProps {
+  name: string;
+  level: number;
+  icon?: string;
+  tags?: string[];
+  description?: string;
+}
+
+const SkillCard: React.FC<SkillCardProps> = ({
+  name,
+  level,
+  icon,
+  tags = [],
+  description
+}) => {
+  // 图标映射
+  const getIcon = () => {
+    switch (icon) {
+      case 'react':
+        return <i className="devicon-react-original colored"></i>;
+      case 'typescript':
+        return <i className="devicon-typescript-plain colored"></i>;
+      default:
+        return <CodeOutlined />;
+    }
+  };
+
+  return (
+    <Card className="skill-card" size="small">
+      <div className="skill-header">
+        <div className="skill-icon">
+          {getIcon()}
+        </div>
+        <div className="skill-info">
+          <div className="skill-name">{name}</div>
+          <Rate disabled defaultValue={level} count={5} />
+        </div>
+      </div>
+
+      {description && (
+        <div className="skill-description">
+          {description}
+        </div>
+      )}
+
+      {tags.length > 0 && (
+        <div className="skill-tags">
+          <Space size={[0, 8]} wrap>
+            {tags.map(tag => (
+              <Tag key={tag} color="blue" icon={<CheckOutlined />}>
+                {tag}
+              </Tag>
+            ))}
+          </Space>
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default SkillCard;`}
+</CodePreview>
+
+## 交互演示
+
+<Card title="技能测评">
+  <Alert
+    message="技能自评"
+    description="点击下方按钮开始技能自评测试，评估您的React技能水平。"
+    type="info"
+    showIcon
+    style={{ marginBottom: 16 }}
+  />
+  <Space>
+    <Button type="primary">开始测评</Button>
+    <Button>查看详情</Button>
+  </Space>
+</Card>
+
+<Divider />
+
+## 学习资源
+
+- [React 官方文档](https://react.dev/)
+- [TypeScript 官方文档](https://www.typescriptlang.org/)
+- [Ant Design 组件库](https://ant.design/)
+
+> 本文档使用 MDX 技术构建，支持在 Markdown 中混合使用 React 组件，非常适合技术文档和作品集展示。

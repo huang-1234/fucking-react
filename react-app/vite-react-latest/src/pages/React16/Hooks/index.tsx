@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Divider, Card, Space, Button, InputNumber, Badge, Tabs, Alert } from 'antd';
 import { CodeBlock } from '../../../components/CodeBlock';
+import { useStateCode, useEffectCode, classComponentCode } from './react-text';
 
 const { Title, Paragraph, Text } = Typography;
 const { TabPane } = Tabs;
@@ -23,87 +24,7 @@ const HooksDemo: React.FC = () => {
     };
   }, [count]);
 
-  // useState代码示例
-  const useStateCode = `// React 16.8+ 中的useState Hook
-import React, { useState } from 'react';
-
-function Counter() {
-  // 声明一个叫 "count" 的 state 变量，初始值为0
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
-}`;
-
-  // useEffect代码示例
-  const useEffectCode = `// React 16.8+ 中的useEffect Hook
-import React, { useState, useEffect } from 'react';
-
-function Example() {
-  const [count, setCount] = useState(0);
-
-  // 相当于 componentDidMount 和 componentDidUpdate:
-  useEffect(() => {
-    // 更新文档标题
-    document.title = \`You clicked \${count} times\`;
-
-    // 返回的函数相当于 componentWillUnmount
-    return () => {
-      document.title = 'React App';
-    };
-  }, [count]); // 仅在count更改时重新运行
-
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
-}`;
-
-  // 类组件等效代码
-  const classComponentCode = `// React 15/16 中的类组件等效实现
-import React, { Component } from 'react';
-
-class Example extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      count: 0
-    };
-  }
-
-  componentDidMount() {
-    document.title = \`You clicked \${this.state.count} times\`;
-  }
-
-  componentDidUpdate() {
-    document.title = \`You clicked \${this.state.count} times\`;
-  }
-
-  componentWillUnmount() {
-    document.title = 'React App';
-  }
-
-  render() {
-    return (
-      <div>
-        <p>You clicked {this.state.count} times</p>
-        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
-          Click me
-        </button>
-      </div>
-    );
-  }
-}`;
+  // 使用从react-text.ts导入的代码字符串
 
   return (
     <div className="hooks-demo">
@@ -151,7 +72,7 @@ class Example extends Component {
 
                 <Divider />
 
-                <CodeBlock code={useStateCode} />
+                <CodeBlock code={useStateCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -177,7 +98,7 @@ class Example extends Component {
 
                 <Divider />
 
-                <CodeBlock code={useEffectCode} />
+                <CodeBlock code={useEffectCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -192,7 +113,7 @@ class Example extends Component {
                   showIcon
                 />
 
-                <CodeBlock code={classComponentCode} />
+                <CodeBlock code={classComponentCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -216,4 +137,4 @@ class Example extends Component {
   );
 };
 
-export default HooksDemo;
+export default React.memo(HooksDemo);

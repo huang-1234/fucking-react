@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Divider, Card, Space, Button, Alert, Switch, Tabs, Badge } from 'antd';
-import { CodeBlock } from '../../../components/CodeBlock';
+import { Typography, Divider, Card, Space, Button, Alert, Switch, Tabs, Badge, List } from 'antd';
+import { CodeBlock } from '@/components/CodeBlock';
+import { reactCompilerAdvantages } from '../common';
+import { unoptimizedCode, optimizedCode, manualOptimizationCode } from '../hooks/compiler';
 
 const { Title, Paragraph, Text } = Typography;
 const { TabPane } = Tabs;
@@ -36,97 +38,6 @@ const ReactCompilerDemo: React.FC = () => {
     setRenderCount({ parent: 0, child: 0 });
   };
 
-  // 未优化的代码示例
-  const unoptimizedCode = `// 未经React Compiler优化的代码
-function ParentComponent() {
-  const [count, setCount] = useState(0);
-
-  // 每次count变化，整个组件都会重新渲染
-  return (
-    <div>
-      <h2>计数: {count}</h2>
-      <button onClick={() => setCount(count + 1)}>
-        增加
-      </button>
-
-      {/* ChildComponent会在每次ParentComponent重渲染时也重渲染 */}
-      <ChildComponent />
-    </div>
-  );
-}
-
-function ChildComponent() {
-  // 这个组件不依赖于父组件的状态
-  // 但在传统React中，它仍会在父组件重渲染时重渲染
-  return (
-    <div>
-      <h3>子组件</h3>
-      <p>这个组件不需要重渲染，但它会被重渲染</p>
-    </div>
-  );
-}`;
-
-  // React Compiler优化后的代码示例
-  const optimizedCode = `// React Compiler自动优化后的代码
-// 注意：这是React Compiler在构建时生成的代码，开发者不需要手动编写
-
-// React Compiler自动添加记忆化
-function ParentComponent() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <h2>计数: {count}</h2>
-      <button onClick={() => setCount(count + 1)}>
-        增加
-      </button>
-
-      {/* React Compiler自动避免不必要的重渲染 */}
-      <ChildComponent />
-    </div>
-  );
-}
-
-// React Compiler自动记忆化这个组件
-// 相当于自动应用了React.memo()
-function ChildComponent() {
-  return (
-    <div>
-      <h3>子组件</h3>
-      <p>这个组件不需要重渲染，所以不会被重渲染</p>
-    </div>
-  );
-}`;
-
-  // 手动优化的代码示例
-  const manualOptimizationCode = `// 传统的手动优化方式
-import React, { useState, memo } from 'react';
-
-function ParentComponent() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <h2>计数: {count}</h2>
-      <button onClick={() => setCount(count + 1)}>
-        增加
-      </button>
-
-      {/* 使用memo包装的子组件 */}
-      <MemoizedChildComponent />
-    </div>
-  );
-}
-
-// 手动使用memo优化
-const MemoizedChildComponent = memo(function ChildComponent() {
-  return (
-    <div>
-      <h3>子组件</h3>
-      <p>使用memo避免不必要的重渲染</p>
-    </div>
-  );
-});`;
 
   return (
     <div className="react-compiler-demo">
@@ -201,7 +112,7 @@ const MemoizedChildComponent = memo(function ChildComponent() {
                   <Button
                     size="small"
                     onClick={handleChildRender}
-                    style={{ marginTop: 8 }}
+                    style={{ marginLeft: 8 }}
                   >
                     触发子组件渲染
                   </Button>
@@ -237,7 +148,7 @@ const MemoizedChildComponent = memo(function ChildComponent() {
           <Tabs defaultActiveKey="1">
             <TabPane tab="未优化代码" key="1">
               <Card title="传统React代码">
-                <CodeBlock code={unoptimizedCode} />
+                <CodeBlock code={unoptimizedCode} width="100%" />
 
                 <Alert
                   message="性能问题"
@@ -251,7 +162,7 @@ const MemoizedChildComponent = memo(function ChildComponent() {
 
             <TabPane tab="React Compiler优化" key="2">
               <Card title="React Compiler自动优化">
-                <CodeBlock code={optimizedCode} />
+                <CodeBlock code={optimizedCode} width="100%" />
 
                 <Alert
                   message="自动优化"
@@ -265,7 +176,7 @@ const MemoizedChildComponent = memo(function ChildComponent() {
 
             <TabPane tab="手动优化对比" key="3">
               <Card title="传统手动优化方式">
-                <CodeBlock code={manualOptimizationCode} />
+                <CodeBlock code={manualOptimizationCode} width="100%" />
 
                 <Alert
                   message="手动优化的缺点"
@@ -279,17 +190,16 @@ const MemoizedChildComponent = memo(function ChildComponent() {
           </Tabs>
         </Space>
 
-        <Divider orientation="left">React Compiler的优势</Divider>
-        <Paragraph>
+        <Paragraph style={{ fontSize: 16, fontWeight: 500 }}>
           React Compiler带来以下优势：
         </Paragraph>
-        <ul>
-          <li><Text strong>自动优化</Text> - 无需手动添加memo、useMemo等优化代码</li>
-          <li><Text strong>性能提升</Text> - 减少不必要的重渲染，提高应用性能</li>
-          <li><Text strong>代码简洁</Text> - 保持组件代码的简洁性，不需要添加额外的优化代码</li>
-          <li><Text strong>避免人为错误</Text> - 自动分析依赖关系，避免手动优化可能带来的错误</li>
-          <li><Text strong>构建时优化</Text> - 在构建时应用优化，不影响运行时性能</li>
-        </ul>
+        {reactCompilerAdvantages?.map(ad => {
+          return (
+            <Paragraph key={ad.title}>
+              <Text strong>{ad.title}</Text> - {ad.description}
+            </Paragraph>
+          )
+        })}
 
         <Paragraph>
           React Compiler代表了React团队对未来React应用性能优化的新方向，通过将优化从手动转向自动，
