@@ -35,7 +35,7 @@ const NewJSXDemo: React.FC = () => {
         <Tabs defaultActiveKey="1">
           <TabPane tab="旧JSX转换" key="1">
             <Card title="React 17之前的JSX转换">
-              <CodeBlock code={oldJSXCode} />
+              <CodeBlock code={oldJSXCode} width="100%" />
 
               <Alert
                 message="必须导入React"
@@ -49,7 +49,7 @@ const NewJSXDemo: React.FC = () => {
 
           <TabPane tab="新JSX转换" key="2">
             <Card title="React 17的新JSX转换">
-              <CodeBlock code={newJSXCode} />
+              <CodeBlock code={newJSXCode} width="100%" />
 
               <Alert
                 message="无需导入React"
@@ -63,7 +63,7 @@ const NewJSXDemo: React.FC = () => {
 
           <TabPane tab="实际应用" key="3">
             <Card title="实际开发中的应用">
-              <CodeBlock code={autoImportCode} />
+              <CodeBlock code={autoImportCode} width="100%" />
 
               <Alert
                 message="更简洁的导入"
@@ -108,6 +108,7 @@ const NewJSXDemo: React.FC = () => {
     }]
   ]
 }`}
+            width="100%"
           />
         </Card>
 

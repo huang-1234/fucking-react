@@ -177,7 +177,7 @@ const UseFormStateDemo: React.FC = () => {
           <Divider orientation="left">代码对比</Divider>
 
           <Card title="使用useFormState">
-            <CodeBlock code={codeuseFormState} />
+            <CodeBlock code={codeuseFormState} width="100%" />
 
             <Alert
               message="优势"
@@ -189,7 +189,7 @@ const UseFormStateDemo: React.FC = () => {
           </Card>
 
           <Card title="传统表单处理">
-            <CodeBlock code={traditionalFormCode} />
+            <CodeBlock code={traditionalFormCode} width="100%" />
 
             <Alert
               message="缺点"

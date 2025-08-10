@@ -232,10 +232,10 @@ const EventDelegationDemo: React.FC = () => {
 
             <Tabs defaultActiveKey="1">
               <TabPane tab="React 16" key="1">
-                <CodeBlock code={react16EventCode} />
+                <CodeBlock code={react16EventCode} width="100%" />
               </TabPane>
               <TabPane tab="React 17" key="2">
-                <CodeBlock code={react17EventCode} />
+                <CodeBlock code={react17EventCode} width="100%" />
               </TabPane>
             </Tabs>
           </Card>

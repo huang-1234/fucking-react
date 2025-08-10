@@ -7,6 +7,8 @@
   margin-bottom: @spacing-md;
   box-shadow: @box-shadow-base;
   transition: box-shadow @transition-duration @transition-ease;
+  width: 100% !important; // 确保宽度始终为100%
+  max-width: 100%; // 最大宽度不超过容器
 
   &:hover {
     box-shadow: @box-shadow-hover;
@@ -35,6 +37,9 @@
 
   .editorContainer {
     position: relative;
+    flex: 1; // 让编辑器容器自动填充剩余空间
+    min-height: 0; // 防止flex布局中的最小高度问题
+    width: 100% !important; // 确保编辑器容器宽度撑满
 
     .loadingOverlay {
       position: absolute;

@@ -1,12 +1,15 @@
 import { lazy } from 'react';
 import {
   HomeOutlined,
-  CodeOutlined
+  AppstoreOutlined
 } from '@ant-design/icons';
 import { reactVersionMenuItems } from './ReactVersionMenu';
 
 // 首页
 const HomePage = lazy(() => import('../pages/HomePage'));
+
+// 组件应用展示
+const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
 
 export interface IMenu {
   key: string;
@@ -29,5 +32,11 @@ export const menuItems: IMenu[] = [
   //   icon: <CodeOutlined />,
   //   children: reactVersionMenuItems
   // },
-  ...reactVersionMenuItems
+  ...reactVersionMenuItems,
+  {
+    key: '/components',
+    label: '组件应用展示',
+    icon: <AppstoreOutlined />,
+    component: ComponentsApplyPage
+  }
 ];

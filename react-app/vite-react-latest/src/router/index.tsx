@@ -35,6 +35,9 @@ const React19FormState = lazy(() => import('../pages/React19/useFormState'));
 // 技术文档组件
 const MDXDemoPage = lazy(() => import('../pages/Tech/MDXDemo'));
 
+// 组件应用展示
+const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
+
 // 加载中组件
 const LoadingComponent = () => <div>加载中...</div>;
 
@@ -220,6 +223,15 @@ const router = createBrowserRouter([
             )
           }
         ]
+      },
+      // 组件应用展示路由
+      {
+        path: 'components',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <ComponentsApplyPage />
+          </Suspense>
+        )
       }
     ]
   }

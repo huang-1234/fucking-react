@@ -30,13 +30,13 @@ const FragmentsDemo: React.FC = () => {
         </Paragraph>
 
         <Divider orientation="left">React 15 中的写法</Divider>
-        <Card>
-          <CodeBlock code={react15Code} language="jsx" />
+        <Card style={{ width: '100%' }}>
+          <CodeBlock code={react15Code} language="jsx" width="100%" />
         </Card>
 
         <Divider orientation="left">React 16+ 中的写法</Divider>
-        <Card>
-          <CodeBlock code={react16Code} language="jsx" />
+        <Card style={{ width: '100%' }}>
+          <CodeBlock code={react16Code} language="jsx" width="100%" />
         </Card>
 
         <Divider orientation="left">实时演示</Divider>

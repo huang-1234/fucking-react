@@ -271,11 +271,11 @@ const UseTransitionDemo: React.FC = () => {
           <Divider orientation="left">API用法</Divider>
 
           <Card title="useTransition">
-            <CodeBlock code={useTransitionCode} />
+            <CodeBlock code={useTransitionCode} width="100%" />
           </Card>
 
           <Card title="useDeferredValue">
-            <CodeBlock code={useDeferredValueCode} />
+            <CodeBlock code={useDeferredValueCode} width="100%" />
           </Card>
         </Space>
 

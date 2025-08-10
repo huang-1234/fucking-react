@@ -97,7 +97,7 @@ const SuspenseSSRDemo: React.FC = () => {
                   )}
                 </div>
 
-                <CodeBlock code={react17SSRCode} />
+                <CodeBlock code={react17SSRCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -157,7 +157,7 @@ const SuspenseSSRDemo: React.FC = () => {
                   )}
                 </div>
 
-                <CodeBlock code={react18SSRCode} />
+                <CodeBlock code={react18SSRCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -254,7 +254,7 @@ const SuspenseSSRDemo: React.FC = () => {
                   )}
                 </div>
 
-                <CodeBlock code={selectiveHydrationCode} />
+                <CodeBlock code={selectiveHydrationCode} width="100%" />
               </Space>
             </Card>
           </TabPane>

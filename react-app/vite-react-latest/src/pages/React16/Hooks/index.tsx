@@ -72,7 +72,7 @@ const HooksDemo: React.FC = () => {
 
                 <Divider />
 
-                <CodeBlock code={useStateCode} />
+                <CodeBlock code={useStateCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -98,7 +98,7 @@ const HooksDemo: React.FC = () => {
 
                 <Divider />
 
-                <CodeBlock code={useEffectCode} />
+                <CodeBlock code={useEffectCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -113,7 +113,7 @@ const HooksDemo: React.FC = () => {
                   showIcon
                 />
 
-                <CodeBlock code={classComponentCode} />
+                <CodeBlock code={classComponentCode} width="100%" />
               </Space>
             </Card>
           </TabPane>
@@ -137,4 +137,4 @@ const HooksDemo: React.FC = () => {
   );
 };
 
-export default HooksDemo;
+export default React.memo(HooksDemo);

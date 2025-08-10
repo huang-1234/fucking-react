@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Editor, { type Monaco, type OnMount } from '@monaco-editor/react';
+import Editor, { type OnMount } from '@monaco-editor/react';
 import { Spin, Select, Switch, Button } from 'antd';
 import { CopyOutlined, CheckOutlined } from '@ant-design/icons';
+import ResizeWindow from '../ResizeWindow';
 import styles from './MonacaReact.module.less';
 
 const { Option } = Select;
@@ -30,12 +31,15 @@ interface MonacoReactProps {
   language?: string;
   readOnly?: boolean;
   height?: string | number;
-  width?: string | number;
+  width?: string | number; // 宽度参数，但实际使用固定的100%宽度
   theme?: string;
   onChange?: (value: string | undefined) => void;
   lineNumbers?: boolean;
   minimap?: boolean;
   wordWrap?: boolean;
+  resizable?: boolean; // 是否可以拖动调整大小
+  minHeight?: number; // 最小高度
+  maxHeight?: number; // 最大高度
 }
 
 /**
@@ -47,26 +51,31 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
   language = 'javascript',
   readOnly = false,
   height = '300px',
-  width = '100%',
+  width = '100%', // 默认宽度设置为100%以撑满容器
   theme = 'vs-dark',
   onChange,
   lineNumbers = true,
   minimap = true,
-  wordWrap = false
+  wordWrap = false,
+  resizable = true,
+  minHeight = 100,
+  maxHeight = 800
 }) => {
   const [editorValue, setEditorValue] = useState<string>(code);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(language);
   const [selectedTheme, setSelectedTheme] = useState<string>(theme);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [copied, setCopied] = useState<boolean>(false);
   const editorRef = useRef<any>(null);
-  // useState shouldWordWrap
+  const [currentHeight, setCurrentHeight] = useState<number>(typeof height === 'number' ? height : 500);
+  const [currentWidth, setCurrentWidth] = useState<number>(typeof width === 'number' ? width : 800);
   const [shouldWordWrap, setShouldWordWrap] = useState<boolean>(wordWrap);
 
   // 当外部代码变化时更新编辑器内容
   useEffect(() => {
     setEditorValue(code);
   }, [code]);
+
+  // 移除不必要的日志
 
   // 处理编辑器内容变化
   const handleEditorChange = (value: string | undefined) => {
@@ -75,12 +84,11 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
       onChange(value);
     }
   };
-  console.log('editorValue', editorRef, editorValue);
+  // 编辑器内容变化时的回调
 
   // 处理编辑器加载完成
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
-    setIsLoading(false);
 
     // 配置编辑器
     editor.updateOptions({
@@ -120,10 +128,31 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
     }
   };
 
+    // 处理尺寸变化
+  const handleResize = (_width: number, height: number) => {
+    // 只有当高度真正变化时才更新状态，防止抖动
+    if (Math.abs(currentHeight - height) > 8) {
+      console.log('Resize height changed:', height);
+      setCurrentHeight(height);
+    }
+
+  };
+
   return (
-    <div className={styles.monacoReactWrapper} style={{ width, display: 'flex', flexDirection: 'column' }}>
-      {/* 工具栏 */}
-      <div className={styles.toolbar}>
+    <ResizeWindow
+      className={`${styles.monacoReactWrapper} vscode-style`}
+      width={currentWidth}
+      height={currentHeight}
+      minHeight={minHeight}
+      maxHeight={maxHeight}
+      resizable={resizable}
+      directions={['bottom', 'bottomRight', 'right']}
+      onResize={handleResize}
+      style={{ display: 'flex', flexDirection: 'column' }}
+    >
+      <div className={styles.toolbar} style={{
+        height:  40
+      }}>
         <div className={styles.toolbarLeft}>
           <Select
             value={selectedLanguage}
@@ -159,14 +188,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
           </Button>
         </div>
       </div>
-
-      {/* 编辑器 */}
-      <div className={styles.editorContainer} style={{ height }}>
-        {/* {isLoading && (
-          <div className={styles.loadingOverlay}>
-            <Spin tip="加载编辑器..." />
-          </div>
-        )} */}
+      <div className={styles.editorContainer} style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         <Editor
           height="100%"
           width="100%"
@@ -188,7 +210,9 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
 
       {/* 底部配置选项 */}
       {!readOnly && (
-        <div className={styles.footer}>
+        <div className={styles.footer} style={{
+          height: 40
+        }}>
           <div className={styles.footerOption}>
             <span className={styles.optionLabel}>行号:</span>
             <Switch
@@ -228,7 +252,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </ResizeWindow>
   );
 };
 

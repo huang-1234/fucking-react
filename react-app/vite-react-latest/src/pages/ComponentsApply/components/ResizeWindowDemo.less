@@ -1,0 +1,236 @@
+@import '../../../styles/variables.less';
+
+.resize-window-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .demo-controls {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+
+    .ant-card {
+      flex: 1;
+
+      .control-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+    }
+
+    .status-display {
+      width: 250px;
+      padding: 16px;
+      border: 1px solid @border-color-base;
+      border-radius: @border-radius-base;
+      background-color: @background-color-light;
+
+      .status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .ant-typography-code {
+          background-color: fade(@primary-color, 10%);
+          border-color: fade(@primary-color, 20%);
+        }
+      }
+    }
+  }
+
+  .resize-container {
+    position: relative;
+    min-height: 400px;
+    padding: 20px;
+    border: 1px dashed @border-color-base;
+    border-radius: @border-radius-base;
+    background-color: fade(@background-color-light, 50%);
+  }
+
+  // 演示窗口样式
+  .demo-resize-window {
+    border: 1px solid @border-color-base;
+    border-radius: @border-radius-base;
+    background-color: @component-background;
+    box-shadow: @box-shadow-base;
+
+    .window-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+
+      .window-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: @background-color-light;
+        border-bottom: 1px solid @border-color-split;
+        border-top-left-radius: @border-radius-base;
+        border-top-right-radius: @border-radius-base;
+
+        .window-title {
+          font-weight: 500;
+        }
+
+        .window-controls {
+          display: flex;
+          gap: 6px;
+
+          .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+
+            &.minimize {
+              background-color: #ffbd2e;
+            }
+
+            &.maximize {
+              background-color: #28c940;
+            }
+
+            &.close {
+              background-color: #ff5f57;
+            }
+          }
+        }
+      }
+
+      .window-body {
+        flex: 1;
+        padding: 16px;
+        overflow: auto;
+
+        ul {
+          margin-bottom: 16px;
+        }
+      }
+
+      .window-footer {
+        padding: 8px 16px;
+        background-color: @background-color-light;
+        border-top: 1px solid @border-color-split;
+        text-align: right;
+        color: @text-color-secondary;
+        font-size: 12px;
+      }
+    }
+  }
+
+  // 代码编辑器主题
+  .code-theme {
+    border-color: #1e1e1e;
+
+    .window-content {
+      .window-header {
+        background-color: #1e1e1e;
+        border-color: #333;
+        color: #d4d4d4;
+      }
+
+      .window-body {
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+
+        h4 {
+          color: #d4d4d4;
+        }
+
+        ul li {
+          color: #d4d4d4;
+        }
+
+        .ant-typography-mark {
+          background-color: #614a03;
+        }
+      }
+
+      .window-footer {
+        background-color: #1e1e1e;
+        border-color: #333;
+        color: #858585;
+      }
+    }
+  }
+
+  // 控制面板主题
+  .panel-theme {
+    border-color: @primary-color;
+
+    .window-content {
+      .window-header {
+        background-color: @primary-color;
+        border-color: @primary-color;
+        color: #fff;
+      }
+
+      .window-body {
+        background-color: @component-background;
+      }
+
+      .window-footer {
+        background-color: fade(@primary-color, 10%);
+        border-color: fade(@primary-color, 20%);
+        color: @primary-color;
+      }
+    }
+  }
+}
+
+// 响应式调整
+@media (max-width: 768px) {
+  .resize-window-demo {
+    .demo-controls {
+      flex-direction: column;
+
+      .status-display {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// 暗色主题调整
+:global(.ant-theme-dark) {
+  .resize-window-demo {
+    .demo-controls {
+      .status-display {
+        background-color: @background-color-base;
+        border-color: @border-color-base;
+      }
+    }
+
+    .resize-container {
+      background-color: fade(@background-color-base, 30%);
+    }
+
+    .demo-resize-window {
+      &:not(.code-theme):not(.panel-theme) {
+        border-color: @border-color-base;
+        background-color: @component-background;
+
+        .window-content {
+          .window-header {
+            background-color: @background-color-base;
+            border-color: @border-color-split;
+          }
+
+          .window-footer {
+            background-color: @background-color-base;
+            border-color: @border-color-split;
+          }
+        }
+      }
+    }
+  }
+}

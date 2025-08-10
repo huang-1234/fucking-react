@@ -1,0 +1,142 @@
+@import '../../../styles/variables.less';
+
+.react-rnd-component {
+  box-sizing: border-box;
+  border: 1px solid @border-color-base;
+  border-radius: @border-radius-base;
+  background-color: @background-color-light;
+  box-shadow: @box-shadow-base;
+  transition: box-shadow 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: @box-shadow-hover;
+  }
+
+  &.dragging {
+    opacity: 0.8;
+    box-shadow: @box-shadow-hover;
+    user-select: none;
+  }
+}
+
+// 自定义调整大小的手柄样式
+.react-rnd-resize-handle {
+  position: absolute;
+  background-color: transparent;
+
+  &:hover {
+    background-color: fade(@primary-color, 20%);
+  }
+
+  &:active {
+    background-color: fade(@primary-color, 40%);
+  }
+
+  // 右侧手柄
+  &.react-rnd-resize-handle-right {
+    width: 8px;
+    height: 100%;
+    right: 0;
+    top: 0;
+    cursor: e-resize;
+  }
+
+  // 底部手柄
+  &.react-rnd-resize-handle-bottom {
+    height: 8px;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    cursor: s-resize;
+  }
+
+  // 左侧手柄
+  &.react-rnd-resize-handle-left {
+    width: 8px;
+    height: 100%;
+    left: 0;
+    top: 0;
+    cursor: w-resize;
+  }
+
+  // 顶部手柄
+  &.react-rnd-resize-handle-top {
+    height: 8px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    cursor: n-resize;
+  }
+
+  // 右下角手柄
+  &.react-rnd-resize-handle-bottom-right {
+    width: 12px;
+    height: 12px;
+    right: 0;
+    bottom: 0;
+    cursor: se-resize;
+
+    &::after {
+      content: '';
+      position: absolute;
+      right: 3px;
+      bottom: 3px;
+      width: 6px;
+      height: 6px;
+      border-right: 2px solid @text-color-secondary;
+      border-bottom: 2px solid @text-color-secondary;
+    }
+  }
+
+  // 左下角手柄
+  &.react-rnd-resize-handle-bottom-left {
+    width: 12px;
+    height: 12px;
+    left: 0;
+    bottom: 0;
+    cursor: sw-resize;
+  }
+
+  // 右上角手柄
+  &.react-rnd-resize-handle-top-right {
+    width: 12px;
+    height: 12px;
+    right: 0;
+    top: 0;
+    cursor: ne-resize;
+  }
+
+  // 左上角手柄
+  &.react-rnd-resize-handle-top-left {
+    width: 12px;
+    height: 12px;
+    left: 0;
+    top: 0;
+    cursor: nw-resize;
+  }
+}
+
+// 暗色主题下的样式调整
+:global(.ant-theme-dark) {
+  .react-rnd-component {
+    border-color: @border-color-base;
+    background-color: @background-color-base;
+  }
+
+  .react-rnd-resize-handle {
+    &:hover {
+      background-color: fade(@primary-color, 30%);
+    }
+
+    &:active {
+      background-color: fade(@primary-color, 50%);
+    }
+
+    &.react-rnd-resize-handle-bottom-right {
+      &::after {
+        border-color: fade(@text-color-secondary, 70%);
+      }
+    }
+  }
+}

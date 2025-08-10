@@ -33,13 +33,13 @@ const PropTypesDemo: React.FC = () => {
         </Paragraph>
 
         <Divider orientation="left">React 15 中的PropTypes</Divider>
-        <Card>
-          <CodeBlock code={react15PropTypesCode} language="jsx" />
+        <Card style={{ width: '100%' }}>
+          <CodeBlock code={react15PropTypesCode} language="jsx" width="100%" />
         </Card>
 
         <Divider orientation="left">React 16+ 中的PropTypes</Divider>
-        <Card>
-          <CodeBlock code={react16PropTypesCode} language="jsx" />
+        <Card style={{ width: '100%' }}>
+          <CodeBlock code={react16PropTypesCode} language="jsx" width="100%" />
         </Card>
 
         <Divider orientation="left">实时演示</Divider>

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { initVersionBridge } from './sandbox/VersionBridge'
-import './styles/global.less'
+import './styles/global.css'
 import './styles/highlight.css'
 import './styles/mdx.less'
 import App from './App.tsx'

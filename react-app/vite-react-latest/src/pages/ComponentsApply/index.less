@@ -1,0 +1,64 @@
+@import '../../styles/variables.less';
+
+.components-apply-page {
+  padding: @padding-md;
+
+  .page-header {
+    margin-bottom: @margin-md;
+  }
+
+  .demo-container {
+    .demo-tabs {
+      margin-bottom: @margin-md;
+
+      .ant-tabs-nav {
+        margin-bottom: @margin-md;
+      }
+    }
+
+    .demo-card {
+      margin-bottom: @margin-lg;
+
+      .ant-card-body {
+        padding: @padding-lg;
+      }
+    }
+
+        .coming-soon-list {
+      margin: 0;
+      padding-left: 20px;
+
+      li {
+        margin-bottom: @margin-xs;
+        color: @text-color-secondary;
+      }
+    }
+
+    .coming-soon {
+      text-align: center;
+      padding: 20px 0;
+    }
+  }
+
+  // 响应式调整
+  @media (max-width: 768px) {
+    padding: @padding-xs;
+
+    .demo-card {
+      .ant-card-body {
+        padding: @padding-md;
+      }
+    }
+  }
+}
+
+// 暗色主题调整
+:global(.ant-theme-dark) {
+  .components-apply-page {
+    .coming-soon-list {
+      li {
+        color: fade(@text-color, 65%);
+      }
+    }
+  }
+}

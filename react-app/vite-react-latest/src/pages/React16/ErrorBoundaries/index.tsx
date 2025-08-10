@@ -118,7 +118,7 @@ const ErrorBoundariesDemo: React.FC = () => {
 
             <Divider />
 
-            <CodeBlock code={errorBoundaryCode} />
+            <CodeBlock code={errorBoundaryCode} width="100%" />
           </Space>
         </Card>
 

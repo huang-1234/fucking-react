@@ -1,0 +1,201 @@
+@import '../../styles/variables.less';
+
+.resize-window {
+  box-sizing: border-box;
+  overflow: visible; // 修改为visible，确保内容不会被裁剪
+  transition: none; // 移除过渡效果，确保拖动时立即响应
+  display: flex; // 添加flex布局
+  flex-direction: column; // 垂直方向布局
+
+  &.resizing {
+    user-select: none;
+    pointer-events: auto !important; // 确保拖动时不会丢失鼠标事件
+  }
+
+  // 确保内容区域可以填充整个容器
+  .resize-content {
+    min-height: 0; // 防止flex布局中的最小高度问题
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    // 确保子元素能够填充整个内容区域
+    & > * {
+      min-height: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+      // 基础调整手柄样式
+  .resize-handle {
+    position: absolute;
+    z-index: 100; // 增加z-index确保手柄在最上层
+    background-color: transparent; // 确保默认透明
+
+    &:hover {
+      background-color: fade(@primary-color, 20%);
+    }
+
+    &.active {
+      background-color: fade(@primary-color, 40%);
+    }
+  }
+
+  // 确保手柄区域足够大，便于操作
+  .resize-handle-right,
+  .resize-handle-left {
+    width: 8px; // 增加宽度
+  }
+
+  .resize-handle-top,
+  .resize-handle-bottom {
+    height: 8px; // 增加高度
+  }
+
+  .resize-handle-topLeft,
+  .resize-handle-topRight,
+  .resize-handle-bottomLeft,
+  .resize-handle-bottomRight {
+    width: 12px; // 增加角落手柄尺寸
+    height: 12px;
+  }
+
+  // 顶部手柄
+  .resize-handle-top {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    cursor: ns-resize;
+  }
+
+  // 右侧手柄
+  .resize-handle-right {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: ew-resize;
+  }
+
+  // 底部手柄
+  .resize-handle-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    cursor: ns-resize;
+  }
+
+  // 左侧手柄
+  .resize-handle-left {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: ew-resize;
+  }
+
+  // 左上角手柄
+  .resize-handle-topLeft {
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nwse-resize;
+  }
+
+  // 右上角手柄
+  .resize-handle-topRight {
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nesw-resize;
+  }
+
+  // 左下角手柄
+  .resize-handle-bottomLeft {
+    bottom: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nesw-resize;
+  }
+
+  // 右下角手柄
+  .resize-handle-bottomRight {
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nwse-resize;
+  }
+}
+
+// VSCode风格的调整手柄样式
+.vscode-style {
+  .resize-handle {
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: fade(@primary-color, 15%);
+    }
+
+    &.active {
+      background-color: fade(@primary-color, 30%);
+    }
+  }
+
+  // 角落手柄的特殊样式
+  .resize-handle-topLeft,
+  .resize-handle-topRight,
+  .resize-handle-bottomLeft,
+  .resize-handle-bottomRight {
+    &::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: @text-color-secondary;
+      border-radius: 50%;
+    }
+  }
+
+  .resize-handle-topLeft::after {
+    top: 2px;
+    left: 2px;
+  }
+
+  .resize-handle-topRight::after {
+    top: 2px;
+    right: 2px;
+  }
+
+  .resize-handle-bottomLeft::after {
+    bottom: 2px;
+    left: 2px;
+  }
+
+  .resize-handle-bottomRight::after {
+    bottom: 2px;
+    right: 2px;
+  }
+}
+
+// 暗色主题样式调整
+:global(.ant-theme-dark) {
+  .resize-window {
+    .resize-handle {
+      &:hover {
+        background-color: fade(@primary-color, 30%);
+      }
+
+      &.active {
+        background-color: fade(@primary-color, 50%);
+      }
+    }
+  }
+}
