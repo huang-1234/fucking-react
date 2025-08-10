@@ -3,9 +3,13 @@ import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import React15Sandbox from '../sandbox/React15Sandbox';
 import APIVersionLayout from '../components/APIVersionLayout';
+// import loadable from 'loadable-components';
 
 // 页面组件懒加载
 const HomePage = lazy(() => import('../pages/HomePage'));
+
+// 画布组件
+const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
 
 // React 15 组件
 const React15Page = lazy(() => import('../pages/React15'));
@@ -42,7 +46,7 @@ const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
 const LoadingComponent = () => <div>加载中...</div>;
 
 // 路由配置
-const router = createBrowserRouter([
+const routerBrowser = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
@@ -52,6 +56,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<LoadingComponent />}>
             <HomePage />
+          </Suspense>
+        )
+      },
+      {
+        path: 'canvas',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <CanvasPanelPage />
           </Suspense>
         )
       },
@@ -237,4 +249,4 @@ const router = createBrowserRouter([
   }
 ]);
 
-export default router;
+export default routerBrowser;

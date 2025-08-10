@@ -1,7 +1,8 @@
 import { lazy } from 'react';
 import {
   HomeOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  LayoutOutlined
 } from '@ant-design/icons';
 import { reactVersionMenuItems } from './ReactVersionMenu';
 
@@ -10,6 +11,9 @@ const HomePage = lazy(() => import('../pages/HomePage'));
 
 // 组件应用展示
 const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
+
+// 画布面板
+const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
 
 export interface IMenu {
   key: string;
@@ -26,17 +30,17 @@ export const menuItems: IMenu[] = [
     icon: <HomeOutlined />,
     component: HomePage
   },
-  // {
-  //   key: '/react-versions',
-  //   label: 'React版本',
-  //   icon: <CodeOutlined />,
-  //   children: reactVersionMenuItems
-  // },
   ...reactVersionMenuItems,
   {
     key: '/components',
     label: '组件应用展示',
     icon: <AppstoreOutlined />,
     component: ComponentsApplyPage
+  },
+  {
+    key: '/canvas',
+    label: '画布面板',
+    icon: <LayoutOutlined />,
+    component: CanvasPanelPage
   }
 ];

@@ -65,27 +65,24 @@ const UseTransitionDemo: React.FC = () => {
 
   // 使用useTransition的过滤
   useEffect(() => {
-    const filterItemsWithTransition = () => {
-      startTransition(() => {
-        if (transitionFilterText) {
-          // 添加人为延迟以模拟重计算
-          const start = performance.now();
-          while (performance.now() - start < delay) {
-            // 空循环以模拟CPU密集型操作
-          }
-
-          setItems(
-            ITEMS.filter(item =>
-              item.name.toLowerCase().includes(transitionFilterText.toLowerCase())
-            ).slice(0, 100)
-          );
-        } else {
-          setItems(ITEMS.slice(0, 100));
+    // 立即响应输入，但将过滤操作标记为非紧急任务
+    startTransition(() => {
+      if (transitionFilterText) {
+        // 添加人为延迟以模拟重计算
+        const start = performance.now();
+        while (performance.now() - start < delay) {
+          // 空循环以模拟CPU密集型操作
         }
-      });
-    };
 
-    filterItemsWithTransition();
+        setItems(
+          ITEMS.filter(item =>
+            item.name.toLowerCase().includes(transitionFilterText.toLowerCase())
+          ).slice(0, 100)
+        );
+      } else {
+        setItems(ITEMS.slice(0, 100));
+      }
+    });
   }, [transitionFilterText, delay, startTransition]);
 
   // 使用useDeferredValue的过滤
@@ -114,6 +111,7 @@ const UseTransitionDemo: React.FC = () => {
   // 处理输入变化的实际函数
   const handleInputChangeImpl = (value: string) => {
     if (useTransitionFilter) {
+      // 立即更新输入值，确保输入框响应迅速
       setTransitionFilterText(value);
     } else {
       setFilterText(value);
@@ -121,10 +119,10 @@ const UseTransitionDemo: React.FC = () => {
   };
 
   // 使用useMemo和debounce创建防抖处理的输入函数
-  const debouncedInputChange = useMemo(
-    () => debounce(handleInputChangeImpl, 300),
-    [useTransitionFilter]
-  );
+  // const debouncedInputChange = useMemo(
+  //   () => debounce(handleInputChangeImpl, 3),
+  //   [useTransitionFilter]
+  // );
 
   // 处理延迟输入变化的实际函数
   const handleDeferredInputChangeImpl = (value: string) => {
@@ -133,22 +131,29 @@ const UseTransitionDemo: React.FC = () => {
 
   // 使用useMemo和debounce创建防抖处理的延迟输入函数
   const debouncedDeferredInputChange = useMemo(
-    () => debounce(handleDeferredInputChangeImpl, 300),
+    () => debounce(handleDeferredInputChangeImpl, 3),
     []
   );
 
   // 组件卸载时取消防抖函数的执行
   useEffect(() => {
     return () => {
-      debouncedInputChange.cancel();
       debouncedDeferredInputChange.cancel();
     };
-  }, [debouncedInputChange, debouncedDeferredInputChange]);
+  }, [debouncedDeferredInputChange]);
+  // useEffect(() => {
+  //   return () => {
+  //     debouncedInputChange.cancel();
+  //   };
+  // }, [debouncedInputChange]);
 
-  // 处理输入变化
+
+
+  // 处理输入变化 - 不使用防抖，确保输入框立即响应
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    debouncedInputChange(value);
+    // 直接调用，不使用防抖，确保输入框立即响应
+    handleInputChangeImpl(value);
   };
 
   // 处理延迟输入变化
@@ -201,7 +206,7 @@ const UseTransitionDemo: React.FC = () => {
             <Card
               title={
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span>过滤大数据集 ({useTransitionFilter ? 'useTransition' : '常规更新'})</span>
+                  <span>{useTransitionFilter ? '过滤大数据集 useTransition' : '过滤大数据集 常规更新'}</span>
                   {isPending && useTransitionFilter && (
                     <Tag color="processing" style={{ marginLeft: 8 }}>更新中...</Tag>
                   )}
@@ -213,7 +218,11 @@ const UseTransitionDemo: React.FC = () => {
                   placeholder="输入过滤文本..."
                   value={useTransitionFilter ? transitionFilterText : filterText}
                   onChange={handleInputChange}
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                    borderColor: isPending && useTransitionFilter ? '#1890ff' : undefined,
+                    boxShadow: isPending && useTransitionFilter ? '0 0 0 2px rgba(24,144,255,0.2)' : undefined
+                  }}
                 />
 
                 <List
@@ -232,7 +241,8 @@ const UseTransitionDemo: React.FC = () => {
                     height: 300,
                     overflow: 'auto',
                     opacity: isPending && useTransitionFilter ? 0.7 : 1,
-                    transition: 'opacity 0.2s'
+                    transition: 'opacity 0.2s',
+                    backgroundColor: isPending && useTransitionFilter ? '#f5f5f5' : 'transparent'
                   }}
                 />
               </Space>
