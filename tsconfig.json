@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "declaration": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "shared/*": ["packages/shared/*"],
+      "hooks/*": ["packages/hooks/*"],
+      "jsx-compile/*": ["packages/jsx-compile/*"],
+      "react-reconciler/*": ["packages/Reconciler/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

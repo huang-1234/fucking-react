@@ -1,0 +1,27 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "shared utilities for react",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "prepublish": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "types",
+    "shared"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "5.8.3"
+  },
+  "packageManager": "pnpm@10.13.1"
+}

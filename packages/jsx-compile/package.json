@@ -1,0 +1,43 @@
+{
+  "name": "jsx-compile",
+  "version": "1.0.0",
+  "description": "JSX语法编译器，将JSX转换为React.createElement调用",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "jsx-compile": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "prepublish": "npm run build"
+  },
+  "keywords": [
+    "jsx",
+    "react",
+    "compiler",
+    "babel",
+    "ast"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "7.22.0",
+    "@babel/traverse": "7.22.0",
+    "@babel/types": "7.22.0"
+  },
+  "devDependencies": {
+    "@types/babel__core": "7.20.5",
+    "@types/babel__traverse": "7.28.0",
+    "@types/jest": "29.5.14",
+    "@types/node": "22.13.10",
+    "jest": "29.7.0",
+    "ts-jest": "29.2.5",
+    "typescript": "5.8.3"
+  },
+  "packageManager": "pnpm@10.13.1"
+}
