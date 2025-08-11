@@ -349,6 +349,9 @@ importers:
       '@types/react-dom':
         specifier: 19.1.7
         version: 19.1.7(@types/react@19.1.9)
+      '@types/react-helmet-async':
+        specifier: ^1.0.3
+        version: 1.0.3(react@19.1.1)
       '@vitejs/plugin-react':
         specifier: 4.3.4
         version: 4.3.4(vite@6.0.0(@types/node@22.13.10)(less@4.4.0)(terser@5.43.1))
@@ -1670,6 +1673,10 @@ packages:
     resolution: {integrity: sha512-i5ZzwYpqjmrKenzkoLM2Ibzt6mAsM7pxB6BCIouEVVmgiqaMj1TjaK7hnA36hbW5aZv20kx7Lw6hWzPWg0Rurw==}
     peerDependencies:
       '@types/react': ^19.0.0
+
+  '@types/react-helmet-async@1.0.3':
+    resolution: {integrity: sha512-DqbSuZPSHiH1l3XI/y8LbhrAGNh+Bpc9QY4MsYRM1yD4+qhax8bN4DInUMpv/tNyIdjsa+1V8XXmbRx8W5dB0w==}
+    deprecated: This is a stub types definition. react-helmet-async provides its own type definitions, so you do not need this installed.
 
   '@types/react-syntax-highlighter@15.5.13':
     resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
@@ -6672,6 +6679,12 @@ snapshots:
   '@types/react-dom@19.1.7(@types/react@19.1.9)':
     dependencies:
       '@types/react': 19.1.9
+
+  '@types/react-helmet-async@1.0.3(react@19.1.1)':
+    dependencies:
+      react-helmet-async: 2.0.5(react@19.1.1)
+    transitivePeerDependencies:
+      - react
 
   '@types/react-syntax-highlighter@15.5.13':
     dependencies:
