@@ -25,15 +25,45 @@ export function createServer() {
   // 静态资源服务
   app.use(serve(path.resolve(process.cwd(), 'dist/client'), {
     maxage: config.static.maxAge,
-    gzip: true,
-    br: true
+    gzip: true
   }));
 
   app.use(serve(path.resolve(process.cwd(), 'public'), {
     maxage: config.static.maxAge,
-    gzip: true,
-    br: true
+    gzip: true
   }));
+
+  // API路由
+  app.use(async (ctx, next) => {
+    if (ctx.path === '/api/home') {
+      ctx.type = 'application/json';
+      ctx.body = {
+        title: 'React 19 SSR 演示',
+        subtitle: '使用React 19、Koa和TypeScript实现的高性能SSR应用',
+        description: 'React 19 SSR演示首页，展示最新的React服务端渲染功能',
+        features: [
+          {
+            title: 'React 19 流式SSR',
+            description: '利用React 19的最新流式渲染功能，实现更快的首屏加载和更好的用户体验。'
+          },
+          {
+            title: '高性能Koa服务器',
+            description: '基于Koa构建的高性能服务器，支持集群模式和多级缓存策略。'
+          },
+          {
+            title: 'TypeScript支持',
+            description: '全栈TypeScript支持，提供类型安全和更好的开发体验。'
+          },
+          {
+            title: '多级缓存',
+            description: '实现页面级、组件级和数据级缓存，显著提升性能。'
+          }
+        ]
+      };
+      return;
+    }
+    await next();
+  });
 
   // 缓存中间件
   app.use(cacheMiddleware());
