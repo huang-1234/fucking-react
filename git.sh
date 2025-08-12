@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="init timer tick"
+ciMessage="init graph"
 git add .
 
 git ci -m "$ciAction $ciMessage"
