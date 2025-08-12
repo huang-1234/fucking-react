@@ -5,23 +5,23 @@
 
 import { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
-import { PluginObj } from '@babel/core';
+import { type PluginObj, type PluginPass } from '@babel/core';
 
 interface BabelPluginOptions {
   [key: string]: any;
 }
 
-export default function transformJSX(): PluginObj {
+export default function transformJSX(): PluginObj<PluginPass> {
   return {
     name: "transform-jsx",
     visitor: {
-      JSXElement(path: NodePath<t.JSXElement>) {
+      JSXElement(path) {
         const openingElement = path.node.openingElement;
         const tagName = (openingElement.name as t.JSXIdentifier).name;
         const attributes = openingElement.attributes;
 
         // 转换JSX属性为对象属性
-        const props = attributes.map((attr: t.JSXAttribute) => {
+        const props = attributes.map(attr => {
           if (t.isJSXAttribute(attr)) {
             const key = t.identifier(attr.name.name as string);
             let value: t.Expression;
@@ -43,7 +43,7 @@ export default function transformJSX(): PluginObj {
         }).filter(Boolean) as t.ObjectProperty[];
 
         // 处理子元素
-        const children = path.node.children.map((child: t.JSXElement) => {
+        const children = path.node.children.map(child => {
           if (t.isJSXText(child)) {
             const text = child.value.trim();
             return text ? t.stringLiteral(text) : null;
@@ -58,8 +58,8 @@ export default function transformJSX(): PluginObj {
                 t.stringLiteral((child.openingElement.name as t.JSXIdentifier).name),
                 t.objectExpression([]),
                 ...child.children
-                  .filter((c: t.JSXElement) => t.isJSXText(c) ? c.value.trim() !== '' : true)
-                  .map((c: t.JSXElement) => {
+                  .filter(c => t.isJSXText(c) ? c.value.trim() !== '' : true)
+                  .map(c => {
                     if (t.isJSXText(c)) {
                       return t.stringLiteral(c.value.trim());
                     } else if (t.isJSXExpressionContainer(c)) {
@@ -83,7 +83,7 @@ export default function transformJSX(): PluginObj {
           ]
         );
 
-        path.replaceWith(createElement);
+        path.replaceWith(createElement as any);
       }
     }
   };

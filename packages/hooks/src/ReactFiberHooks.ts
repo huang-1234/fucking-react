@@ -146,7 +146,7 @@ function updateWorkInProgressHook(): Hook {
  * @returns 状态值和更新函数
  */
 function useState<State>(initialState: State | (() => State)): [State, Dispatch<State>] {
-  return useReducer(basicStateReducer, initialState);
+  return useReducer<State, State>(basicStateReducer, initialState as State);
 }
 
 /**
@@ -168,8 +168,8 @@ function basicStateReducer<State>(state: State, action: State | ((prevState: Sta
  */
 function useReducer<State, Action>(
   reducer: (state: State, action: Action) => State,
-  initialArg: any,
-  init?: (arg: any) => State
+  initialArg: State,
+  init?: (arg: State) => State
 ): [State, Dispatch<Action>] {
   const hook = updateWorkInProgressHook();
 
@@ -184,7 +184,7 @@ function useReducer<State, Action>(
     };
 
     hook.queue.dispatch = dispatch;
-    return [hook.memoizedState, dispatch];
+    return [hook.memoizedState, dispatch as Dispatch<Action>];
   } else {
     // 更新阶段处理队列中的更新
     if (hook.queue.pending !== null) {

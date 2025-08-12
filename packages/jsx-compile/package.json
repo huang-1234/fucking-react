@@ -12,6 +12,7 @@
     "jsx-compile": "./dist/src/cli.js"
   },
   "scripts": {
+    "dev": "tsc -w",
     "test": "jest",
     "build": "tsc",
     "prepublish": "npm run build"
@@ -31,6 +32,7 @@
     "@babel/types": "7.22.0"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-jsx": "^7.27.1",
     "@types/babel__core": "7.20.5",
     "@types/babel__traverse": "7.28.0",
     "@types/jest": "29.5.14",

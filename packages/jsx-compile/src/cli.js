@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { parseJSX } = require('./jsxParser');
+const { parseJSXFile } = require('./jsxParser');
 
 // 解析命令行参数
 const args = process.argv.slice(2);
@@ -19,12 +19,21 @@ if (args.length < 1) {
 const inputFile = args[0];
 const outputFile = args[1] || inputFile.replace(/\.jsx$/, '.js');
 
-// 读取输入文件
-try {
-  const jsxContent = fs.readFileSync(inputFile, 'utf8');
+// 检查输入文件是否存在
+if (!fs.existsSync(inputFile)) {
+  console.error(`错误: 文件 ${inputFile} 不存在`);
+  process.exit(1);
+}
 
-  // 解析JSX
-  const jsCode = parseJSX(jsxContent);
+// 确保输出目录存在
+const outputDir = path.dirname(outputFile);
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+
+try {
+  // 解析JSX文件
+  const jsCode = parseJSXFile(inputFile);
 
   // 写入输出文件
   fs.writeFileSync(outputFile, jsCode, 'utf8');
