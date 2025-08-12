@@ -16,7 +16,7 @@ class Graph {
       /** @type {Map<T, T[]>} */
       this.adjacencyList = new Map();
     }
-  
+
     /**
      * 添加顶点
      * @param {T} vertex - 要添加的顶点
@@ -26,7 +26,7 @@ class Graph {
         this.adjacencyList.set(vertex, []);
       }
     }
-  
+
     /**
      * 添加无向边
      * @param {T} vertex1 - 第一个顶点
@@ -38,7 +38,7 @@ class Graph {
       this.adjacencyList.get(vertex1).push(vertex2);
       this.adjacencyList.get(vertex2).push(vertex1);
     }
-  
+
     /**
      * 添加有向边
      * @param {T} source - 源顶点
@@ -49,7 +49,7 @@ class Graph {
       this.addVertex(destination);
       this.adjacencyList.get(source).push(destination);
     }
-  
+
     /**
      * 获取所有顶点
      * @returns {T[]} 所有顶点的数组
@@ -57,7 +57,7 @@ class Graph {
     getVertices() {
       return Array.from(this.adjacencyList.keys());
     }
-  
+
     /**
      * 获取顶点的邻接点
      * @param {T} vertex - 要获取邻接点的顶点
@@ -66,7 +66,7 @@ class Graph {
     getNeighbors(vertex) {
       return this.adjacencyList.get(vertex) || [];
     }
-  
+
     /**
      * 打印图结构
      */
@@ -76,17 +76,17 @@ class Graph {
       }
     }
   }
-  
+
   /**
    * 创建一个示例图用于测试
    * @returns {Graph<number>} 示例图
    */
   function createExampleGraph() {
     const graph = new Graph();
-  
+
     // 添加顶点
     [0, 1, 2, 3, 4, 5].forEach(v => graph.addVertex(v));
-  
+
     // 添加边
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -96,20 +96,20 @@ class Graph {
     graph.addEdge(3, 4);
     graph.addEdge(3, 5);
     graph.addEdge(4, 5);
-  
+
     return graph;
   }
-  
+
   /**
    * 创建一个有向图示例
    * @returns {Graph<number>} 有向图示例
    */
   function createExampleDirectedGraph() {
     const graph = new Graph();
-  
+
     // 添加顶点
     [0, 1, 2, 3, 4, 5].forEach(v => graph.addVertex(v));
-  
+
     // 添加有向边
     graph.addDirectedEdge(0, 1);
     graph.addDirectedEdge(0, 2);
@@ -119,19 +119,18 @@ class Graph {
     graph.addDirectedEdge(3, 4);
     graph.addDirectedEdge(3, 5);
     graph.addDirectedEdge(4, 5);
-  
+
     return graph;
   }
-  
+
   module.exports = {
     Graph,
     createExampleGraph,
     createExampleDirectedGraph
   };
-  
-  
+
+
   (function test() {
     const graph = createExampleGraph();
     graph.print();
   })()
-  

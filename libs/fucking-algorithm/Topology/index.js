@@ -22,7 +22,7 @@ class Graph {
       /** @type {Map<T, T[]>} */
       this.adjacencyList = new Map();
     }
-  
+
     /**
      * 添加顶点
      * @param {T} vertex - 要添加的顶点
@@ -32,7 +32,7 @@ class Graph {
         this.adjacencyList.set(vertex, []);
       }
     }
-  
+
     /**
      * 添加有向边
      * @param {T} source - 源顶点
@@ -43,7 +43,7 @@ class Graph {
       this.addVertex(destination);
       this.adjacencyList.get(source).push(destination);
     }
-  
+
     /**
      * 获取所有顶点
      * @returns {T[]} 所有顶点的数组
@@ -51,7 +51,7 @@ class Graph {
     getVertices() {
       return Array.from(this.adjacencyList.keys());
     }
-  
+
     /**
      * 获取顶点的邻接点
      * @param {T} vertex - 要获取邻接点的顶点
@@ -60,7 +60,7 @@ class Graph {
     getNeighbors(vertex) {
       return this.adjacencyList.get(vertex) || [];
     }
-  
+
     /**
      * 打印图结构
      */
@@ -70,7 +70,7 @@ class Graph {
       }
     }
 }
-  
+
   /**
    * Kahn算法实现拓扑排序
    * 时间复杂度: O(V + E)，其中V是顶点数，E是边数
@@ -94,41 +94,41 @@ class Graph {
     const queue = [];
     /** @type {Map<T, number>} */
     const inDegree = new Map();
-  
+
     // 初始化所有顶点的入度为0
     graph.getVertices().forEach(v => inDegree.set(v, 0));
-  
+
     // 计算每个顶点的入度
     graph.getVertices().forEach(v => {
       graph.getNeighbors(v).forEach(neighbor => {
         inDegree.set(neighbor, (inDegree.get(neighbor) || 0) + 1);
       });
     });
-  
+
     // 将所有入度为0的顶点加入队列
     inDegree.forEach((degree, vertex) => {
       if (degree === 0) queue.push(vertex);
     });
-  
+
     // BFS
     while (queue.length > 0) {
       const current = queue.shift();
       result.push(current);
-  
+
       graph.getNeighbors(current).forEach(neighbor => {
         const newDegree = inDegree.get(neighbor) - 1;
         inDegree.set(neighbor, newDegree);
-  
+
         if (newDegree === 0) {
           queue.push(neighbor);
         }
       });
     }
-  
+
     // 检查是否存在环
     return result.length === graph.getVertices().length ? result : [];
   }
-  
+
   /**
    * DFS算法实现拓扑排序
    * 时间复杂度: O(V + E)，其中V是顶点数，E是边数
@@ -149,10 +149,10 @@ class Graph {
     /** @type {Map<T, number>} */
     const visited = new Map(); // 0: 未访问, 1: 访问中, 2: 已访问
     let hasCycle = false;
-  
+
     // 初始化所有顶点为未访问
     graph.getVertices().forEach(v => visited.set(v, 0));
-  
+
     /**
      * DFS辅助函数
      * @param {T} vertex - 当前访问的顶点
@@ -160,14 +160,14 @@ class Graph {
     function dfs(vertex) {
       // 如果已经检测到环，直接返回
       if (hasCycle) return;
-  
+
       // 标记为访问中
       visited.set(vertex, 1);
-  
+
       // 访问所有邻接点
       for (const neighbor of graph.getNeighbors(vertex)) {
         const status = visited.get(neighbor);
-  
+
         if (status === 0) { // 未访问
           dfs(neighbor);
         } else if (status === 1) { // 访问中，检测到环
@@ -176,30 +176,30 @@ class Graph {
         }
         // 已访问的顶点不需要再次访问
       }
-  
+
       // 标记为已访问
       visited.set(vertex, 2);
       // 将顶点加入结果（前插法，最终结果需要反转）
       result.unshift(vertex);
     }
-  
+
     // 对每个未访问的顶点进行DFS
     for (const vertex of graph.getVertices()) {
       if (visited.get(vertex) === 0) {
         dfs(vertex);
       }
     }
-  
+
     return hasCycle ? [] : result;
   }
-  
+
   /**
    * 创建并返回一个示例图
    * @returns {Graph<string>} 示例图
    */
   function createExampleGraph() {
     const graph = new Graph();
-  
+
     // 添加边：课程依赖关系示例
     // 例如: ["数据结构", "算法"] 表示"算法"依赖于"数据结构"
     const dependencies = [
@@ -210,48 +210,48 @@ class Graph {
       ["算法", "高级算法"],
       ["数据库", "系统设计"]
     ];
-  
+
     dependencies.forEach(([prereq, course]) => {
       graph.addVertex(prereq);
       graph.addVertex(course);
       graph.addEdge(prereq, course);
     });
-  
+
     return graph;
   }
-  
+
   /**
    * 测试函数
    */
   function testTopologicalSort() {
     const graph = createExampleGraph();
-  
+
     console.log("图结构:");
     graph.print();
-  
+
     console.log("\nKahn算法拓扑排序结果:");
     const kahnResult = topologicalSortKahn(graph);
     console.log(kahnResult.join(" -> "));
-  
+
     console.log("\nDFS算法拓扑排序结果:");
     const dfsResult = topologicalSortDFS(graph);
     console.log(dfsResult.join(" -> "));
-  
+
     // 创建一个有环的图进行测试
     const cyclicGraph = new Graph();
     cyclicGraph.addEdge("A", "B");
     cyclicGraph.addEdge("B", "C");
     cyclicGraph.addEdge("C", "A"); // 形成环
-  
+
     console.log("\n有环图的Kahn算法结果:");
     const cyclicKahnResult = topologicalSortKahn(cyclicGraph);
     console.log(cyclicKahnResult.length === 0 ? "检测到环，无法进行拓扑排序" : cyclicKahnResult.join(" -> "));
-  
+
     console.log("\n有环图的DFS算法结果:");
     const cyclicDFSResult = topologicalSortDFS(cyclicGraph);
     console.log(cyclicDFSResult.length === 0 ? "检测到环，无法进行拓扑排序" : cyclicDFSResult.join(" -> "));
   }
-  
+
   // 导出所有需要的函数和类
   module.exports = {
     Graph,
@@ -260,9 +260,8 @@ class Graph {
     createExampleGraph,
     testTopologicalSort
   };
-  
+
   // 如果直接运行此文件，则执行测试
   if (require.main === module) {
     testTopologicalSort();
   }
-  
