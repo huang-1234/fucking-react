@@ -1,6 +1,6 @@
 /**
 import { expect } from 'vitest';
- * @desc Retry utility for ECMAScript Promises
+ * @desc Retry utility for ECMAScript Promises、这个会产生线性个闭包、对内存不友好
  * @module ECMAScript/PromiseTask/retry
  * Retries a function call with a specified number of retries and delay between attempts.
  * @param {Function} fn - The function to retry.
@@ -9,11 +9,11 @@ import { expect } from 'vitest';
  * @returns A promise that resolves to the result of the function or rejects after all retries fail.
  */
 function retry(fn, retries = 3, delay = 1000) {
-  return fn().catch(err => {
+  return fn().catch((err) => {
     if (retries <= 0) {
       throw err;
     }
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(retry(fn, retries - 1, delay)), delay);
     });
   });
@@ -31,7 +31,7 @@ function retry(fn, retries = 3, delay = 1000) {
 function retrySyncRecursive(fn, retries = 3, delay = 1000) {
   return new Promise((resolve, reject) => {
     const attempt = (remaining) => {
-      fn().then(resolve, error => {
+      fn().then(resolve, (error) => {
         if (remaining <= 0) {
           reject(error);
         } else {
@@ -47,10 +47,10 @@ function retrySyncRecursive(fn, retries = 3, delay = 1000) {
 /**
  * @desc 版本 2: 链式调用实现; 通过Promise链的方式实现重试. 这种方式不会出现栈溢出的问题, 但是闭包会按照线性增长
  * @module ECMAScript/PromiseTask/retryChain
- * @param {Function} fn - The function to retry.
+ * @param {() => Promise<T>} fn - The function to retry.
  * @param {number} retries - The number of retry attempts.
  * @param {number} delay - The delay between retries in milliseconds.
- * @returns A promise that resolves to the result of the function or rejects after all retries fail.
+ * @returns {Promise<T>} A promise that resolves to the result of the function or rejects after all retries fail.
  */
 function retryChain(fn, retries = 3, delay = 1000) {
   function handleError(error) {
@@ -68,11 +68,7 @@ function retryChain(fn, retries = 3, delay = 1000) {
   return promise;
 }
 
-export {
-  retry,
-  retrySyncRecursive,
-  retryChain
-}
+export { retry, retrySyncRecursive, retryChain };
 /**
  * @desc 最优版本3: 通过数组reduce实现重试
  * @param {Function} fn - The function to retry.
@@ -93,7 +89,6 @@ function retryOptimal(fn, retries = 3) {
   );
 }
 
-
 /**
  * @example
  * @desc 测试函数 - 前两次失败，第三次成功
@@ -113,23 +108,19 @@ function flakyAPI() {
 function testRetry(k) {
   switch (k) {
     case 1:
-      console.log('Case 1 executed');
+      console.log("Case 1 executed");
 
       // 测试递归版本
-      retrySyncRecursive(flakyAPI, 3)
-        .then(console.log)
-        .catch(console.error);
+      retrySyncRecursive(flakyAPI, 3).then(console.log).catch(console.error);
       // Output:
       // Retry 1/3
       // Retry 2/3
       // Succeeded at attempt 3
       break;
     case 2:
-      console.log('Case 2 executed');
+      console.log("Case 2 executed");
       // 测试链式版本
-      retryChain(flakyAPI, 3)
-        .then(console.log)
-        .catch(console.error);
+      retryChain(flakyAPI, 3).then(console.log).catch(console.error);
       // 相同输出，但内存结构不同
       // Output:
       // Retry 1/3
@@ -137,21 +128,17 @@ function testRetry(k) {
       // Succeeded at attempt 3
       break;
     case 3:
-      console.log('Case 3 executed');
+      console.log("Case 3 executed");
       // 测试优化版本
-      retryOptimal(flakyAPI, 3)
-        .then(console.log)
-        .catch(console.error);
+      retryOptimal(flakyAPI, 3).then(console.log).catch(console.error);
     // Output:
     // Retry 1/3
     // Retry 2/3
     // Succeeded at attempt 3
     default:
-      console.log('Default case executed');
+      console.log("Default case executed");
       // 测试优化版本
-      retryOptimal(flakyAPI, 3)
-        .then(console.log)
-        .catch(console.error);
+      retryOptimal(flakyAPI, 3).then(console.log).catch(console.error);
       break;
   }
 }
