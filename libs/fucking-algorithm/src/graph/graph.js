@@ -193,6 +193,16 @@ class Graph {
     });
     return result.join("\n");
   }
+  /**
+   * 将图转换为JSON对象
+   * @returns {Object} - 图的JSON对象
+   */
+  toJson() {
+    return {
+      adjacencyList: Array.from(this.adjacencyList.entries()),
+      metadata: Array.from(this.metadata.entries())
+    };
+  }
 }
 
 /**

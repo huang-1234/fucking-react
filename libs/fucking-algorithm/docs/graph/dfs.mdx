@@ -1,0 +1,38 @@
+# 深度优先搜索(DFS)算法
+
+## 算法原理
+
+深度优先搜索(DFS)是一种用于遍历或搜索树或图的算法。它从根节点开始，沿着一条路径尽可能深入，直到无法继续为止，然后回溯到前一个节点，继续探索其他路径。
+
+## 深度优先搜索(DFS)可视化展示
+
+### 示例1
+
+```typescript
+import { Graph } from "./graph";
+
+const graph = new Graph();
+graph.addEdge(1, 2);
+graph.addEdge(1, 3);
+graph.addEdge(2, 4);
+graph.addEdge(3, 4);
+graph.addEdge(4, 5);
+
+console.log(graph.dfs(1)); // [1, 2, 4, 3, 5]
+
+```
+
+### 示例2
+
+```typescript
+
+import { Graph } from "./graph";
+
+const graph = new Graph();
+graph.addEdge(1, 2);
+graph.addEdge(1, 3);
+graph.addEdge(2, 4);
+graph.addEdge(3, 4);
+graph.addEdge(4, 5);
+console.log(graph.dfs(1)); // [1, 2, 4, 5, 3]
+```
