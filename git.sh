@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="init TaskScheduling"
+ciMessage="init TaskScheduler"
 git add .
 
 git ci -m "$ciAction $ciMessage"
