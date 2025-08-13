@@ -48,6 +48,8 @@
    - 成功监听到嵌套属性变化：`data.info.name = 'Vue2.7'` → "Info.name updated: Vue2.7"
 
 2. **Proxy**：
+   - 基本属性监听：`state.count = 1` 触发更新 → "Count: 1"
+   - 嵌套属性自动监听：`state.info.name = 'Vue3.2'` 触发更新 → "Info name: Vue3.2"
    - 自动处理嵌套对象代理，API更简洁
    - 无需特殊处理即可监听属性增删操作
 
