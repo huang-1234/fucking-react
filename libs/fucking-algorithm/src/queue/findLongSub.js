@@ -43,40 +43,41 @@ function findLongSubWithQueue(nums) {
  */
 function findLongSubWithSet(nums) {
   const set = new Set(nums);
+  console.log('findLongSubWithSet set', set)
   const len = nums.length;
   let res = 0;
   for (let i = 0; i < len; i++) {
     const current = nums[i];
     console.log('current', current)
     // 如果当前元素-1存在，则跳过；我们只做加1的遍历
-    if (set.has(current - 1)) {
-      console.log('current：跳过', current)
-      continue;
-    }
+    if (!set.has(current - 1)) {
+      console.log('current：开始遍历', current)
 
-    console.log('current：开始遍历', current)
-    // 如果当前元素-1不存在，则以当前元素为起点，向后遍历，直到不连续为止
-    /**
-     * 这里使用while循环，而不是for循环，是因为while循环可以跳过一些不必要的遍历
-     * 比如：[0, 3, 7, 2, 5, 8, 4, 6, 0, 1]
-     * 当遍历到7时，7-1=6，6在set中存在，所以跳过7，直接遍历8
-     * 当遍历到8时，8-1=7，7在set中不存在，所以以8为起点，向后遍历，直到不连续为止
-     */
-    let currentNum = current;
-    let currentLength = 1;
-    // 向后遍历，直到不连续为止
-    while (set.has(currentNum + 1)) {
-
-      currentNum++;
-      currentLength++;
+      // 如果当前元素-1不存在，则以当前元素为起点，向后遍历，直到不连续为止
+      /**
+       * 这里使用while循环，而不是for循环，是因为while循环可以跳过一些不必要的遍历
+       * 比如：[0, 3, 7, 2, 5, 8, 4, 6, 0, 1]
+       * 当遍历到7时，7-1=6，6在set中存在，所以跳过7，直接遍历8
+       * 当遍历到8时，8-1=7，7在set中不存在，所以以8为起点，向后遍历，直到不连续为止
+       */
+      let currentNum = current;
+      let currentLength = 1;
+      // 向后遍历，直到不连续为止
+      while (set.has(currentNum + 1)) {
+        currentNum++;
+        currentLength++;
+      }
+      res = Math.max(res, currentLength);
     }
-    res = Math.max(res, currentLength);
+    console.log('current：跳过', current)
   }
   return res;
 }
 
 
-const nums = [0, 3, 7, 2, 5, 8, 44, 6, 0, 1]
+// const nums = [0, 3, 7, 2, 5, 8, 44, 6, 0, 1]
+const nums = [0, 0, 0, 0, 10,9, 8, 7, 6,5,4,3,2,1,0,0,0,0]
+
 const result = findLongSubWithSet(nums)
 
 console.log('result', result)
