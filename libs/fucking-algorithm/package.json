@@ -1,0 +1,25 @@
+{
+  "name": "fucking-algorithm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "rspress dev",
+    "build": "rspress build",
+    "preview": "rspress preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1",
+  "devDependencies": {
+    "vitest": "2.1.5",
+    "rspress": "^1.45.1"
+  },
+  "dependencies": {
+    "@antv/g6": "^5.0.49",
+    "react": "19.1.1",
+    "typescript": "5.8.3"
+  }
+}

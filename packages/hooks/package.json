@@ -1,0 +1,37 @@
+{
+  "name": "hooks",
+  "version": "1.0.0",
+  "description": "React Hooks链表实现与状态管理系统",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "prepublish": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "fiber",
+    "state"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "29.5.14",
+    "@types/node": "22.13.10",
+    "@types/react": "18.3.1",
+    "jest": "29.7.0",
+    "ts-jest": "29.2.5",
+    "typescript": "5.8.3"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "packageManager": "pnpm@10.13.1"
+}

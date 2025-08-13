@@ -1,0 +1,32 @@
+.heap-page {
+  padding: 20px;
+}
+
+.visualization-card {
+  min-height: 550px;
+}
+
+.control-card {
+  margin-bottom: 16px;
+}
+
+.control-group {
+  margin-bottom: 16px;
+}
+
+.control-group h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #333;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .heap-page {
+    padding: 10px;
+  }
+
+  .visualization-card {
+    min-height: 400px;
+  }
+}
