@@ -5,6 +5,7 @@ import mdx from "@mdx-js/rollup";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { createHtmlPlugin } from 'vite-plugin-html'
+import markdownPlugin from './src/config/plugins/vite-markdown-plugin'
 
 // 将 https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js 加载script中去
 
@@ -16,6 +17,7 @@ function getInjectScript() {
 export default defineConfig({
   plugins: [
     react(),
+    markdownPlugin(), // 添加 Markdown 转 HTML 插件
     //  将 https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js 加载html标签中中去
     createHtmlPlugin({
       minify: true,
