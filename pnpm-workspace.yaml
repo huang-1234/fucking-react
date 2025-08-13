@@ -1,6 +1,4 @@
 packages:
-  - 'vue-app/*'
-  - 'react-app/*'
   - 'packages/*'
   - 'libs/*'
   - 'apps/*'
