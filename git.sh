@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="init markdown-loader"
+ciMessage="ac readme"
 git add .
 
 git ci -m "$ciAction $ciMessage"

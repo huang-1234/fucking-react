@@ -12,114 +12,25 @@
 
 ## 项目结构
 ```
-react-app/
-  vite-react-latest/
-    src/
-      components/          # 通用组件
-      layouts/             # 布局组件
-      pages/               # 页面组件
-        React15/           # React 15 示例
-        React16/           # React 16 示例
-        React17/           # React 17 示例
-        React18/           # React 18 示例
-        React19/           # React 19 示例
-      router/              # 路由配置
-      sandbox/             # 沙盒环境
-      styles/              # 全局样式
-```
-
-## 核心功能
-1. **多版本支持**: 提供 React 15 到 19 的 API 示例和特性对比。
-2. **沙盒环境**: 使用 `<iframe>` 隔离不同版本的 React 代码。
-3. **代码高亮**: 支持语法高亮和 Markdown 渲染。
-4. **响应式设计**: 适配移动端和桌面端。
-
----
-
-# Vue 项目 (`@vite-vue-ts/`)
-
-## 技术栈
-- **框架**: Vue 3 (Composition API)
-- **构建工具**: Vite
-- **语言**: TypeScript
-- **UI 库**: Ant Design Vue 4
-- **路由**: Vue Router
-- **状态管理**: Pinia
-- **代码编辑器**: CodeMirror (简化版)
-
-## 项目结构
-```
-vue-app/
-  vite-vue-ts/
-    src/
-      components/          # 通用组件
-      layouts/             # 布局组件
-      pages/               # 页面组件
-        vue3/              # Vue 3 示例
-          CompositionAPI/  # Composition API 示例
-          LifecycleHooks/  # 生命周期钩子示例
-          Performance/     # 性能优化示例
-          ReactiveSystem/  # 响应式系统示例
-      router/              # 路由配置
-      stores/              # 状态管理
-      styles/              # 全局样式
-```
-
-## 核心功能
-1. **Vue 3 特性展示**: 包括 Composition API、响应式系统、性能优化等。
-2. **代码编辑器**: 提供交互式代码编辑和预览功能。
-3. **主题切换**: 支持亮色和暗色主题。
-4. **静态数据分离**: 逻辑和视图分离，减少视图层代码量。
-=======
-# Fucking-React 项目文档
-
-本项目包含两个主要部分：React学习平台和Vue学习平台，分别展示了React和Vue的核心特性、版本差异和最佳实践。
-
-## 项目结构
-
-```
 fucking-react/
-├── react-app/
-│   └── vite-react-latest/  # React学习平台
-└── vue-app/
-    └── vite-vue-ts/        # Vue学习平台
+├── apps/
+│   ├── react-tutorial/  # React学习平台
+│   └── vue-tutorial/    # Vue学习平台
 ```
 
-## React学习平台 (vite-react-latest)
+## React学习平台 (react-tutorial)
 
 ### 技术栈
-
-- **框架**: React 18+
+- **框架**: React 19
 - **构建工具**: Vite
 - **语言**: TypeScript
+- **UI 库**: Ant Design
 - **路由**: React Router
-- **样式**: CSS-in-JS
-
-### 核心功能
-
-1. **多版本API展示**
-   - React 15 特性展示 (PropTypes, Fragments)
-   - React 16 特性展示 (Error Boundaries, Hooks)
-   - React 17 特性展示 (Event Delegation, New JSX Transform)
-   - React 18 特性展示 (Suspense SSR, useTransition)
-   - React 19 特性展示 (React Compiler, useFormState)
-
-2. **交互式代码示例**
-   - 提供可运行的代码示例
-   - 实时展示API使用效果
-
-3. **版本对比**
-   - 不同React版本API的差异对比
-   - 升级迁移指南
-
-4. **最佳实践展示**
-   - 组件设计模式
-   - 性能优化技巧
+- **状态管理**: React Hooks
 
 ### 目录结构
-
 ```
-vite-react-latest/
+react-tutorial/
 ├── src/
 │   ├── components/         # 通用组件
 │   ├── hooks/              # 自定义Hooks
@@ -135,43 +46,19 @@ vite-react-latest/
 │   └── styles/             # 全局样式
 ```
 
-## Vue学习平台 (vite-vue-ts)
+## Vue学习平台 (vue-tutorial)
 
 ### 技术栈
-
 - **框架**: Vue 3
 - **构建工具**: Vite
 - **语言**: TypeScript
+- **UI 库**: Ant Design Vue
 - **路由**: Vue Router
 - **状态管理**: Pinia
 
-### 核心功能
-
-1. **Vue3核心特性展示**
-   - Composition API
-   - 响应式系统
-   - 生命周期钩子
-   - 性能优化
-
-2. **交互式代码编辑器**
-   - 在线编辑和运行Vue代码
-   - 实时预览和控制台输出
-
-3. **Vue2与Vue3 API对比**
-   - Options API vs Composition API
-   - 响应式系统对比
-   - 生命周期对比
-   - 逻辑复用方式对比
-
-4. **最佳实践指南**
-   - 组件设计模式
-   - 性能优化技巧
-   - TypeScript集成
-
 ### 目录结构
-
 ```
-vite-vue-ts/
+vue-tutorial/
 ├── src/
 │   ├── components/         # 通用组件
 │   ├── layouts/            # 布局组件
@@ -183,48 +70,104 @@ vite-vue-ts/
 │   └── assets/             # 静态资源
 ```
 
+## 核心功能
+1. **多版本支持**: 提供 React 15 到 19 的 API 示例和特性对比。
+2. **沙盒环境**: 使用 `<iframe>` 隔离不同版本的 React 代码。
+3. **代码高亮**: 支持语法高亮和 Markdown 渲染。
+4. **响应式设计**: 适配移动端和桌面端。
+
+---
+
+# Monorepo 包介绍
+
+## @libs
+
+### 概述
+`@libs` 是一个包含多个独立库的 monorepo 包，主要用于提供 ECMAScript、Node.js 和算法相关的工具和示例代码。
+
+### 子包
+1. **ECMAScript**
+   - 提供 ECMAScript 特性的示例和工具函数。
+   - 包括 Promise 链式调用、任务调度等。
+
+2. **Nodejs**
+   - 包含 Node.js 核心特性的示例代码，如事件循环、定时器等。
+   - 提供测试用例和性能分析工具。
+
+3. **fucking-algorithm**
+   - 算法学习和实践的工具包。
+   - 包括数据结构、图算法、树算法等。
+
+### 使用场景
+- 学习 ECMAScript 和 Node.js 的核心特性。
+- 快速查找和复用算法实现。
+
+---
+
+## @apps
+
+### 概述
+`@apps` 是一个包含 React 和 Vue 学习平台的 monorepo 包，用于展示不同框架的特性和最佳实践。
+
+### 子包
+1. **react-tutorial**
+   - 提供 React 15 到 19 的 API 示例和特性对比。
+   - 包含沙盒环境和交互式代码示例。
+
+2. **vue-tutorial**
+   - 展示 Vue 3 的核心特性，如 Composition API 和响应式系统。
+   - 提供代码编辑器和实时预览功能。
+
+### 使用场景
+- 学习 React 和 Vue 的核心特性。
+- 快速查找和复用框架的最佳实践。
+
+---
+
+## @servers
+
+### 概述
+`@servers` 是一个包含服务器端渲染 (SSR) 和开发工具的 monorepo 包。
+
+### 子包
+1. **ssr**
+   - 提供基于 React 的 SSR 实现。
+   - 包含集群配置、中间件和测试工具。
+
+### 使用场景
+- 快速搭建 SSR 应用。
+- 学习和测试 SSR 相关技术。
+
+---
+
 ## 安装与运行
 
-### React学习平台
-
+### @libs
 ```bash
-cd react-app/vite-react-latest
+cd libs/ECMAScript/PromiseTask
+npm install
+npm run test
+```
+
+### @apps
+```bash
+cd apps/react-tutorial
 npm install
 npm run dev
 ```
 
-### Vue学习平台
-
+### @servers
 ```bash
-cd vue-app/vite-vue-ts
-npm install vue-router@4 pinia@2
+cd servers/ssr
+npm install
 npm run dev
 ```
 
-## 学习路径建议
-
-1. **React初学者**:
-   - 从React16的Hooks开始学习
-   - 理解函数式组件和类组件的区别
-   - 掌握核心Hook (useState, useEffect, useContext)
-
-2. **Vue初学者**:
-   - 从Composition API开始
-   - 理解响应式系统的工作原理
-   - 学习组件通信和生命周期
-
-3. **进阶学习**:
-   - React: 深入了解Concurrent Mode和Suspense
-   - Vue: 探索自定义组合函数和性能优化
-
 ## 贡献指南
-
-欢迎提交Pull Request或Issue来完善本项目，特别是:
-
-1. 添加新的React/Vue版本特性展示
-2. 改进代码示例和文档
-3. 修复bug和改进用户体验
+欢迎提交 Pull Request 或 Issue 来完善本项目，特别是：
+1. 添加新的特性示例。
+2. 改进文档和代码示例。
+3. 修复 bug 和改进性能。
 
 ## 许可证
-
 MIT
