@@ -1,4 +1,10 @@
 
+/**
+ * 给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+ *
+ * @param {number[]} nums 未排序的整数数组
+ * @returns 最长连续序列的长度
+ */
 function findLongSub(nums) {
   const numsLocal = nums.sort();
   const len = nums.length;
@@ -18,6 +24,9 @@ function findLongSub(nums) {
   }
   return res;
 }
+/**
+ * 对于从外面更新和从内侧更新，需要考虑清楚，这两种有哪些区别、为何对结果影响这么大
+ */
 
 const nums = [0, 3, 7, 2, 5, 8, 4, 6, 0, 1]
 const result = findLongSub(nums)
