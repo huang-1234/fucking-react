@@ -14,6 +14,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
+    "vitest": "2.1.5",
     "rspress": "^1.45.1"
   },
   "dependencies": {

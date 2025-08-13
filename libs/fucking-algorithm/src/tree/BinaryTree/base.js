@@ -120,9 +120,11 @@ class TreeTraversal {
         stack.push(current);
         current = current.left;
       }
-
+      // 访问根节点
       current = stack.pop();
+      // 访问根节点
       result.push(current.value);
+      // 遍历右子树
       current = current.right;
     }
 
