@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="ac async_promise"
+ciMessage="feat: add async_executor"
 git add .
 
 git ci -m "$ciAction $ciMessage"
