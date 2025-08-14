@@ -104,7 +104,7 @@ function repeatDecompressWithRegex(str) {
 // 测试用例
 (function test() {
   switch (1) {
-    case value:
+    case 1:
 
       console.log(repeatDecompress("HG[3|B[2|CA]]")); // "HGBCACABCACABCACA"
       console.log(repeatDecompress("a[2|b]"));        // "abb"
