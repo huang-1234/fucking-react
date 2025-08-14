@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="feat: init async_executor test"
+ciMessage="feat: init repeat decompress"
 git add .
 
 git ci -m "$ciAction $ciMessage"
