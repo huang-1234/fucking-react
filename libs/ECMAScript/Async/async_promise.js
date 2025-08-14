@@ -185,15 +185,31 @@
   }
 
   // ======== 工具函数 ========
-  // 模拟传统回调函数
-  function getAsyncData(id, callback) {
-    setTimeout(() => callback(`Data${id}`), 100);
+  /**
+   * @desc 模拟传统回调函数
+   * @param {Number} id 数据id
+   * @param {Number} time 时间
+   * @param {Number} error 失败的概率，0-100
+   * @returns {Promise<string>}
+   */
+  function getAsyncData(id, time = 100, error = 0) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (error && Math.random() * 100 < error) {
+          reject(new Error(`Error${id}`));
+        } else {
+          const result = `Data${id}`;
+          console.log(`${result} is ready`);
+          resolve(result);
+        }
+      }, time);
+    });
   }
 
   /**
    * @desc 封装为Promise
-   * @param {Number} id
-   * @param {Number} time
+   * @param {Number} id 数据id
+   * @param {Number} time 时间
    * @param {Number} error 失败的概率，0-100
    * @returns {Promise}
    */
@@ -214,9 +230,9 @@
   /**
    * @desc Generator执行器
    * @param {() => Generator<any, any, any>} genFunc
-   * @param {Array<Number>} array
-   * @param {Number} time
-   * @param {Number} error
+   * @param {Array<Number>} array 数据数组
+   * @param {Number} time 时间
+   * @param {Number} error 错误率
    * @returns {void}
    */
   function runGenerator(genFunc, array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], time = 100, error = 0) {
@@ -251,7 +267,7 @@
 
   switch (mode) {
     case 'callback':
-      callbackHell();
+      callbackHell(getAsyncData, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 500, 0);
       break;
     case 'promise':
       promiseChain(getPromise);
