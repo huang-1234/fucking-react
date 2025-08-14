@@ -59,15 +59,34 @@
   }
 
   // ======== 工具函数 ========
-  // 模拟传统回调函数
+  /**
+   * @desc 模拟传统回调函数
+   * @param {Number} id
+   * @param {Function} callback
+   * @returns {void}
+   */
   function getAsyncData(id, callback) {
     setTimeout(() => callback(`Data${id}`), 100);
   }
 
-  // 封装为Promise
-  function getPromise(id) {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(`Data${id}`), 100);
+  /**
+   * @desc 封装为Promise
+   * @param {Number} id
+   * @param {Number} time
+   * @param {Number} error
+   * @returns {Promise<string>}
+   */
+  function getPromise(id, time = 100, error = 0) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (error && Math.random() * 100 < error) {
+          reject(new Error(`Error${id}`));
+        } else {
+          const result = `Data${id}`;
+          console.log(`${result} is ready`);
+          resolve(result);
+        }
+      }, time);
     });
   }
 
