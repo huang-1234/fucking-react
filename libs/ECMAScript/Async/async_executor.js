@@ -173,14 +173,15 @@ export class AsyncExecutor {
     }
   }
 
-  /**
+    /**
    * 添加任务到队列
    * @param {...any} args 传递给异步函数的参数
    * @returns {Promise} 返回一个Promise，当任务完成时resolve
    */
   add(...args) {
-    return new Promise((resolve, reject) => {
-      const taskId = Date.now() + Math.random().toString(36).substring(2, 9);
+    const taskId = Date.now() + Math.random().toString(36).substring(2, 9);
+
+    const promise = new Promise((resolve, reject) => {
       const task = {
         id: taskId,
         args,
@@ -195,9 +196,12 @@ export class AsyncExecutor {
       if (this.options.autoStart && !this.isPaused && !this.isAborted) {
         this.processQueue();
       }
-
-      return taskId;
     });
+
+    // 将taskId附加到Promise上，以便测试和其他代码可以访问
+    promise.taskId = taskId;
+
+    return promise;
   }
 
   /**

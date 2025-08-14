@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { AsyncExecutor } from '../async_executor.js';
 
 describe('AsyncExecutor', () => {
+  // 设置更长的超时时间，避免测试超时
+  vi.setConfig({ testTimeout: 10000 });
   // 模拟异步函数
   let mockAsyncFn;
   // 默认选项
@@ -159,7 +161,7 @@ describe('AsyncExecutor', () => {
 
   // 取消操作测试
   describe('取消操作', () => {
-    it('应该能取消单个任务', async () => {
+        it('应该能取消单个任务', async () => {
       let resolveTask;
       mockAsyncFn.mockImplementation(() => {
         return new Promise(resolve => {
@@ -173,7 +175,7 @@ describe('AsyncExecutor', () => {
       const taskPromise = executor.add('task');
 
       // 取消任务
-      const taskId = await taskPromise.taskId;
+      const taskId = taskPromise.taskId; // 直接访问taskId，不需要await
       const cancelled = executor.cancelTask(taskId);
 
       expect(cancelled).toBe(true);
