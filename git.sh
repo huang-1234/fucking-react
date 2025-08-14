@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="init ant-design-vue"
+ciMessage="init promise event and html tag match"
 git add .
 
 git ci -m "$ciAction $ciMessage"
