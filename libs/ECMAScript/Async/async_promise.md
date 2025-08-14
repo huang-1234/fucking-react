@@ -34,24 +34,23 @@
   }
 
   // 3. Generator+yield（过渡方案）
-  function* generatorFlow() {
-    const data1 = yield getPromise(1);
-    console.log('Generator 1:', data1);
-    const data2 = yield getPromise(2);
-    console.log('Generator 2:', data2);
-    const data3 = yield getPromise(3);
-    console.log('Generator 3:', data3);
+  function* generatorFlow(getPromise, array = [1, 2, 3], time = 100, error = 0) {
+    for (let i = 0; i < array.length; i++) {
+      const data = yield getPromise(array[i], time, error);
+      console.log(`Generator ${array[i]}:`, data);
+    }
+    console.log('all data: ', array);
     return 'Generator Complete';
   }
 
   // 4. Async/Await（现代终极方案）
-  async function asyncAwaitFlow() {
+  async function asyncAwaitFlow(getPromise, array = [1, 2, 3], time = 100, error = 0) {
     try {
-      const data1 = await getPromise(1);
+      const data1 = await getPromise(array[0], time, error);
       console.log('Async 1:', data1);
-      const data2 = await getPromise(2);
+      const data2 = await getPromise(array[1], time, error);
       console.log('Async 2:', data2);
-      const data3 = await getPromise(3);
+      const data3 = await getPromise(array[2], time, error);
       console.log('Async 3:', data3);
       return 'Async Complete';
     } catch (err) {
@@ -72,10 +71,27 @@
     });
   }
 
-  // Generator执行器
-  function runGenerator(genFunc) {
-    const gen = genFunc();
+  /**
+   * @desc Generator执行器
+   * @param {Function} genFunc
+   * @param {Array<Number>} array
+   * @param {Number} time
+   * @param {Number} error
+   * @returns {void}
+   */
+  function runGenerator(genFunc, array = [1, 2, 3], time = 100, error = 0) {
+    /**
+     * @type {Generator<any, any, any>}
+     */
+    const gen = genFunc(getPromise, array, time, error);
+    /**
+     * @param {() => IteratorResult<any, any>} nextFn
+     * @returns {Promise<any> | void}
+     */
     function step(nextFn) {
+      /**
+       * @type {IteratorResult<any, any>}
+       */
       let next;
       try {
         next = nextFn();
@@ -103,10 +119,10 @@
       promiseChain();
       break;
     case 'generator':
-      runGenerator(generatorFlow);
+      runGenerator(generatorFlow, [1, 2, 3], 100, 0);
       break;
     case 'async':
-      asyncAwaitFlow().then(res => console.log(res));
+      asyncAwaitFlow(getPromise, [1, 2, 3], 100, 0).then(res => console.log(res));
       break;
     default:
       console.log('Invalid mode');
