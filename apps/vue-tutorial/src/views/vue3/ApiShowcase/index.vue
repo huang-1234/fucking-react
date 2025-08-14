@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Tabs } from 'ant-design-vue'
-import ComponentDeclareDemo from './components/ComponentDeclareDemo.vue'
-import ReactiveDemo from './components/ReactiveDemo.vue'
-import LifecycleDemo from './components/LifecycleDemo.vue'
-import WatchDemo from './components/WatchDemo.vue'
-import DomEventsDemo from './components/DomEventsDemo.vue'
-import DependencyInjectionDemo from './components/DependencyInjectionDemo.vue'
-import GlobalPropertiesDemo from './components/GlobalPropertiesDemo.vue'
-import BuiltInComponentsDemo from './components/BuiltInComponentsDemo.vue'
-import DirectivesDemo from './components/DirectivesDemo.vue'
+import ComponentDeclareDemo from './components/ComponentDeclareDemo/ComponentDeclareDemo.vue'
+import ReactiveDemo from './components/ReactiveDemo/ReactiveDemo.vue'
+import LifecycleDemo from './components/LifecycleDemo/LifecycleDemo.vue'
+import WatchDemo from './components/WatchDemo/WatchDemo.vue'
+import DomEventsDemo from './components/DomEventsDemo/DomEventsDemo.vue'
+import DependencyInjectionDemo from './components/DependencyInjectionDemo/DependencyInjectionDemo.vue'
+import GlobalPropertiesDemo from './components/GlobalPropertiesDemo/GlobalPropertiesDemo.vue'
+import BuiltInComponentsDemo from './components/BuiltInComponentsDemo/BuiltInComponentsDemo.vue'
+import DirectivesDemo from './components/DirectivesDemo/DirectivesDemo.vue'
 
 // 示例数据
 const book = {
