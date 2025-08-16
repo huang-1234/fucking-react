@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Card, Typography, Button, Space, Divider, Steps, List, Tag, Tooltip } from 'antd';
+import { Row, Col, Card, Typography, Button, Space, Divider, Steps, List, Tag, Tabs } from 'antd';
 import { CodeBlock } from '../../../../components/CodeBlock';
-import CodePreview from '../../../../components/CodePreview';
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
   StepForwardOutlined,
   ReloadOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
   MessageOutlined
 } from '@ant-design/icons';
+import VisionEventLoopBrowser from './VisionEventLoopBrowser';
 
 const { Title, Paragraph, Text } = Typography;
 const { Step } = Steps;
@@ -272,6 +270,9 @@ interface EventLoopState {
 }
 
 const EventLoopModule: React.FC = () => {
+  // 标签页状态
+  const [activeTab, setActiveTab] = useState<string>('basic');
+
   // 事件循环状态
   const [eventLoopState, setEventLoopState] = useState<EventLoopState>(initialEventLoopState);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -359,219 +360,236 @@ const EventLoopModule: React.FC = () => {
         它能够执行非阻塞的异步操作。本模块将介绍事件循环的工作原理及可视化演示。
       </Paragraph>
 
-      <Row gutter={[16, 16]}>
-        <Col span={24}>
-          <Card title="事件循环基础">
-            <Paragraph>
-              JavaScript的执行环境包含一个<Text strong>调用栈（Call Stack）</Text>、一个<Text strong>宏任务队列（Macro Task Queue）</Text>
-              和一个<Text strong>微任务队列（Micro Task Queue）</Text>。事件循环不断地检查调用栈是否为空，如果为空，则按照一定的规则执行任务队列中的任务。
-            </Paragraph>
-            <Paragraph>
-              <Text strong>执行顺序规则：</Text>
-            </Paragraph>
-            <ol>
-              <li>执行调用栈中的所有同步代码</li>
-              <li>调用栈清空后，检查微任务队列，执行所有微任务</li>
-              <li>执行一个宏任务</li>
-              <li>重复步骤2和3，直到所有任务队列都为空</li>
-            </ol>
-            <CodeBlock code={eventLoopBasicsCode} language="javascript" />
-          </Card>
-        </Col>
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        items={[
+          {
+            key: 'basic',
+            label: '基础事件循环',
+            children: (
+              <Row gutter={[16, 16]}>
+                <Col span={24}>
+                  <Card title="事件循环基础">
+                    <Paragraph>
+                      JavaScript的执行环境包含一个<Text strong>调用栈（Call Stack）</Text>、一个<Text strong>宏任务队列（Macro Task Queue）</Text>
+                      和一个<Text strong>微任务队列（Micro Task Queue）</Text>。事件循环不断地检查调用栈是否为空，如果为空，则按照一定的规则执行任务队列中的任务。
+                    </Paragraph>
+                    <Paragraph>
+                      <Text strong>执行顺序规则：</Text>
+                    </Paragraph>
+                    <ol>
+                      <li>执行调用栈中的所有同步代码</li>
+                      <li>调用栈清空后，检查微任务队列，执行所有微任务</li>
+                      <li>执行一个宏任务</li>
+                      <li>重复步骤2和3，直到所有任务队列都为空</li>
+                    </ol>
+                    <CodeBlock code={eventLoopBasicsCode} language="javascript" />
+                  </Card>
+                </Col>
 
-        <Col span={24} lg={12}>
-          <Card title="宏任务与微任务">
-            <Paragraph>
-              <Text strong>宏任务（Macro Task）</Text>包括：script（整体代码）、setTimeout、setInterval、setImmediate、I/O、UI渲染等。
-            </Paragraph>
-            <Paragraph>
-              <Text strong>微任务（Micro Task）</Text>包括：Promise.then/catch/finally、process.nextTick（Node.js）、MutationObserver等。
-            </Paragraph>
-            <Paragraph>
-              微任务总是在当前宏任务执行完毕后立即执行，而下一个宏任务则要等到所有微任务执行完毕后才会执行。
-            </Paragraph>
-            <CodeBlock code={macroMicroTasksCode} language="javascript" />
-          </Card>
-        </Col>
+                <Col span={24} lg={12}>
+                  <Card title="宏任务与微任务">
+                    <Paragraph>
+                      <Text strong>宏任务（Macro Task）</Text>包括：script（整体代码）、setTimeout、setInterval、setImmediate、I/O、UI渲染等。
+                    </Paragraph>
+                    <Paragraph>
+                      <Text strong>微任务（Micro Task）</Text>包括：Promise.then/catch/finally、process.nextTick（Node.js）、MutationObserver等。
+                    </Paragraph>
+                    <Paragraph>
+                      微任务总是在当前宏任务执行完毕后立即执行，而下一个宏任务则要等到所有微任务执行完毕后才会执行。
+                    </Paragraph>
+                    <CodeBlock code={macroMicroTasksCode} language="javascript" />
+                  </Card>
+                </Col>
 
-        <Col span={24} lg={12}>
-          <Card title="复杂事件循环示例">
-            <Paragraph>
-              下面是一个更复杂的事件循环示例，包含嵌套的宏任务和微任务。通过分析输出顺序，可以更深入地理解事件循环机制。
-            </Paragraph>
-            <CodeBlock code={complexEventLoopCode} language="javascript" />
-          </Card>
-        </Col>
+                <Col span={24} lg={12}>
+                  <Card title="复杂事件循环示例">
+                    <Paragraph>
+                      下面是一个更复杂的事件循环示例，包含嵌套的宏任务和微任务。通过分析输出顺序，可以更深入地理解事件循环机制。
+                    </Paragraph>
+                    <CodeBlock code={complexEventLoopCode} language="javascript" />
+                  </Card>
+                </Col>
 
-        <Col span={24}>
-          <Card title="事件循环可视化">
-            <Row gutter={16}>
-              <Col span={24} lg={16}>
-                <div style={{ marginBottom: 16 }}>
-                  <Space>
-                    <Button
-                      type="primary"
-                      icon={eventLoopState.isRunning ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
-                      onClick={toggleRunning}
-                    >
-                      {eventLoopState.isRunning ? '暂停' : (eventLoopState.isCompleted ? '重置' : '开始')}
-                    </Button>
-                    <Button
-                      icon={<StepForwardOutlined />}
-                      onClick={stepForward}
-                      disabled={eventLoopState.isRunning || eventLoopState.isCompleted}
-                    >
-                      下一步
-                    </Button>
-                    <Button
-                      icon={<ReloadOutlined />}
-                      onClick={resetEventLoop}
-                    >
-                      重置
-                    </Button>
-                    <span>速度：</span>
-                    <Button
-                      size="small"
-                      onClick={() => changeSpeed(2000)}
-                      type={eventLoopState.speed === 2000 ? 'primary' : 'default'}
-                    >
-                      慢
-                    </Button>
-                    <Button
-                      size="small"
-                      onClick={() => changeSpeed(1000)}
-                      type={eventLoopState.speed === 1000 ? 'primary' : 'default'}
-                    >
-                      中
-                    </Button>
-                    <Button
-                      size="small"
-                      onClick={() => changeSpeed(500)}
-                      type={eventLoopState.speed === 500 ? 'primary' : 'default'}
-                    >
-                      快
-                    </Button>
-                  </Space>
-                </div>
+                <Col span={24}>
+                  <Card title="事件循环可视化">
+                    <Row gutter={16}>
+                      <Col span={24} lg={16}>
+                        <div style={{ marginBottom: 16 }}>
+                          <Space>
+                            <Button
+                              type="primary"
+                              icon={eventLoopState.isRunning ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+                              onClick={toggleRunning}
+                            >
+                              {eventLoopState.isRunning ? '暂停' : (eventLoopState.isCompleted ? '重置' : '开始')}
+                            </Button>
+                            <Button
+                              icon={<StepForwardOutlined />}
+                              onClick={stepForward}
+                              disabled={eventLoopState.isRunning || eventLoopState.isCompleted}
+                            >
+                              下一步
+                            </Button>
+                            <Button
+                              icon={<ReloadOutlined />}
+                              onClick={resetEventLoop}
+                            >
+                              重置
+                            </Button>
+                            <span>速度：</span>
+                            <Button
+                              size="small"
+                              onClick={() => changeSpeed(2000)}
+                              type={eventLoopState.speed === 2000 ? 'primary' : 'default'}
+                            >
+                              慢
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => changeSpeed(1000)}
+                              type={eventLoopState.speed === 1000 ? 'primary' : 'default'}
+                            >
+                              中
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => changeSpeed(500)}
+                              type={eventLoopState.speed === 500 ? 'primary' : 'default'}
+                            >
+                              快
+                            </Button>
+                          </Space>
+                        </div>
 
-                <Divider orientation="left">当前步骤</Divider>
-                <div style={{ marginBottom: 16 }}>
-                  <Steps
-                    current={eventLoopState.currentStep}
-                    size="small"
-                    direction="horizontal"
-                    style={{ maxWidth: '100%', overflowX: 'auto' }}
-                  >
-                    {eventLoopSteps.map((step, index) => (
-                      <Step
-                        key={index}
-                        title={`步骤${index + 1}`}
-                        description={step.description}
-                      />
-                    ))}
-                  </Steps>
-                </div>
+                        <Divider orientation="left">当前步骤</Divider>
+                        <div style={{ marginBottom: 16 }}>
+                          <Steps
+                            current={eventLoopState.currentStep}
+                            size="small"
+                            direction="horizontal"
+                            style={{ maxWidth: '100%', overflowX: 'auto' }}
+                          >
+                            {eventLoopSteps.map((step, index) => (
+                              <Step
+                                key={index}
+                                title={`步骤${index + 1}`}
+                                description={step.description}
+                              />
+                            ))}
+                          </Steps>
+                        </div>
 
-                <Row gutter={16}>
-                  <Col span={8}>
-                    <Card title="调用栈" size="small" style={{ marginBottom: 16 }}>
-                      {eventLoopState.callStack.length > 0 ? (
-                        <List
-                          size="small"
-                          dataSource={eventLoopState.callStack}
-                          renderItem={(item, index) => (
-                            <List.Item>
-                              <Tag color="blue">{eventLoopState.callStack.length - index}</Tag> {item}
-                            </List.Item>
-                          )}
-                        />
-                      ) : (
-                        <Text type="secondary">调用栈为空</Text>
-                      )}
-                    </Card>
-                  </Col>
+                        <Row gutter={16}>
+                          <Col span={8}>
+                            <Card title="调用栈" size="small" style={{ marginBottom: 16 }}>
+                              {eventLoopState.callStack.length > 0 ? (
+                                <List
+                                  size="small"
+                                  dataSource={eventLoopState.callStack}
+                                  renderItem={(item, index) => (
+                                    <List.Item>
+                                      <Tag color="blue">{eventLoopState.callStack.length - index}</Tag> {item}
+                                    </List.Item>
+                                  )}
+                                />
+                              ) : (
+                                <Text type="secondary">调用栈为空</Text>
+                              )}
+                            </Card>
+                          </Col>
 
-                  <Col span={8}>
-                    <Card title="宏任务队列" size="small" style={{ marginBottom: 16 }}>
-                      {eventLoopState.taskQueue.length > 0 ? (
-                        <List
-                          size="small"
-                          dataSource={eventLoopState.taskQueue}
-                          renderItem={(item) => (
-                            <List.Item>
-                              <Tag color="orange">{item.type}</Tag> {item.content}
-                            </List.Item>
-                          )}
-                        />
-                      ) : (
-                        <Text type="secondary">宏任务队列为空</Text>
-                      )}
-                    </Card>
-                  </Col>
+                          <Col span={8}>
+                            <Card title="宏任务队列" size="small" style={{ marginBottom: 16 }}>
+                              {eventLoopState.taskQueue.length > 0 ? (
+                                <List
+                                  size="small"
+                                  dataSource={eventLoopState.taskQueue}
+                                  renderItem={(item) => (
+                                    <List.Item>
+                                      <Tag color="orange">{item.type}</Tag> {item.content}
+                                    </List.Item>
+                                  )}
+                                />
+                              ) : (
+                                <Text type="secondary">宏任务队列为空</Text>
+                              )}
+                            </Card>
+                          </Col>
 
-                  <Col span={8}>
-                    <Card title="微任务队列" size="small" style={{ marginBottom: 16 }}>
-                      {eventLoopState.microTaskQueue.length > 0 ? (
-                        <List
-                          size="small"
-                          dataSource={eventLoopState.microTaskQueue}
-                          renderItem={(item) => (
-                            <List.Item>
-                              <Tag color="green">{item.type}</Tag> {item.content}
-                            </List.Item>
-                          )}
-                        />
-                      ) : (
-                        <Text type="secondary">微任务队列为空</Text>
-                      )}
-                    </Card>
-                  </Col>
-                </Row>
+                          <Col span={8}>
+                            <Card title="微任务队列" size="small" style={{ marginBottom: 16 }}>
+                              {eventLoopState.microTaskQueue.length > 0 ? (
+                                <List
+                                  size="small"
+                                  dataSource={eventLoopState.microTaskQueue}
+                                  renderItem={(item) => (
+                                    <List.Item>
+                                      <Tag color="green">{item.type}</Tag> {item.content}
+                                    </List.Item>
+                                  )}
+                                />
+                              ) : (
+                                <Text type="secondary">微任务队列为空</Text>
+                              )}
+                            </Card>
+                          </Col>
+                        </Row>
 
-                <Card title="控制台输出" size="small">
-                  {eventLoopState.output.map((item, index) => (
-                    <div key={index} style={{ fontFamily: 'monospace', padding: '4px 0' }}>
-                      <MessageOutlined style={{ marginRight: 8 }} /> {item}
-                    </div>
-                  ))}
-                </Card>
-              </Col>
+                        <Card title="控制台输出" size="small">
+                          {eventLoopState.output.map((item, index) => (
+                            <div key={index} style={{ fontFamily: 'monospace', padding: '4px 0' }}>
+                              <MessageOutlined style={{ marginRight: 8 }} /> {item}
+                            </div>
+                          ))}
+                        </Card>
+                      </Col>
 
-              <Col span={24} lg={8}>
-                <Card title="事件循环执行流程" size="small">
-                  <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                    <img
-                      src="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop/the_javascript_runtime_environment_example.svg"
-                      alt="事件循环示意图"
-                      style={{ maxWidth: '100%' }}
-                    />
-                  </div>
-                  <Divider />
-                  <Title level={5}>执行流程说明</Title>
-                  <ol>
-                    <li>执行全局代码（同步代码）</li>
-                    <li>调用函数时，将函数推入调用栈</li>
-                    <li>遇到异步API（如setTimeout）时，将回调函数放入相应的任务队列</li>
-                    <li>当调用栈为空时，检查微任务队列并执行所有微任务</li>
-                    <li>执行一个宏任务，然后重复步骤4</li>
-                    <li>如果UI需要渲染，会在执行完一个宏任务后进行渲染</li>
-                  </ol>
-                </Card>
+                      <Col span={24} lg={8}>
+                        <Card title="事件循环执行流程" size="small">
+                          <div style={{ textAlign: 'center', marginBottom: 16 }}>
+                            <img
+                              src="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop/the_javascript_runtime_environment_example.svg"
+                              alt="事件循环示意图"
+                              style={{ maxWidth: '100%' }}
+                            />
+                          </div>
+                          <Divider />
+                          <Title level={5}>执行流程说明</Title>
+                          <ol>
+                            <li>执行全局代码（同步代码）</li>
+                            <li>调用函数时，将函数推入调用栈</li>
+                            <li>遇到异步API（如setTimeout）时，将回调函数放入相应的任务队列</li>
+                            <li>当调用栈为空时，检查微任务队列并执行所有微任务</li>
+                            <li>执行一个宏任务，然后重复步骤4</li>
+                            <li>如果UI需要渲染，会在执行完一个宏任务后进行渲染</li>
+                          </ol>
+                        </Card>
 
-                <Card title="浏览器与Node.js的区别" size="small" style={{ marginTop: 16 }}>
-                  <Paragraph>
-                    浏览器和Node.js的事件循环机制有一些差异，特别是在旧版本的Node.js中。
-                  </Paragraph>
-                  <CodeBlock code={browserNodeDifferencesCode} language="javascript" />
-                  <Paragraph>
-                    <Text type="secondary">注：从Node.js v11开始，Node.js的事件循环行为已经与浏览器保持一致。</Text>
-                  </Paragraph>
-                </Card>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
+                        <Card title="浏览器与Node.js的区别" size="small" style={{ marginTop: 16 }}>
+                          <Paragraph>
+                            浏览器和Node.js的事件循环机制有一些差异，特别是在旧版本的Node.js中。
+                          </Paragraph>
+                          <CodeBlock code={browserNodeDifferencesCode} language="javascript" />
+                          <Paragraph>
+                            <Text type="secondary">注：从Node.js v11开始，Node.js的事件循环行为已经与浏览器保持一致。</Text>
+                          </Paragraph>
+                        </Card>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Col>
+              </Row>
+            ),
+          },
+          {
+            key: 'browser',
+            label: '事件循环浏览器',
+            children: <VisionEventLoopBrowser />
+          }
+        ]}
+      />
     </div>
   );
 };
