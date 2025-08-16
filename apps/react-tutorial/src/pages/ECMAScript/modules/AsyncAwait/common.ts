@@ -389,3 +389,13 @@ const asyncSteps = [
     code: 'return data; // 返回值会被包装成Promise'
   }
 ];
+
+export {
+  asyncAwaitBasicsCode,
+  comparisonCode,
+  errorHandlingCode,
+  parallelExecutionCode,
+  patternCode,
+  underTheHoodCode,
+  asyncSteps,
+}
