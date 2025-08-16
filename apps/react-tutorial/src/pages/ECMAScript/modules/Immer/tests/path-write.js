@@ -162,6 +162,46 @@ function testProduceFake() {
   console.log(result.b.b1 === obj.b.b1); // true (未修改属性保持引用)
 }
 
+function testProduceList() {
+  const card = {
+    key: 1,
+    a: {
+      a1: {
+        a11: 111,
+        a12: 112,
+        a13: 113,
+      },
+    },
+    b: {
+      b1: 21,
+      b2: 22,
+      b3: {
+        b31: 231,
+        b32: 232,
+        b33: 233,
+      },
+    }
+  }
+  const dataList = {
+    list: new Array(10).fill(0).map((_, index) => ({
+      ...card,
+      key: index + card.key,
+    }))
+  }
+  const newDataList = produceFake(dataList, (draft) => {
+    draft.list.push(...new Array(2).fill(0).map((_, index) => ({
+      ...card,
+      key: index + draft.list.length + (draft.list?.[0]?.key || 2),
+    })))
+  });
+  // list parent is some
+  console.log(dataList.list === newDataList.list)
+  // list origin item is some
+  console.log(dataList.list[0] === newDataList.list[0])
+  // list new item is some
+  console.log(dataList.list[newDataList.list.length - 1] === newDataList.list[newDataList.list.length - 1])
+}
+
 (function testPathWrite(innerKey) {
   const isNode = typeof process !== 'undefined' && process.versions && process.versions.node;
   const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -226,5 +266,8 @@ function testProduceFake() {
     case 3:
       testProduceFake();
       break;
+    case 4:
+      testProduceList();
+      break;
   }
-})(3);
+})(4);
