@@ -6,15 +6,17 @@
  * @license MIT
  * @template T
  * @typedef {{ value: T, error: Error | null, idx: number }} TaskResult
- * @typedef {{ status: 'fulfilled' | 'rejected', value?: T, reason?: Error }} Result
- * @property {number} concurrency 当前并发量
- * @property {number} maxConcurrency 最大并发量
- * @property {number} minConcurrency 最小并发量
+ * @typedef {{ status: 'fulfilled' | 'rejected', value?: T, reason?: Error }} Result<T>
  * @property {Array<() => Promise<T>>} queue 任务队列
  * @property {Array<{idx: number, result: T} | {idx: number, error: Error}>} results 结果队列
  * @property {number} isRunning 正在进行的任务数
  * @property {number} index 当前结果索引
  * @property {Map<number, (result: {idx: number, result: T} | {idx: number, error: Error}) => void>} pendingResolves 未解决的 Promise
+ * =======
+ * @property {number} concurrency 当前并发量
+ * @property {number} maxConcurrency 最大并发量
+ * @property {number} minConcurrency 最小并发量
+ * @property {Array<() => Promise<T>>} taskQueue 任务队列
  * @class
  * @example
  * const controller = new AsyncController(4, 2); // 并发2-4
@@ -29,12 +31,25 @@
  * }
  */
 export class InnerAsyncController {
-  constructor(options = { maxConcurrency: 4, minConcurrency: 2 }) {
+  /**
+   * @param {Object} options
+   * @param {number} options.maxConcurrency - 最大并发量
+   * @param {number} options.minConcurrency - 最小并发量
+   * @param {number} options.timeout - 超时自动失败时间
+   * @param {number} options.retryCount - 最大重试次数
+   * @param {boolean} options.debug - 是否开启调试模式
+   * @description 创建一个异步任务调度控制器
+   * @example
+   */
+  constructor(options = { maxConcurrency: 4, minConcurrency: 2, timeout: 5000, retryCount: 0 }) {
     const { maxConcurrency, minConcurrency, debug } = options;
     this.debug = debug || false;
     this.maxConcurrency = maxConcurrency;
     this.minConcurrency = minConcurrency;
     this.concurrency = Math.max(minConcurrency, Math.min(maxConcurrency, 1));
+    this.retryCount = options.retryCount || 0;
+    this.timeout = options.timeout || 5000;
+    this.pendingResolves = new Map();
     this.taskQueue = [];
     this.isRunning = 0;
     this.completed = 0;
@@ -42,6 +57,14 @@ export class InnerAsyncController {
     this.rejected = 0;
     this.result = [];
     this.allResolved = Promise.resolve();
+  }
+  timeoutFinish() {
+  }
+  retry(task) {
+    if (this.retryCount > 0) {
+      this.retryCount--;
+      return task().catch(this.retry.bind(this));
+    }
   }
 
   /**
@@ -79,7 +102,7 @@ export class InnerAsyncController {
         const result = await task();
         return { value: result, error: null, idx: this.taskQueue.length - 1 };
       } catch (error) {
-        return { value: null, error, idx: this.taskQueue.length - 1 };
+        return this.retry ? this.retry(task) : { value: null, error, idx: this.taskQueue.length - 1 };
       }
     };
     this.taskQueue.push(promiseTask);
