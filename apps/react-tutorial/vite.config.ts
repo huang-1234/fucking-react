@@ -62,7 +62,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src')
+      // 相对路径
+      '@': resolve(__dirname, './src'),
+      // 绝对路径
     }
   },
   css: {

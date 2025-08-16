@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="feat: init repeat decompress"
+ciMessage="feat: init ECMAScript"
 git add .
 
 git ci -m "$ciAction $ciMessage"
