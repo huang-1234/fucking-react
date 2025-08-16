@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="feat: ac immer produce"
+ciMessage="feat: ac immer.test.js"
 git add .
 
 git ci -m "$ciAction $ciMessage"
