@@ -3,7 +3,8 @@ import {
   HomeOutlined,
   AppstoreOutlined,
   LayoutOutlined,
-  CloudServerOutlined
+  CloudServerOutlined,
+  CodeOutlined
 } from '@ant-design/icons';
 import { reactVersionMenuItems } from './ReactVersionMenu';
 
@@ -18,6 +19,9 @@ const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
 
 // SSR页面
 const SSRPage = lazy(() => import('../pages/SSR/SSRPage'));
+
+// ECMAScript页面
+const ECMAScriptPage = lazy(() => import('../pages/ECMAScript'));
 
 export interface IMenu {
   key: string;
@@ -52,5 +56,11 @@ export const menuItems: IMenu[] = [
     label: 'React SSR',
     icon: <CloudServerOutlined />,
     component: SSRPage
+  },
+  {
+    key: '/ecmascript',
+    label: 'ECMAScript',
+    icon: <CodeOutlined />,
+    component: ECMAScriptPage
   }
 ];

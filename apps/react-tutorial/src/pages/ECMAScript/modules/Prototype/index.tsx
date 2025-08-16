@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Row, Col, Card, Typography, Button, Tabs, Space, Alert, Divider } from 'antd';
-import { CodeBlock } from '../../../../components/CodeBlock';
-import CodePreview from '../../../../components/CodePreview';
-import { create } from 'domain';
+import { Row, Col, Card, Typography, Button, Tabs, Alert, Divider } from 'antd';
+import { CodeBlock } from '@/components/CodeBlock';
 
 const { Title, Paragraph, Text } = Typography;
 

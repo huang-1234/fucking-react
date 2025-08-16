@@ -45,6 +45,9 @@ const MDXDemoPage = lazy(() => import('../pages/Tech/MDXDemo'));
 // 组件应用展示
 const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
 
+// ECMAScript组件
+const ECMAScriptPage = lazy(() => import('../pages/ECMAScript'));
+
 // 加载中组件
 const LoadingComponent = () => <div>加载中...</div>;
 
@@ -54,6 +57,7 @@ const routerBrowser = createBrowserRouter([
     path: '/',
     element: <MainLayout />,
     children: [
+      // 首页路由
       {
         index: true,
         element: (
@@ -62,11 +66,21 @@ const routerBrowser = createBrowserRouter([
           </Suspense>
         )
       },
+      // canvas路由
       {
         path: 'canvas',
         element: (
           <Suspense fallback={<LoadingComponent />}>
             <CanvasPanelPage />
+          </Suspense>
+        )
+      },
+      // ECMAScript路由
+      {
+        path: 'ecmascript',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <ECMAScriptPage />
           </Suspense>
         )
       },

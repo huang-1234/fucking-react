@@ -83,4 +83,4 @@ const ECMAScriptPage: React.FC = () => {
   );
 };
 
-export default ECMAScriptPage;
+export default React.memo(ECMAScriptPage);

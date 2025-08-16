@@ -5,7 +5,9 @@ import mdx from "@mdx-js/rollup";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { createHtmlPlugin } from 'vite-plugin-html'
-import markdownPlugin from './src/config/plugins/vite-markdown-plugin'
+import markdownPlugin from './src/config/plugins/vite-markdown-plugin';
+
+import { nodePolyfills } from 'vite-plugin-node-polyfills'; // 引入插件
 
 // 将 https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js 加载script中去
 
@@ -15,8 +17,17 @@ function getInjectScript() {
 }
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      external: [], // 确保未排除关键模块 [1](@ref)
+    }
+  },
   plugins: [
     react(),
+    nodePolyfills({
+      include: ['events', 'stream', 'util'], // 按需添加缺失模块
+      globals: { Buffer: true } // 可选：解决 Buffer 未定义问题
+    }),
     markdownPlugin(), // 添加 Markdown 转 HTML 插件
     //  将 https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js 加载html标签中中去
     createHtmlPlugin({
