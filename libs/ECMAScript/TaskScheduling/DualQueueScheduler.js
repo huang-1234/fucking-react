@@ -64,7 +64,7 @@ class DualQueueScheduler {
             console.error(`❌ 普通任务执行失败:`, error);
           }
           reject(error);
-          throw error;
+          // 不要重新抛出错误，因为它已经被reject处理了
         } finally {
           if (this.debug) {
             console.log(`✓ 普通任务完成`);
@@ -101,7 +101,7 @@ class DualQueueScheduler {
             console.error(`❌ 紧急任务执行失败:`, error);
           }
           reject(error);
-          throw error;
+          // 不要重新抛出错误，因为它已经被reject处理了
         } finally {
           if (this.debug) {
             console.log(`✓ 紧急任务完成`);
@@ -205,3 +205,4 @@ function runDualQueueExample() {
 }
 
 export { DualQueueScheduler, runDualQueueExample };
+

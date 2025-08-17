@@ -79,7 +79,7 @@ class PriorityScheduler {
             console.error(`❌ 任务失败: ${id}`, error);
           }
           reject(error);
-          throw error;
+          // 不要重新抛出错误，因为它已经被reject处理了
         }
       };
 
