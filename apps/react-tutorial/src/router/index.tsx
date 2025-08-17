@@ -11,6 +11,11 @@ const HomePage = lazy(() => import('../pages/HomePage'));
 // 画布组件
 const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
 
+// 算法可视化组件
+const AlgorithmPage = lazy(() => import('../pages/Algorithm'));
+const LengthOfLISPage = lazy(() => import('../pages/Algorithm/lengthOfLIS'));
+const HeapPage = lazy(() => import('../pages/Algorithm/Heap'));
+
 // React 15 组件
 const React15Page = lazy(() => import('../pages/React15'));
 const React15Fragments = lazy(() => import('../pages/React15/Fragments'));
@@ -261,6 +266,36 @@ const routerBrowser = createBrowserRouter([
             <ComponentsApplyPage />
           </Suspense>
         )
+      },
+      // 算法可视化路由
+      {
+        path: 'algorithm',
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <AlgorithmPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'lengthoflis',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <LengthOfLISPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'heap',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <HeapPage />
+              </Suspense>
+            )
+          }
+        ]
       },
       // SSR路由
       {

@@ -7,6 +7,7 @@ import {
   CodeOutlined
 } from '@ant-design/icons';
 import { reactVersionMenuItems } from './ReactVersionMenu';
+import AlgorithmPage from '@/pages/Algorithm';
 
 // 首页
 const HomePage = lazy(() => import('../pages/HomePage'));
@@ -62,5 +63,11 @@ export const menuItems: IMenu[] = [
     label: 'ECMAScript',
     icon: <CodeOutlined />,
     component: ECMAScriptPage
+  },
+  {
+    key: '/algorithm',
+    label: '算法',
+    icon: <CodeOutlined />,
+    component: AlgorithmPage
   }
 ];
