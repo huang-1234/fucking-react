@@ -1,3 +1,19 @@
+// import { flakyAPI } from '../test/promise-base';
+/**
+ * @example
+ * @desc 测试函数 - 前两次失败，第三次成功
+ * @returns {Promise<string>}
+ */
+export function flakyAPI() {
+  return new Promise((resolve, reject) => {
+    const attempt = Math.floor(Math.random() * 5); // 随机数模拟失败或成功
+    if (attempt < 3) {
+      reject(`Failed at attempt ${attempt}`);
+    } else {
+      resolve(`Succeeded at attempt ${attempt}`);
+    }
+  });
+}
 /**
  * @fileoverview 异步任务调度控制器
  * @author huangsq
@@ -56,15 +72,42 @@ export class InnerAsyncController {
     this.fulfilled = 0;
     this.rejected = 0;
     this.result = [];
-    this.allResolved = Promise.resolve();
+    /**
+     * @desc 所有任务完成后的回调
+     * @type {<T>(value: T | PromiseLike<T>): Promise<Awaited<T>>}
+     */
+    this.allResolved = null;
   }
-  timeoutFinish() {
+  /**
+   * @desc 超时完成、快速失败
+   * @param {() => Promise<T>} task 任务
+   * @returns {Promise<T>} 结果
+   */
+  timeoutFinish(task) {
+    return Promise.race([
+      task(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Task timeout")), this.timeout))
+    ]);
   }
+  /**
+   * @desc 重试任务
+   * @param {() => Promise<T>} task 任务
+   * @returns {Promise<T>} 结果
+   */
   retry(task) {
-    if (this.retryCount > 0) {
-      this.retryCount--;
-      return task().catch(this.retry.bind(this));
-    }
+    return new Promise((resolve, reject) => {
+      let currentAttempt = 1;
+      function handleError(error) {
+        console.log(`Retry ${currentAttempt}/${this.retryCount}`);
+        if (currentAttempt <= this.retryCount) {
+          currentAttempt++;
+          return task?.().catch(handleError.bind(this));
+        }
+        console.error("Retry", error);
+        return reject(error);
+      }
+      return resolve(task?.().catch(handleError.bind(this)))
+    });
   }
 
   /**
@@ -154,49 +197,83 @@ export class InnerAsyncController {
   }
 }
 
-const delayTime = {
-  fast: 200,
-  slow: 2000,
-  outTime: 2000,
-};
-// 使用示例
-async function main() {
-  console.time("main");
-  const tasks = [
-    () => new Promise((res) => setTimeout(() => res("Task1"), delayTime.fast)),
-    () => new Promise((res) => setTimeout(() => res("Task2"), delayTime.slow)),
-    () =>
-      new Promise((_, rej) =>
-        setTimeout(() => rej("Task3 error"), delayTime.outTime)
-      ),
-    () => new Promise((res) => setTimeout(() => res("Task4"), delayTime.slow)),
-    () => new Promise((res) => setTimeout(() => res("Task5"), delayTime.slow)),
-    () => new Promise((res) => setTimeout(() => res("Task6"), delayTime.fast)),
-    () => new Promise((res) => setTimeout(() => res("Task7"), delayTime.slow)),
-    () => new Promise((res) => setTimeout(() => res("Task8"), delayTime.fast)),
-    () => new Promise((res) => setTimeout(() => res("Task9"), delayTime.fast)),
-    () => new Promise((res) => setTimeout(() => res("Task10"), delayTime.fast)),
-    () => new Promise((res) => setTimeout(() => res("Task11"), delayTime.fast)),
-    () => new Promise((res) => setTimeout(() => res("Task12"), delayTime.slow)),
-    () => new Promise((res) => setTimeout(() => res("Task13"), delayTime.slow)),
-    () => new Promise((res) => setTimeout(() => res("Task14"), delayTime.slow)),
-    () => new Promise((res) => setTimeout(() => res("Task15"), delayTime.fast)),
-    () => new Promise((res) => setTimeout(() => res("Task16"), delayTime.fast)),
-  ];
 
+function testRetry() {
   const controller = new InnerAsyncController({
-    maxConcurrency: 4,
-    minConcurrency: 2,
-    debug: true,
-  }); // 并发2-4
-  const results = await controller.run(tasks);
-
-  console.timeEnd("main");
-  console.log("最终结果:");
-  console.log('results', results);
-  // 可选：按需获取有序结果（流式处理）
-  for (const result of controller.getOrderedResult()) {
-    console.log(result);
-  }
+    retryCount: 2,
+  });
+  controller.retry(flakyAPI).then(console.log).catch(console.error);
 }
-main().catch(console.error);
+
+// 测试并发
+function testConcurrency() {
+  const delayTime = {
+    fast: 200,
+    slow: 2000,
+    outTime: 2000,
+  };
+  // 使用示例
+  async function runConcurrency() {
+    console.time("main");
+    const tasks = [
+      () => new Promise((res) => setTimeout(() => res("Task1"), delayTime.fast)),
+      () => new Promise((res) => setTimeout(() => res("Task2"), delayTime.slow)),
+      () =>
+        new Promise((_, rej) =>
+          setTimeout(() => rej("Task3 error"), delayTime.outTime)
+        ),
+      () => new Promise((res) => setTimeout(() => res("Task4"), delayTime.slow)),
+      () => new Promise((res) => setTimeout(() => res("Task5"), delayTime.slow)),
+      () => new Promise((res) => setTimeout(() => res("Task6"), delayTime.fast)),
+      () => new Promise((res) => setTimeout(() => res("Task7"), delayTime.slow)),
+      () => new Promise((res) => setTimeout(() => res("Task8"), delayTime.fast)),
+      () => new Promise((res) => setTimeout(() => res("Task9"), delayTime.fast)),
+      () => new Promise((res) => setTimeout(() => res("Task10"), delayTime.fast)),
+      () => new Promise((res) => setTimeout(() => res("Task11"), delayTime.fast)),
+      () => new Promise((res) => setTimeout(() => res("Task12"), delayTime.slow)),
+      () => new Promise((res) => setTimeout(() => res("Task13"), delayTime.slow)),
+      () => new Promise((res) => setTimeout(() => res("Task14"), delayTime.slow)),
+      () => new Promise((res) => setTimeout(() => res("Task15"), delayTime.fast)),
+      () => new Promise((res) => setTimeout(() => res("Task16"), delayTime.fast)),
+    ];
+
+    const controller = new InnerAsyncController({
+      maxConcurrency: 4,
+      minConcurrency: 2,
+      debug: true,
+    }); // 并发2-4
+    const results = await controller.run(tasks);
+
+    console.timeEnd("main");
+    console.log("最终结果:");
+    console.log('results', results);
+    // 可选：按需获取有序结果（流式处理）
+    for (const result of controller.getOrderedResult()) {
+      console.log(result);
+    }
+  }
+  runConcurrency().catch(console.error);
+}
+
+// 测试超时
+function testTimeout() {
+  const controller = new InnerAsyncController({
+    timeout: 1000,
+  });
+  controller.timeoutFinish(flakyAPI).then(console.log).catch(console.error);
+}
+
+
+(function test(k) {
+  switch (k) {
+    case 'retry':
+      testRetry();
+      break;
+    case 'concurrency':
+      testConcurrency();
+      break;
+    case 'timeout':
+      testTimeout();
+      break;
+  }
+})('retry')

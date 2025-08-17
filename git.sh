@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="feat: ac InnerAsyncController"
+ciMessage="feat: ac InnerAsyncController.retry"
 git add .
 
 git ci -m "$ciAction $ciMessage"
