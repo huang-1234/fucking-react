@@ -4,7 +4,9 @@
  */
 import React from 'react';
 import { StaticRouter } from 'react-router-dom/server';
-import { HelmetProvider, HelmetServerState } from 'react-helmet-async';
+// import { HelmetProvider, HelmetServerState } from 'react-helmet-async';
+import pkg, { HelmetServerState } from 'react-helmet-async';
+const { HelmetProvider } = pkg;
 import App from './shared/App';
 import { AppProvider, fetchInitialState } from './shared/store';
 import routes from './shared/routes';
@@ -68,7 +70,7 @@ export async function render(url: string, context: any = {}): Promise<RenderResu
   const helmetContext = {};
 
   // 渲染应用
-  const App = (
+  const MainApp = (
     <HelmetProvider context={helmetContext}>
       <AppProvider initialState={initialState}>
         <StaticRouter location={url}>
@@ -82,7 +84,7 @@ export async function render(url: string, context: any = {}): Promise<RenderResu
   const { helmet } = helmetContext as { helmet: HelmetServerState };
 
   return {
-    App,
+    App: MainApp,
     head: {
       title: helmet.title.toString(),
       meta: helmet.meta.toString(),
