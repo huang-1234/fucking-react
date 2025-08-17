@@ -4,6 +4,7 @@ import { PlayCircleOutlined, PauseCircleOutlined, StepForwardOutlined, StepBackw
 import LISVisualizerDP from './LISVisualizerDP';
 import LISVisualizerTails from './LISVisualizerTails';
 import './styles.less';
+import VisualLongestIncreasingSubsequenceInterval from './VisualLongestIncreasingSubsequenceInterval';
 
 const { TabPane } = Tabs;
 const { Title, Paragraph, Text } = Typography;
@@ -18,54 +19,20 @@ const CASES = [
     array: [10, 9, 2, 5, 5, 5, 3, 7, 4, 8, -1, -3, 1, 2, 3, 4, 5, 101, 18, 19, 10],
   },
   /**
-   * 测试类型​​
+   * 测试类型​​  输入序列​​​预期LIS长度​​ 验证目标​​
+   *  头部递减处理 [10, 9, 2, 5, 5, 5, 3, 7, 4, 8, -1, -3, 1, 2, 3, 4, 5, 101, 18, 19, 10] 1 验证LIS长度
 
-​​输入序列​​
+   * 平台区稳定性 [10, 9, 2, 5, 5, 5, 3, 7, 4, 8, -1, -3, 1, 2, 3, 4, 5, 101, 18, 19, 10] 1 验证LIS长度
 
-​​预期LIS长度​​
+   * 单元素序列 [5] 1 验证LIS长度 初始化逻辑
 
-​​验证目标​​
+   * 长连续递增 [1,3,5,7,9,11] 6 验证LIS长度
 
-全递减序列
+   * 完全递增优化 [-5,-3,0,2] 4 验证LIS长度
 
-[9,8,7,6,5]
+   * 负数递增 [-5,-3,0,2] 4 验证LIS长度
 
-1
-
-头部递减处理
-
-全等序列
-
-[3,3,3,3]
-
-1
-
-平台区稳定性
-
-单元素序列
-
-[5]
-
-1
-
-初始化逻辑
-
-长连续递增
-
-[1,3,5,7,9,11]
-
-6
-
-完全递增优化
-
-负数递增
-
-[-5,-3,0,2]
-
-4
-
-负数比较逻辑
-
+   * 负数比较逻辑 [-5,-3,0,2] 4 验证LIS长度
 
    */
   {
@@ -197,6 +164,9 @@ const VisualLengthOfLIS: React.FC = () => {
             showIcon
           />
           <LISVisualizerTails array={array} />
+        </TabPane>
+        <TabPane tab="数对链" key="3">
+          <VisualLongestIncreasingSubsequenceInterval />
         </TabPane>
       </Tabs>
     </div>
