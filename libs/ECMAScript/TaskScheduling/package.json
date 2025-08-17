@@ -1,0 +1,25 @@
+{
+  "name": "task-scheduling",
+  "version": "1.0.0",
+  "description": "任务调度器模块集合",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "example": "node examples/run-all.js"
+  },
+  "keywords": [
+    "task",
+    "scheduler",
+    "async",
+    "priority",
+    "queue"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "^2.1.5"
+  }
+}

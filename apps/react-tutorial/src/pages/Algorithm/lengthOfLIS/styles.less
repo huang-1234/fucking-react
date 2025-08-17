@@ -1,0 +1,114 @@
+.lis-container {
+  padding: 20px;
+
+  .lis-input-card {
+    margin-bottom: 20px;
+  }
+
+  .lis-visualizer {
+    margin-top: 20px;
+  }
+
+  .lis-controls {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .lis-array-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .lis-array-item {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    position: relative;
+
+    &.current {
+      border-color: #1890ff;
+      background-color: #e6f7ff;
+    }
+
+    &.in-lis {
+      border-color: #52c41a;
+      background-color: #f6ffed;
+    }
+
+    &.compared {
+      border-color: #faad14;
+      background-color: #fffbe6;
+    }
+
+    .lis-array-index {
+      position: absolute;
+      top: -20px;
+      font-size: 12px;
+      color: #888;
+    }
+  }
+
+  .lis-dp-array {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .lis-dp-item {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    position: relative;
+
+    &.current {
+      border-color: #1890ff;
+      background-color: #e6f7ff;
+    }
+
+    &.updated {
+      border-color: #52c41a;
+      background-color: #f6ffed;
+    }
+  }
+
+  .lis-tails-array {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .lis-info-panel {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+  }
+
+  .lis-step-description {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .lis-result {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+}

@@ -20,6 +20,7 @@ const selectedKeys = computed(() => {
   if (path.includes('reactive-system')) return ['reactive-system']
   if (path.includes('lifecycle-hooks')) return ['lifecycle-hooks']
   if (path.includes('performance')) return ['performance']
+  if (path.includes('api-showcase')) return ['api-showcase']
   return ['composition-api'] // 默认选中
 })
 
@@ -48,6 +49,12 @@ const menuItems = [
     icon: () => h(RocketOutlined),
     label: '性能优化',
     onClick: () => router.push('/vue3/performance')
+  },
+  {
+    key: 'api-showcase',
+    icon: () => h(CodeOutlined),
+    label: 'API 展示',
+    onClick: () => router.push('/vue3/api-showcase')
   }
 ]
 </script>

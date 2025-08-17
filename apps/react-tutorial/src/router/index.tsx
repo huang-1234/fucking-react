@@ -11,6 +11,11 @@ const HomePage = lazy(() => import('../pages/HomePage'));
 // 画布组件
 const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
 
+// 算法可视化组件
+const AlgorithmPage = lazy(() => import('../pages/Algorithm'));
+const LengthOfLISPage = lazy(() => import('../pages/Algorithm/lengthOfLIS'));
+const HeapPage = lazy(() => import('../pages/Algorithm/Heap'));
+
 // React 15 组件
 const React15Page = lazy(() => import('../pages/React15'));
 const React15Fragments = lazy(() => import('../pages/React15/Fragments'));
@@ -45,6 +50,9 @@ const MDXDemoPage = lazy(() => import('../pages/Tech/MDXDemo'));
 // 组件应用展示
 const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
 
+// ECMAScript组件
+const ECMAScriptPage = lazy(() => import('../pages/ECMAScript'));
+
 // 加载中组件
 const LoadingComponent = () => <div>加载中...</div>;
 
@@ -54,6 +62,7 @@ const routerBrowser = createBrowserRouter([
     path: '/',
     element: <MainLayout />,
     children: [
+      // 首页路由
       {
         index: true,
         element: (
@@ -62,11 +71,21 @@ const routerBrowser = createBrowserRouter([
           </Suspense>
         )
       },
+      // canvas路由
       {
         path: 'canvas',
         element: (
           <Suspense fallback={<LoadingComponent />}>
             <CanvasPanelPage />
+          </Suspense>
+        )
+      },
+      // ECMAScript路由
+      {
+        path: 'ecmascript',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <ECMAScriptPage />
           </Suspense>
         )
       },
@@ -247,6 +266,36 @@ const routerBrowser = createBrowserRouter([
             <ComponentsApplyPage />
           </Suspense>
         )
+      },
+      // 算法可视化路由
+      {
+        path: 'algorithm',
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <AlgorithmPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'lengthoflis',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <LengthOfLISPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'heap',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <HeapPage />
+              </Suspense>
+            )
+          }
+        ]
       },
       // SSR路由
       {

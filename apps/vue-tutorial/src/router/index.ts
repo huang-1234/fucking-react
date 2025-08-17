@@ -30,6 +30,11 @@ const routes: RouteRecordRaw[] = [
         path: 'performance',
         name: 'Performance',
         component: () => import('../views/vue3/Performance/index.vue')
+      },
+      {
+        path: 'api-showcase',
+        name: 'ApiShowcase',
+        component: () => import('../views/vue3/ApiShowcase/index.vue')
       }
     ]
   },
