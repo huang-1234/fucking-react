@@ -8,7 +8,16 @@ class DualQueueScheduler {
 
   // 添加普通任务
   addNormalTask(task) {
-    this.normalQueue.push(task);
+    // 包装一下task
+    const wrappedTask = async () => {
+      try {
+        return await task();
+      } catch (error) {
+
+      }
+    };
+
+    this.normalQueue.push(wrappedTask);
     this._schedule();
   }
 
@@ -34,3 +43,11 @@ class DualQueueScheduler {
     }
   }
 }
+
+(function test() {
+  const scheduler = new DualQueueScheduler(2);
+  scheduler.addNormalTask(() => new Promise(resolve => setTimeout(() => resolve('normal'), 1000)));
+  scheduler.addUrgentTask(() => new Promise(resolve => setTimeout(() => resolve('urgent'), 500)));
+  scheduler.addNormalTask(() => new Promise(resolve => setTimeout(() => resolve('normal2'), 1000)));
+  scheduler.addUrgentTask(() => new Promise(resolve => setTimeout(() => resolve('urgent2'), 500)));
+})()

@@ -1,24 +1,29 @@
 /**
  * 异步控制器
- * @param {number} concurrency 并发量
- * @param {number} minRequests 最小请求数
+ * @param {number} maxConcurrency 最大并发量
+ * @param {number} minConcurrency 最小并发量
  */
 class AsyncController {
   /**
-   * @param {number} concurrency 最大并发量
-   * @param {number} minRequests 最小并发量
+   * @property {number} maxConcurrency 最大并发量
+   * @property {number} minConcurrency 最小并发量
+   * @property {Array<() => Promise<T>>} queue 任务队列
+   * @property {Array<{idx: number, result: T} | {idx: number, error: Error}>} results 结果队列
+   * @property {number} inProgress 正在进行的任务数
+   * @property {number} index 当前结果索引
+   * @property {Map<number, (result: {idx: number, result: T} | {idx: number, error: Error}) => void>} pendingResolves 未解决的 Promise
    */
-  constructor(concurrency, minRequests = 1) {
+  constructor(options = { maxConcurrency: 4, minConcurrency: 2, debug: false }) {
     /**
      * @desc 最大并发量
      * @type {number}
      */
-    this.maxConcurrency = concurrency;
+    this.maxConcurrency = options.maxConcurrency;
     /**
      * @desc 最小并发量
      * @type {number}
      */
-    this.minConcurrency = minRequests;
+    this.minConcurrency = options.minConcurrency;
     /**
      * @desc 任务队列
      * @type {Array<() => Promise<T>>}
@@ -44,6 +49,11 @@ class AsyncController {
      * @type {Map<number, (result: {idx: number, result: T} | {idx: number, error: Error}) => void>}
      */
     this.pendingResolves = new Map();
+    /**
+     * @desc 是否调试
+     * @type {boolean}
+     */
+    this.debug = options.debug;
   }
 
   /**
@@ -88,15 +98,16 @@ class AsyncController {
       this.minConcurrency,
       Math.min(this.maxConcurrency, Math.ceil(this.queue.length / 2))
     );
-
-    console.log(
-      "effectiveConcurrency",
-      effectiveConcurrency,
-      "inProgress",
-      this.inProgress,
-      "this.queue.length",
-      this.queue.length
-    );
+    if (this.debug) {
+      console.log(
+        "effectiveConcurrency",
+        effectiveConcurrency,
+        "inProgress",
+        this.inProgress,
+        "this.queue.length",
+        this.queue.length
+      );
+    }
 
     while (this.inProgress < effectiveConcurrency && this.queue.length) {
       this.inProgress++;
@@ -184,7 +195,7 @@ async function main() {
     () => new Promise((res) => setTimeout(() => res("Task16"), delayTime.fast)),
   ];
 
-  const controller = new AsyncController(4, 2); // 并发2-4
+  const controller = new AsyncController({ maxConcurrency: 4, minConcurrency: 2 }); // 并发2-4
   const results = await controller.run(tasks);
 
   console.timeEnd("main");
