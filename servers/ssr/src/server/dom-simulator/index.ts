@@ -60,17 +60,17 @@ export function createDOMEnvironment(options: {
   if (typeof global.window.performance === 'undefined') {
     global.window.performance = {
       now: () => Date.now(),
-      mark: () => {},
-      measure: () => {},
+      mark: () => { },
+      measure: () => { },
       getEntriesByName: () => [],
       getEntriesByType: () => [],
-      clearMarks: () => {},
-      clearMeasures: () => {},
+      clearMarks: () => { },
+      clearMeasures: () => { },
       navigation: {} as any,
       timing: {} as any,
       getEntries: () => [],
       toJSON: () => ({})
-    } as Performance;
+    } as unknown as Performance;
   }
 
   // React 18+ 需要的一些特定API
@@ -85,15 +85,15 @@ export function createDOMEnvironment(options: {
   // 清理函数
   const cleanup = () => {
     window.close();
-    delete global.window;
-    delete global.document;
-    delete global.navigator;
-    delete global.location;
-    delete global.history;
-    delete global.HTMLElement;
-    delete global.Element;
-    delete global.Node;
-    delete global.Event;
+    delete (global as any).window;
+    delete (global as any).document;
+    delete (global as any).navigator;
+    delete (global as any).location;
+    delete (global as any).history;
+    delete (global as any).HTMLElement;
+    delete (global as any).Element;
+    delete (global as any).Node;
+    delete (global as any).Event;
   };
 
   return {

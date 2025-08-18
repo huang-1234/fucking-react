@@ -12,6 +12,7 @@
     "dev": "node dev-server.js",
     "dev:vite": "vite",
     "dev:webpack": "webpack-dev-server --config webpack.client.js",
+    "dev:webpack:ssr": "node dev-server-webpack.js",
     "build:client:vite": "vite build --outDir dist/client",
     "build:server:vite": "cross-env SSR=true vite build --ssr src/entry-server.tsx --outDir dist/server",
     "build:client:webpack": "webpack --config webpack.client.js",
@@ -39,7 +40,6 @@
   "dependencies": {
     "isomorphic-style-loader": "^5.3.2",
     "jsdom": "^24.0.0",
-    "jsom": "^1.0.0",
     "koa": "3.0.0",
     "koa-bodyparser": "4.4.1",
     "koa-static": "5.0.0",

@@ -44,8 +44,8 @@ const hydrate = () => {
 hydrate();
 
 // 热更新支持
-if (import.meta.hot) {
-  import.meta.hot.accept();
+if ((import.meta as any).hot) {
+  (import.meta as any).hot.accept();
 }
 
 // 声明全局变量
