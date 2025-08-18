@@ -6,7 +6,7 @@ import React from 'react';
 import { RouteObject } from 'react-router-dom';
 
 // 路由类型定义（扩展自 react-router-dom 的 RouteObject）
-export interface AppRouteObject extends RouteObject {
+export type AppRouteObject = RouteObject & {
   // 数据预取函数，用于SSR
   fetchData?: (params: any) => Promise<any>;
   // 是否需要认证
