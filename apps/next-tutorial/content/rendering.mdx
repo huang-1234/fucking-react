@@ -1,0 +1,266 @@
+---
+title: Next.js 渲染策略
+description: 了解 SSR、SSG、ISR 等不同的渲染策略
+---
+
+# Next.js 渲染策略
+
+Next.js 提供了多种渲染策略，让你可以根据应用需求选择最合适的方式。理解这些策略对于优化性能和用户体验至关重要。
+
+## 渲染策略概览
+
+Next.js 支持以下主要渲染策略：
+
+1. **服务器端渲染 (SSR)**：每次请求时在服务器上渲染页面
+2. **静态生成 (SSG)**：在构建时预渲染页面
+3. **增量静态再生 (ISR)**：在后台定期重新生成静态页面
+4. **客户端渲染 (CSR)**：在浏览器中渲染页面
+
+## 服务器端渲染 (SSR)
+
+服务器端渲染在每次请求时生成 HTML，适合需要实时数据或用户特定内容的页面。
+
+### 实现方式
+
+在 App Router 中，使用动态数据获取实现 SSR：
+
+```tsx
+// app/dashboard/page.tsx
+export default async function Dashboard() {
+  // 每次请求都获取最新数据
+  const data = await fetch('https://api.example.com/dashboard', {
+    cache: 'no-store'
+  }).then(res => res.json());
+
+  return (
+    <div>
+      <h1>仪表盘</h1>
+      <p>最后更新时间: {new Date().toLocaleString()}</p>
+      {/* 渲染数据 */}
+    </div>
+  );
+}
+```
+
+### 优势
+
+- 更好的 SEO，因为搜索引擎可以抓取完整的 HTML
+- 更快的首次内容绘制 (FCP)
+- 适合需要实时数据的页面
+
+### 劣势
+
+- 每次请求都需要服务器处理，可能导致更高的服务器负载
+- 页面加载时间可能受服务器性能和网络延迟影响
+
+## 静态生成 (SSG)
+
+静态生成在构建时预渲染页面，适合内容不经常变化的页面。
+
+### 实现方式
+
+在 App Router 中，默认情况下使用的是静态渲染：
+
+```tsx
+// app/about/page.tsx
+export default async function About() {
+  // 默认情况下会被缓存
+  const data = await fetch('https://api.example.com/about').then(res => res.json());
+
+  return (
+    <div>
+      <h1>关于我们</h1>
+      {/* 渲染数据 */}
+    </div>
+  );
+}
+```
+
+### 优势
+
+- 极快的页面加载速度，因为页面已预渲染
+- 降低服务器负载，因为页面只需生成一次
+- 可以部署到 CDN，进一步提高性能
+
+### 劣势
+
+- 不适合频繁更新的内容
+- 构建时间可能较长，特别是对于大型站点
+
+## 增量静态再生 (ISR)
+
+增量静态再生结合了 SSG 和 SSR 的优点，允许你在特定时间间隔后重新生成静态页面。
+
+### 实现方式
+
+在 App Router 中，使用 `revalidate` 选项实现 ISR：
+
+```tsx
+// app/products/page.tsx
+export default async function Products() {
+  // 每 60 秒重新验证数据
+  const products = await fetch('https://api.example.com/products', {
+    next: { revalidate: 60 }
+  }).then(res => res.json());
+
+  return (
+    <div>
+      <h1>产品列表</h1>
+      {/* 渲染产品 */}
+    </div>
+  );
+}
+```
+
+### 优势
+
+- 结合了 SSG 的性能优势和 SSR 的数据新鲜度
+- 减少服务器负载，因为页面不是每次请求都重新生成
+- 内容会定期更新，保持相对新鲜
+
+### 劣势
+
+- 首次访问后更新的内容可能不是最新的
+- 配置复杂度略高
+
+## 客户端渲染 (CSR)
+
+客户端渲染在浏览器中使用 JavaScript 渲染页面，适合高度交互的应用。
+
+### 实现方式
+
+在 Next.js 中，使用客户端组件实现 CSR：
+
+```tsx
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export default function ClientRenderedPage() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch('/api/data');
+      const json = await res.json();
+      setData(json);
+      setLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div>加载中...</div>;
+
+  return (
+    <div>
+      <h1>客户端渲染页面</h1>
+      {/* 渲染数据 */}
+    </div>
+  );
+}
+```
+
+### 优势
+
+- 适合高度交互的 UI
+- 减少服务器负载
+- 可以实现无刷新的页面转换
+
+### 劣势
+
+- 初始加载较慢，因为需要下载、解析和执行 JavaScript
+- SEO 可能受到影响，因为搜索引擎可能无法看到完整内容
+
+## 混合渲染
+
+Next.js 允许在同一应用中混合使用不同的渲染策略。
+
+### 实现方式
+
+```tsx
+// 静态生成的页面
+// app/blog/page.tsx
+export default async function Blog() {
+  const posts = await fetch('https://api.example.com/posts').then(res => res.json());
+
+  return (
+    <div>
+      <h1>博客文章</h1>
+      {/* 渲染文章列表 */}
+    </div>
+  );
+}
+
+// 服务器渲染的页面
+// app/profile/page.tsx
+export default async function Profile() {
+  const user = await fetch('https://api.example.com/user', {
+    cache: 'no-store'
+  }).then(res => res.json());
+
+  return (
+    <div>
+      <h1>个人资料</h1>
+      {/* 渲染用户信息 */}
+    </div>
+  );
+}
+```
+
+## 流式渲染
+
+Next.js 支持使用 React 的 Suspense 实现流式渲染，允许逐步加载页面。
+
+### 实现方式
+
+```tsx
+import { Suspense } from 'react';
+
+export default function Page() {
+  return (
+    <div>
+      <h1>我的页面</h1>
+      <Suspense fallback={<div>加载用户信息...</div>}>
+        <UserInfo />
+      </Suspense>
+      <Suspense fallback={<div>加载推荐...</div>}>
+        <Recommendations />
+      </Suspense>
+    </div>
+  );
+}
+
+async function UserInfo() {
+  const user = await fetch('https://api.example.com/user').then(res => res.json());
+  return <div>{/* 渲染用户信息 */}</div>;
+}
+
+async function Recommendations() {
+  const recs = await fetch('https://api.example.com/recommendations').then(res => res.json());
+  return <div>{/* 渲染推荐 */}</div>;
+}
+```
+
+## 选择合适的渲染策略
+
+选择渲染策略时，考虑以下因素：
+
+1. **内容更新频率**：
+   - 静态内容（如博客文章、文档）→ SSG
+   - 定期更新的内容（如产品列表）→ ISR
+   - 实时或用户特定内容（如仪表盘）→ SSR
+
+2. **性能要求**：
+   - 高性能、快速加载 → SSG/ISR
+   - 实时数据 → SSR
+   - 高交互性 → CSR + SSR
+
+3. **SEO 重要性**：
+   - SEO 关键页面 → SSG/SSR
+   - 内部或认证后页面 → 可以考虑 CSR
+
+4. **服务器资源**：
+   - 有限的服务器资源 → 更多使用 SSG/ISR
+   - 充足的服务器资源 → 可以更多使用 SSR

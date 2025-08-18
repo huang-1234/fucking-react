@@ -1,0 +1,163 @@
+---
+title: Next.js 路由系统
+description: 学习 Next.js 的文件系统路由和 App Router
+---
+
+# Next.js 路由系统
+
+Next.js 提供了一个基于文件系统的路由机制，这是 Next.js 最强大的功能之一。在 Next.js 13 之后，引入了新的 App Router，它基于 React Server Components，提供了更强大的功能。
+
+## 基础路由
+
+在 Next.js 中，路由是基于文件系统的。例如：
+
+- `app/page.tsx` → `/`
+- `app/about/page.tsx` → `/about`
+- `app/blog/page.tsx` → `/blog`
+
+## 动态路由
+
+你可以创建动态路由来处理不同的路径：
+
+```tsx
+// app/blog/[slug]/page.tsx
+export default function BlogPost({ params }) {
+  return <div>博客文章: {params.slug}</div>;
+}
+```
+
+这将匹配 `/blog/hello-world`、`/blog/learn-nextjs` 等路径。
+
+## 路由组
+
+你可以使用括号 `()` 创建路由组，这不会影响 URL 路径：
+
+```
+app/
+├── (marketing)/ # 不影响 URL
+│   ├── about/
+│   │   └── page.tsx # /about
+│   └── blog/
+│       └── page.tsx # /blog
+└── (shop)/
+    ├── cart/
+    │   └── page.tsx # /cart
+    └── checkout/
+        └── page.tsx # /checkout
+```
+
+## 布局
+
+你可以使用 `layout.tsx` 文件创建共享布局：
+
+```tsx
+// app/layout.tsx
+export default function RootLayout({ children }) {
+  return (
+    <html lang="zh-CN">
+      <body>
+        <header>网站头部</header>
+        {children}
+        <footer>网站底部</footer>
+      </body>
+    </html>
+  );
+}
+```
+
+## 嵌套布局
+
+你可以创建嵌套布局，每个布局只应用于其文件夹及其子文件夹：
+
+```tsx
+// app/blog/layout.tsx
+export default function BlogLayout({ children }) {
+  return (
+    <div>
+      <aside>博客侧边栏</aside>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
+## 加载状态
+
+你可以使用 `loading.tsx` 文件创建加载状态：
+
+```tsx
+// app/blog/loading.tsx
+export default function Loading() {
+  return <div>加载中...</div>;
+}
+```
+
+## 错误处理
+
+你可以使用 `error.tsx` 文件处理错误：
+
+```tsx
+// app/blog/error.tsx
+'use client'; // 错误组件必须是客户端组件
+
+export default function Error({ error, reset }) {
+  return (
+    <div>
+      <h2>出错了！</h2>
+      <p>{error.message}</p>
+      <button onClick={() => reset()}>重试</button>
+    </div>
+  );
+}
+```
+
+## 路由拦截
+
+你可以使用 `(.)` 或 `(..)` 语法进行路由拦截，这对于创建模态窗口非常有用：
+
+```
+app/
+├── feed/
+│   └── page.tsx
+└── photo/
+    ├── [id]/
+    │   └── page.tsx
+    └── @modal/
+        └── (.)photo/
+            └── [id]/
+                └── page.tsx # 拦截 /photo/[id]
+```
+
+## 并行路由
+
+你可以使用 `@folder` 语法创建并行路由，这允许在同一个布局中渲染多个页面：
+
+```tsx
+// app/layout.tsx
+export default function Layout({ children, team, analytics }) {
+  return (
+    <>
+      {children}
+      {team}
+      {analytics}
+    </>
+  );
+}
+```
+
+```
+app/
+├── page.tsx
+├── @team/
+│   └── page.tsx
+└── @analytics/
+    └── page.tsx
+```
+
+## 最佳实践
+
+1. 使用有意义的文件夹结构组织路由
+2. 利用路由组隔离不同的功能区域
+3. 使用共享布局减少重复代码
+4. 实现适当的加载和错误状态提升用户体验
+5. 考虑使用路由拦截和并行路由实现高级 UI 模式

@@ -1,0 +1,215 @@
+---
+title: Next.js 数据获取
+description: 掌握服务器组件和客户端组件的数据获取方式
+---
+
+# Next.js 数据获取
+
+Next.js 提供了多种数据获取方式，包括服务器组件和客户端组件的数据获取。在 App Router 中，React Server Components 是默认的，它们允许你直接在服务器上获取数据。
+
+## 服务器组件数据获取
+
+在服务器组件中，你可以直接使用 `async/await` 获取数据，无需使用 `useEffect` 或数据获取库：
+
+```tsx
+// app/users/page.tsx
+async function getUsers() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users');
+
+  if (!res.ok) {
+    throw new Error('获取用户失败');
+  }
+
+  return res.json();
+}
+
+export default async function UsersPage() {
+  const users = await getUsers();
+
+  return (
+    <div>
+      <h1>用户列表</h1>
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### 静态数据获取
+
+默认情况下，`fetch` 请求会被自动缓存。这等同于 `getStaticProps` 的行为：
+
+```tsx
+// 默认情况下会被缓存（等同于 getStaticProps）
+fetch('https://...');
+```
+
+### 动态数据获取
+
+如果你需要每次请求都获取最新数据，可以使用 `cache: 'no-store'` 选项：
+
+```tsx
+// 每次请求都获取最新数据（等同于 getServerSideProps）
+fetch('https://...', { cache: 'no-store' });
+```
+
+### 增量静态再生 (ISR)
+
+你可以使用 `next.revalidate` 选项实现 ISR：
+
+```tsx
+// 每 60 秒重新验证数据
+fetch('https://...', { next: { revalidate: 60 } });
+```
+
+## 客户端组件数据获取
+
+在客户端组件中，你可以使用 React 的 `useEffect` 或数据获取库如 SWR 或 React Query：
+
+```tsx
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export default function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+        const data = await res.json();
+        setUser(data);
+      } catch (error) {
+        console.error('获取用户失败', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUser();
+  }, [userId]);
+
+  if (loading) return <div>加载中...</div>;
+  if (!user) return <div>未找到用户</div>;
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>邮箱: {user.email}</p>
+      <p>电话: {user.phone}</p>
+    </div>
+  );
+}
+```
+
+### 使用 SWR
+
+SWR 是一个用于数据获取的 React Hooks 库，它具有缓存、重新验证、聚焦时重新获取等功能：
+
+```tsx
+'use client';
+
+import useSWR from 'swr';
+
+const fetcher = (...args) => fetch(...args).then(res => res.json());
+
+export default function UserProfile({ userId }) {
+  const { data, error, isLoading } = useSWR(
+    `https://jsonplaceholder.typicode.com/users/${userId}`,
+    fetcher
+  );
+
+  if (isLoading) return <div>加载中...</div>;
+  if (error) return <div>获取用户失败</div>;
+
+  return (
+    <div>
+      <h1>{data.name}</h1>
+      <p>邮箱: {data.email}</p>
+      <p>电话: {data.phone}</p>
+    </div>
+  );
+}
+```
+
+## 路由处理程序
+
+你可以使用路由处理程序创建 API 端点：
+
+```tsx
+// app/api/users/route.ts
+export async function GET() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users');
+  const data = await res.json();
+
+  return Response.json(data);
+}
+
+export async function POST(request) {
+  const body = await request.json();
+
+  // 处理数据...
+
+  return Response.json({ success: true });
+}
+```
+
+## 最佳实践
+
+1. **尽可能使用服务器组件获取数据**：这可以减少客户端 JavaScript 的大小，提高性能和 SEO。
+
+2. **合理使用缓存策略**：根据数据的性质选择适当的缓存策略。
+
+3. **使用并行数据获取**：同时获取多个数据源以减少等待时间。
+
+```tsx
+async function Dashboard() {
+  // 并行获取数据
+  const [users, posts, comments] = await Promise.all([
+    getUsers(),
+    getPosts(),
+    getComments(),
+  ]);
+
+  // ...
+}
+```
+
+4. **实现流式渲染**：使用 Suspense 和流式渲染逐步加载页面。
+
+```tsx
+import { Suspense } from 'react';
+
+export default function Dashboard() {
+  return (
+    <div>
+      <h1>仪表盘</h1>
+      <Suspense fallback={<div>加载用户...</div>}>
+        <UserList />
+      </Suspense>
+      <Suspense fallback={<div>加载统计...</div>}>
+        <Stats />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+5. **错误处理**：实现适当的错误处理，提供良好的用户体验。
+
+```tsx
+async function getData() {
+  try {
+    // 获取数据...
+  } catch (error) {
+    console.error('获取数据失败:', error);
+    throw new Error('无法加载数据');
+  }
+}
+```
