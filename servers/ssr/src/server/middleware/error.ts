@@ -5,7 +5,6 @@
 import { Context, Next } from 'koa';
 import fs from 'fs';
 import path from 'path';
-import config from '../config';
 
 // 错误日志记录
 const logError = (ctx: Context, error: Error) => {
@@ -31,11 +30,10 @@ const logError = (ctx: Context, error: Error) => {
   };
 
   // 在开发环境下打印到控制台
-  if (config.env === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     console.error('\n[ERROR]', JSON.stringify(logEntry, null, 2));
   } else {
     // 在生产环境下可以将错误写入日志文件或发送到日志服务
-    // 这里简单实现写入文件的方式
     const logDir = path.resolve(process.cwd(), 'logs');
 
     // 确保日志目录存在
@@ -50,7 +48,7 @@ const logError = (ctx: Context, error: Error) => {
 
 // 生成错误HTML页面
 const generateErrorHtml = (status: number, message: string, stack?: string) => {
-  const isDev = config.env === 'development';
+  const isDev = process.env.NODE_ENV !== 'production';
 
   return `<!DOCTYPE html>
 <html>
@@ -113,14 +111,14 @@ export default function errorMiddleware() {
       ctx.type = 'html';
 
       // 生成错误页面
-      const errorMessage = config.env === 'production'
+      const errorMessage = process.env.NODE_ENV === 'production'
         ? '服务器内部错误，请稍后再试'
         : (err as Error).message || '未知错误';
 
       ctx.body = generateErrorHtml(
         ctx.status,
         errorMessage,
-        config.env === 'development' ? (err as Error).stack : undefined
+        process.env.NODE_ENV !== 'production' ? (err as Error).stack : undefined
       );
 
       // 触发应用级错误事件

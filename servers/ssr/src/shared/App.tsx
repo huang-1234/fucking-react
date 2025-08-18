@@ -4,7 +4,8 @@
  */
 import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import routes from './routes';
+import { routes } from './router';
+import { isServer } from './utils/env';
 
 // 加载指示器组件
 const Loading = () => (
@@ -51,9 +52,9 @@ class ErrorBoundary extends React.Component<
         }}>
           <h2>出错了</h2>
           <p>组件渲染过程中发生错误。</p>
-          {typeof window !== 'undefined' && (
+          {!isServer && (
             <button
-              onClick={() => this.setState({ hasError: false, error: null })}
+              onClick={() => window.location.reload()}
               style={{
                 backgroundColor: '#e53e3e',
                 color: 'white',
@@ -70,32 +71,30 @@ class ErrorBoundary extends React.Component<
       );
     }
 
-    return this.props.children;
+    return <>{this.props.children}</>;
   }
 }
 
 // 应用根组件
 const App: React.FC = () => {
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<Loading />}>
-        <Routes>
-          {routes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={
-                <ErrorBoundary>
-                  <Suspense fallback={<Loading />}>
-                    <route.component />
-                  </Suspense>
-                </ErrorBoundary>
-              }
-            />
-          ))}
-        </Routes>
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        {routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              <ErrorBoundary>
+                <Suspense fallback={<Loading />}>
+                  {route.element}
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
+        ))}
+      </Routes>
+    </Suspense>
   );
 };
 

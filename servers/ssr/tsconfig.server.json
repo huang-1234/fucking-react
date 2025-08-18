@@ -2,8 +2,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "CommonJS",
-    "outDir": "./dist",
-    "noEmit": false
+    "moduleResolution": "node",
+    "outDir": "dist/server",
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "types": ["node", "jsdom"],
+    "skipLibCheck": true
   },
-  "include": ["src/server/**/*", "src/index.ts"]
+  "include": ["src/server/**/*", "src/shared/**/*", "src/types/**/*"],
+  "exclude": ["src/client/**/*", "**/*.test.ts", "**/*.spec.ts"]
 }
