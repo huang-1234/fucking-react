@@ -1,14 +1,14 @@
 /**
  * Vitest 测试环境设置
  */
-import { beforeAll, afterAll, afterEach } from 'vitest';
+import { beforeAll, afterAll, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 // 全局设置
 beforeAll(() => {
   // 设置全局环境变量或模拟
-  global.IS_REACT_ACT_ENVIRONMENT = true;
+  (global as any).IS_REACT_ACT_ENVIRONMENT = true;
 });
 
 // 每个测试后清理
