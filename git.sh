@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="feat: init ssr in vite and webpack"
+ciMessage="feat: init ssr test"
 git add .
 
 git ci -m "$ciAction $ciMessage"
