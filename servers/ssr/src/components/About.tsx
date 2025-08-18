@@ -2,107 +2,95 @@
  * 关于页面组件
  */
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import Layout from '../shared/components/Layout';
 import { Link } from 'react-router-dom';
 
 const About: React.FC = () => {
   return (
-    <div className="about-page">
-      <Helmet>
-        <title>关于我们 - React 19 SSR 演示</title>
-        <meta name="description" content="关于React 19 SSR演示项目的详细介绍" />
-      </Helmet>
-
-      <header className="header">
-        <div className="container">
-          <h1>关于我们</h1>
-          <p className="subtitle">了解React 19 SSR演示项目</p>
-        </div>
-      </header>
-
-      <main className="main">
-        <div className="container">
-          <section className="about-section">
-            <h2>项目介绍</h2>
-            <p>
-              React 19 SSR 演示项目是一个基于React 19、Koa和TypeScript实现的高性能服务端渲染应用。
-              该项目旨在展示React 19中的最新SSR功能，特别是流式渲染和Suspense的服务端支持。
-            </p>
-            <p>
-              本项目采用了多级缓存策略、集群模式和流式渲染等技术，能够处理高流量场景下的服务端渲染需求。
-            </p>
-          </section>
-
-          <section className="about-section">
-            <h2>技术栈</h2>
-            <ul className="tech-list">
-              <li>
-                <strong>React 19</strong>
-                <span>使用最新的React特性，包括流式SSR和服务端Suspense</span>
-              </li>
-              <li>
-                <strong>Koa</strong>
-                <span>轻量级高性能Node.js服务器框架</span>
-              </li>
-              <li>
-                <strong>TypeScript</strong>
-                <span>提供类型安全的JavaScript超集</span>
-              </li>
-              <li>
-                <strong>Vite</strong>
-                <span>现代前端构建工具，提供极速的开发体验</span>
-              </li>
-            </ul>
-          </section>
-
-          <section className="about-section">
-            <h2>性能优化</h2>
-            <p>
-              本项目实现了多种性能优化策略，包括：
-            </p>
-            <ul>
-              <li>流式渲染 - 更快的首屏内容展示</li>
-              <li>多级缓存 - 页面级、组件级和数据级缓存</li>
-              <li>集群模式 - 充分利用多核CPU处理能力</li>
-              <li>代码分割 - 按需加载页面和组件</li>
-              <li>静态资源优化 - 压缩和CDN分发</li>
-            </ul>
-          </section>
-
-          <section className="about-section">
-            <h2>团队</h2>
-            <p>
-              我们是一群热爱React和服务端渲染技术的开发者，致力于探索前端技术的最佳实践。
-            </p>
-          </section>
-
-          <div className="back-link">
-            <Link to="/" className="button">返回首页</Link>
+    <Layout
+      title="关于我们 - React 19 SSR 演示"
+      description="关于React 19 SSR演示项目的详细介绍"
+    >
+      <div className="about-page">
+        <header className="about-header">
+          <div className="container">
+            <h1>关于我们</h1>
+            <p className="subtitle">了解React 19 SSR演示项目</p>
           </div>
-        </div>
-      </main>
+        </header>
 
-      <footer className="footer">
-        <div className="container">
-          <p>&copy; {new Date().getFullYear()} React 19 SSR 演示</p>
-        </div>
-      </footer>
+        <main className="about-content">
+          <div className="container">
+            <section className="about-section">
+              <h2>项目介绍</h2>
+              <p>
+                React 19 SSR 演示项目是一个基于React 19、Koa和TypeScript实现的高性能服务端渲染应用。
+                该项目旨在展示React 19中的最新SSR功能，特别是流式渲染和Suspense的服务端支持。
+              </p>
+              <p>
+                本项目采用了多级缓存策略、集群模式和流式渲染等技术，能够处理高流量场景下的服务端渲染需求。
+              </p>
+            </section>
+
+            <section className="about-section">
+              <h2>技术栈</h2>
+              <ul className="tech-list">
+                <li>
+                  <strong>React 19</strong>
+                  <span>使用最新的React特性，包括流式SSR和服务端Suspense</span>
+                </li>
+                <li>
+                  <strong>Koa</strong>
+                  <span>轻量级高性能Node.js服务器框架</span>
+                </li>
+                <li>
+                  <strong>TypeScript</strong>
+                  <span>提供类型安全的JavaScript超集</span>
+                </li>
+                <li>
+                  <strong>Vite & Webpack</strong>
+                  <span>支持多种构建工具，提供灵活的开发体验</span>
+                </li>
+              </ul>
+            </section>
+
+            <section className="about-section">
+              <h2>性能优化</h2>
+              <p>
+                本项目实现了多种性能优化策略，包括：
+              </p>
+              <ul>
+                <li>流式渲染 - 更快的首屏内容展示</li>
+                <li>多级缓存 - 页面级、组件级和数据级缓存</li>
+                <li>集群模式 - 充分利用多核CPU处理能力</li>
+                <li>代码分割 - 按需加载页面和组件</li>
+                <li>静态资源优化 - 压缩和CDN分发</li>
+              </ul>
+            </section>
+
+            <section className="about-section">
+              <h2>团队</h2>
+              <p>
+                我们是一群热爱React和服务端渲染技术的开发者，致力于探索前端技术的最佳实践。
+              </p>
+            </section>
+
+            <div className="back-link">
+              <Link to="/" className="button">返回首页</Link>
+            </div>
+          </div>
+        </main>
+      </div>
 
       <style jsx>{`
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-
-        .header {
+        .about-header {
           background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
           color: white;
           padding: 60px 0;
           text-align: center;
         }
 
-        .header h1 {
+        .about-header h1 {
           font-size: 3rem;
           margin-bottom: 1rem;
         }
@@ -112,7 +100,7 @@ const About: React.FC = () => {
           opacity: 0.9;
         }
 
-        .main {
+        .about-content {
           padding: 60px 0;
         }
 
@@ -189,15 +177,8 @@ const About: React.FC = () => {
         .button:hover {
           background: #1d4ed8;
         }
-
-        .footer {
-          background: #1e293b;
-          color: white;
-          padding: 30px 0;
-          text-align: center;
-        }
       `}</style>
-    </div>
+    </Layout>
   );
 };
 

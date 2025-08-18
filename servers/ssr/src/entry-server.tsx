@@ -4,9 +4,10 @@
  */
 import React from 'react';
 import { StaticRouter } from 'react-router-dom/server';
-// import { HelmetProvider, HelmetServerState } from 'react-helmet-async';
-import pkg, { HelmetServerState } from 'react-helmet-async';
+// 修复 CommonJS 模块导入问题
+import pkg from 'react-helmet-async';
 const { HelmetProvider } = pkg;
+import type { HelmetServerState } from 'react-helmet-async';
 import App from './shared/App';
 import { AppProvider, fetchInitialState } from './shared/store';
 import routes from './shared/routes';

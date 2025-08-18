@@ -2,37 +2,59 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
-// https://vitejs.dev/config/
-export default defineConfig({
+// 共享配置
+const sharedConfig = {
   plugins: [react()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src')
+      '@': resolve(__dirname, 'src')
     }
-  },
-  build: {
-    ssr: true,
-    outDir: 'dist',
-    rollupOptions: {
-      input: {
-        client: resolve(__dirname, 'src/client/entry-client.tsx'),
-        server: resolve(__dirname, 'src/entry-server.tsx')
-      },
-      output: {
-        entryFileNames: '[name].js',
-        chunkFileNames: '[name].js',
-        assetFileNames: '[name].[ext]'
-      }
-    }
-  },
-  ssr: {
-    noExternal: ['react-router-dom']
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
-  },
-  server: {
-    // Add middleware to handle SSR during development
-    middlewareMode: true
   }
+};
+
+// https://vitejs.dev/config/
+export default defineConfig(({ command, mode }) => {
+  const isBuild = command === 'build';
+  const isSSR = process.env.SSR === 'true';
+
+  // SSR 构建配置
+  if (isBuild && isSSR) {
+    return {
+      ...sharedConfig,
+      build: {
+        ssr: true,
+        outDir: 'dist/server',
+        rollupOptions: {
+          input: 'src/entry-server.tsx',
+          output: {
+            format: 'cjs'
+          }
+        }
+      },
+      ssr: {
+        noExternal: ['react-helmet-async']
+      }
+    };
+  }
+
+  // 客户端构建配置
+  if (isBuild) {
+    return {
+      ...sharedConfig,
+      build: {
+        outDir: 'dist/client',
+        rollupOptions: {
+          input: 'src/client/entry-client.tsx'
+        }
+      }
+    };
+  }
+
+  // 开发配置
+  return {
+    ...sharedConfig,
+    server: {
+      port: 3000
+    }
+  };
 });

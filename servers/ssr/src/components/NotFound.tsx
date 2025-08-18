@@ -2,23 +2,23 @@
  * 404页面组件
  */
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import Layout from '../shared/components/Layout';
 import { Link } from 'react-router-dom';
 
 const NotFound: React.FC = () => {
   return (
-    <div className="not-found-page">
-      <Helmet>
-        <title>页面未找到 - React 19 SSR 演示</title>
-        <meta name="description" content="404 - 页面未找到" />
-      </Helmet>
-
-      <div className="container">
-        <div className="content">
-          <h1>404</h1>
-          <h2>页面未找到</h2>
-          <p>您访问的页面不存在或已被移除。</p>
-          <Link to="/" className="button">返回首页</Link>
+    <Layout
+      title="页面未找到 - React 19 SSR 演示"
+      description="404 - 页面未找到"
+    >
+      <div className="not-found-page">
+        <div className="container">
+          <div className="content">
+            <h1>404</h1>
+            <h2>页面未找到</h2>
+            <p>您访问的页面不存在或已被移除。</p>
+            <Link to="/" className="button">返回首页</Link>
+          </div>
         </div>
       </div>
 
@@ -27,7 +27,7 @@ const NotFound: React.FC = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 100vh;
+          min-height: 70vh;
           background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
@@ -81,7 +81,7 @@ const NotFound: React.FC = () => {
           transform: translateY(-2px);
         }
       `}</style>
-    </div>
+    </Layout>
   );
 };
 
