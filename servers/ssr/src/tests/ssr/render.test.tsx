@@ -2,7 +2,7 @@
  * SSR渲染一致性测试
  * 测试服务端渲染和客户端渲染的一致性
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { render } from '@testing-library/react';
@@ -40,16 +40,17 @@ describe('SSR渲染一致性测试', () => {
   let cleanup: () => void;
 
   beforeEach(() => {
-    // 设置DOM环境
-    try {
-      const env = createDOMEnvironment({
-        url: 'http://localhost',
-        referrer: ''
-      });
-      cleanup = env.cleanup;
-    } catch (error) {
-      console.error('DOM环境设置失败:', error);
-    }
+    // 使用vi.mock模拟DOM环境
+    vi.mock('../../server/dom-simulator', () => ({
+      createDOMEnvironment: vi.fn(() => ({
+        cleanup: vi.fn(),
+        window: global.window,
+        document: global.document
+      }))
+    }));
+
+    // 提供一个空的清理函数
+    cleanup = () => {};
   });
 
   afterEach(() => {

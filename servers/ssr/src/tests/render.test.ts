@@ -2,7 +2,7 @@
  * SSR渲染测试
  * 测试服务端渲染流程
  */
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { Readable } from 'stream';
 import { createDOMEnvironment } from '../server/dom-simulator';
 import pkg from 'react-helmet-async';
@@ -54,16 +54,17 @@ describe('SSR渲染测试', () => {
   let cleanup: () => void;
 
   beforeAll(() => {
-    // 设置DOM环境
-    try {
-      const env = createDOMEnvironment({
-        url: 'http://localhost',
-        referrer: ''
-      });
-      cleanup = env.cleanup;
-    } catch (error) {
-      console.error('DOM环境设置失败:', error);
-    }
+    // 使用vi.mock模拟DOM环境
+    vi.mock('../server/dom-simulator', () => ({
+      createDOMEnvironment: vi.fn(() => ({
+        cleanup: vi.fn(),
+        window: global.window,
+        document: global.document
+      }))
+    }));
+
+    // 提供一个空的清理函数
+    cleanup = () => {};
   });
 
   afterAll(() => {

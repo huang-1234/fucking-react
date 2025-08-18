@@ -39,24 +39,24 @@ describe('客户端激活(Hydration)测试', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    // 设置DOM环境
-    try {
-      const env = createDOMEnvironment({
-        url: 'http://localhost',
-        referrer: ''
-      });
-      cleanup = env.cleanup;
+    // 使用vi.mock模拟DOM环境
+    vi.mock('../../server/dom-simulator', () => ({
+      createDOMEnvironment: vi.fn(() => ({
+        cleanup: vi.fn(),
+        window: global.window,
+        document: global.document
+      }))
+    }));
 
-      // 创建容器
-      container = document.createElement('div');
-      container.id = 'root';
-      document.body.appendChild(container);
+    // 模拟document和container
+    document.body.innerHTML = '<div id="root"></div>';
+    container = document.getElementById('root') as HTMLElement;
 
-      // 模拟window.__PRELOADED_STATE__
-      window.__PRELOADED_STATE__ = initialState;
-    } catch (error) {
-      console.error('DOM环境设置失败:', error);
-    }
+    // 模拟window.__PRELOADED_STATE__
+    window.__PRELOADED_STATE__ = initialState;
+
+    // 提供一个空的清理函数
+    cleanup = () => {};
   });
 
   afterEach(() => {
