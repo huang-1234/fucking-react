@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="feat: fix ssr test error"
+ciMessage="feat: fix props to schema plugin"
 git add .
 
 git ci -m "$ciAction $ciMessage"

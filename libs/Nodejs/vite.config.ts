@@ -5,7 +5,7 @@ import mdx from "@mdx-js/rollup";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { createHtmlPlugin } from 'vite-plugin-html'
-import { PropsToSchemaVite } from './plugins/props-to-schema/react';
+import VitePropsToFormilyPlugin from './plugins/props-to-schema/vite-plugin-props-to-formily';
 import { nodePolyfills } from 'vite-plugin-node-polyfills'; // 引入插件
 
 // 将 https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js 加载script中去
@@ -27,11 +27,7 @@ export default defineConfig({
       include: ['events', 'stream', 'util'], // 按需添加缺失模块
       globals: { Buffer: true } // 可选：解决 Buffer 未定义问题
     }),
-    PropsToSchemaVite({
-      virtualModuleId: 'virtual:formily-props',
-      debug: true, // 开启调试日志
-      include: ['**/demos/*.tsx'] // 只处理 demos 目录下的 tsx 文件
-    }), // 添加 props 转 schema 插件
+    VitePropsToFormilyPlugin(), // 添加 props 转 schema 插件
     //  将 https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js 加载html标签中中去
     createHtmlPlugin({
       minify: true,
