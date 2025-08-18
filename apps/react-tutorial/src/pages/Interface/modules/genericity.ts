@@ -1,3 +1,4 @@
+export const typeGeneric = `
 /**
  * TS 泛型编程
  */
@@ -36,3 +37,4 @@ type MyReadonlyPerson = MyReadonly<Person>;
 type MyRequiredPerson = MyRequired<PartialPerson>;
 type MyPickPerson = MyPick<Person, 'name'>;
 type MyExcludePerson = MyExclude<keyof Person, 'age'>;
+`
