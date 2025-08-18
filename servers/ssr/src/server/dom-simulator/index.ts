@@ -24,14 +24,20 @@ export function createDOMEnvironment(options: {
   } = options;
 
   // 创建JSDOM实例
-  const dom = new JSDOM(html, {
+  const jsdomOptions: any = {
     url: url || 'http://localhost',
-    referrer: referrer ? 'http://localhost' : '',
     contentType,
     userAgent,
     pretendToBeVisual: true, // 启用模拟渲染
     runScripts: 'outside-only' // 不自动执行脚本，但允许手动执行
-  });
+  };
+
+  // 只有在提供了有效的referrer时才添加
+  if (referrer && referrer.startsWith('http')) {
+    jsdomOptions.referrer = referrer;
+  }
+
+  const dom = new JSDOM(html, jsdomOptions);
 
   // 全局注入DOM/BOM对象
   const { window } = dom;
