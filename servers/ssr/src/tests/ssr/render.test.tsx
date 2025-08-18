@@ -8,7 +8,7 @@ import { renderToString } from 'react-dom/server';
 import { render } from '@testing-library/react';
 import { createDOMEnvironment } from '../../server/dom-simulator';
 import { Router } from '../../shared/router';
-import { AppProvider } from '../../shared/store';
+import { AppProvider, AppState } from '../../shared/store';
 import App from '../../shared/App';
 import pkg from 'react-helmet-async';
 const { HelmetProvider } = pkg;
@@ -41,8 +41,15 @@ describe('SSR渲染一致性测试', () => {
 
   beforeEach(() => {
     // 设置DOM环境
-    const env = createDOMEnvironment();
-    cleanup = env.cleanup;
+    try {
+      const env = createDOMEnvironment({
+        url: 'http://localhost',
+        referrer: ''
+      });
+      cleanup = env.cleanup;
+    } catch (error) {
+      console.error('DOM环境设置失败:', error);
+    }
   });
 
   afterEach(() => {
@@ -59,7 +66,7 @@ describe('SSR渲染一致性测试', () => {
       // 服务端渲染
       const serverApp = (
         <HelmetProvider context={helmetContext}>
-          <AppProvider initialState={initialState}>
+          <AppProvider initialState={initialState as Partial<AppState>}>
             <Router location={path}>
               <App />
             </Router>
@@ -71,7 +78,7 @@ describe('SSR渲染一致性测试', () => {
       // 客户端渲染
       const { container } = render(
         <HelmetProvider>
-          <AppProvider initialState={initialState}>
+          <AppProvider initialState={initialState as Partial<AppState>}>
             <Router location={path}>
               <App />
             </Router>

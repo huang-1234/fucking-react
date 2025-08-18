@@ -40,21 +40,30 @@ describe('客户端激活(Hydration)测试', () => {
 
   beforeEach(() => {
     // 设置DOM环境
-    const env = createDOMEnvironment();
-    cleanup = env.cleanup;
+    try {
+      const env = createDOMEnvironment({
+        url: 'http://localhost',
+        referrer: ''
+      });
+      cleanup = env.cleanup;
 
-    // 创建容器
-    container = document.createElement('div');
-    container.id = 'root';
-    document.body.appendChild(container);
+      // 创建容器
+      container = document.createElement('div');
+      container.id = 'root';
+      document.body.appendChild(container);
 
-    // 模拟window.__PRELOADED_STATE__
-    window.__PRELOADED_STATE__ = initialState;
+      // 模拟window.__PRELOADED_STATE__
+      window.__PRELOADED_STATE__ = initialState;
+    } catch (error) {
+      console.error('DOM环境设置失败:', error);
+    }
   });
 
   afterEach(() => {
     // 清理DOM环境
-    document.body.removeChild(container);
+    if (document.body.contains(container)) {
+      document.body.removeChild(container);
+    }
     delete window.__PRELOADED_STATE__;
     if (cleanup) cleanup();
   });

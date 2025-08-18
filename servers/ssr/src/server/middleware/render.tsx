@@ -48,6 +48,22 @@ const getTemplate = (): string => {
   return DEFAULT_TEMPLATE;
 };
 
+// SSR渲染选项
+export interface SSROptions {
+  url: string;              // 请求URL
+  template?: string;         // HTML模板
+  manifest?: Record<string, string[]>;  // 资源清单
+  preloadedState?: object;  // 预加载状态
+  context?: object;         // 上下文对象
+}
+
+// SSR渲染结果
+export interface SSRResult {
+  stream: Readable;         // HTML流
+  state: object;            // 状态对象
+  head: Record<string, string>;  // 头部信息
+}
+
 // 创建HTML流
 function createHtmlStream(
   template: string,
@@ -80,6 +96,103 @@ function createHtmlStream(
   return stream;
 }
 
+// 渲染React应用到流
+export async function renderToStream(options: SSROptions): Promise<SSRResult> {
+  const { url, template = getTemplate(), preloadedState = {}, context = {} } = options;
+
+  // 激活DOM环境
+  const { cleanup } = createDOMEnvironment({
+    url: 'http://localhost',
+    referrer: ''
+  });
+
+  try {
+    // 清除之前收集的样式
+    clearCollectedStyles();
+
+    // 获取初始状态
+    const initialState = await fetchInitialState(url);
+
+    // 匹配路由
+    const route = matchRoute(url);
+
+    // 获取路由数据
+    if (route && route.fetchData) {
+      const routeData = await route.fetchData({ url, ctx: context });
+      initialState.pageData = {
+        ...initialState.pageData,
+        [url]: routeData
+      };
+    }
+
+    // 用于收集头部信息
+    const helmetContext = {};
+
+    // 渲染应用
+    const appJsx = (
+      <HelmetProvider context={helmetContext}>
+        <AppProvider initialState={initialState}>
+          <Router location={url}>
+            <App />
+          </Router>
+        </AppProvider>
+      </HelmetProvider>
+    );
+
+    // 流式渲染
+    const streamPromise = new Promise<Readable>((resolve, reject) => {
+      let content = '';
+      const stream = renderToPipeableStream(appJsx, {
+        bootstrapScripts: ['/assets/main.js'],
+        onShellReady() {
+          try {
+            // 提取头部信息
+            const { helmet } = helmetContext as { helmet: HelmetServerState };
+            const head = {
+              title: helmet.title.toString(),
+              meta: helmet.meta.toString(),
+              links: helmet.link.toString(),
+              scripts: helmet.script.toString()
+            };
+
+            // 获取收集到的样式
+            const styles = getCollectedStyles();
+
+            // 创建HTML流
+            const htmlStream = createHtmlStream('', content, head, initialState, styles);
+
+            resolve(htmlStream);
+          } catch (error) {
+            reject(error);
+          }
+        },
+        onError(error) {
+          console.error('流式渲染错误:', error);
+          reject(error);
+        }
+      });
+    });
+
+    // 提取头部信息
+    const { helmet } = helmetContext as { helmet: HelmetServerState };
+    const head = {
+      title: helmet.title.toString(),
+      meta: helmet.meta.toString(),
+      links: helmet.link.toString(),
+      scripts: helmet.script.toString()
+    };
+
+    return {
+      stream: await streamPromise,
+      state: initialState,
+      head
+    };
+  } finally {
+    // 清理DOM环境
+    cleanup();
+  }
+}
+
 // SSR渲染中间件
 export default function renderMiddleware() {
   return async (ctx: Context, next: Next) => {
@@ -94,40 +207,11 @@ export default function renderMiddleware() {
     }
 
     try {
-      // 激活DOM环境
-      const { cleanup } = createDOMEnvironment();
-
-      // 清除之前收集的样式
-      clearCollectedStyles();
-
-      // 获取初始状态
-      const initialState = await fetchInitialState(ctx.url);
-
-      // 匹配路由
-      const route = matchRoute(ctx.url);
-
-      // 获取路由数据
-      if (route && route.fetchData) {
-        const routeData = await route.fetchData({ url: ctx.url, ctx });
-        initialState.pageData = {
-          ...initialState.pageData,
-          [ctx.url]: routeData
-        };
-      }
-
-      // 用于收集头部信息
-      const helmetContext = {};
-
-      // 渲染应用
-      const appJsx = (
-        <HelmetProvider context={helmetContext}>
-          <AppProvider initialState={initialState}>
-            <Router location={ctx.url}>
-              <App />
-            </Router>
-          </AppProvider>
-        </HelmetProvider>
-      );
+      // 渲染React应用
+      const { stream, state, head } = await renderToStream({
+        url: ctx.url,
+        context: { ctx }
+      });
 
       // 设置响应头
       ctx.status = 200;
@@ -135,46 +219,8 @@ export default function renderMiddleware() {
       ctx.set('Content-Type', 'text/html; charset=utf-8');
       ctx.set('Transfer-Encoding', 'chunked');
 
-      // 流式渲染
-      await new Promise<void>((resolve, reject) => {
-        const stream = renderToPipeableStream(appJsx, {
-          bootstrapScripts: ['/assets/main.js'],
-          onShellReady() {
-            try {
-              // 提取头部信息
-              const { helmet } = helmetContext as { helmet: HelmetServerState };
-              const head = {
-                title: helmet.title.toString(),
-                meta: helmet.meta.toString(),
-                links: helmet.link.toString(),
-                scripts: helmet.script.toString()
-              };
-
-              // 获取收集到的样式
-              const styles = getCollectedStyles();
-
-              // 获取HTML模板
-              const template = getTemplate();
-
-              // 创建HTML流
-              const htmlStream = createHtmlStream('', '', head, initialState, styles);
-
-              // 设置响应体为流
-              ctx.body = htmlStream;
-              resolve();
-            } catch (error) {
-              reject(error);
-            }
-          },
-          onError(error) {
-            console.error('流式渲染错误:', error);
-            reject(error);
-          }
-        });
-      });
-
-      // 清理DOM环境
-      cleanup();
+      // 设置响应体为流
+      ctx.body = stream;
 
     } catch (err) {
       console.error('SSR渲染错误:', err);

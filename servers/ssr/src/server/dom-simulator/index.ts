@@ -25,8 +25,8 @@ export function createDOMEnvironment(options: {
 
   // 创建JSDOM实例
   const dom = new JSDOM(html, {
-    url,
-    referrer,
+    url: url || 'http://localhost',
+    referrer: referrer ? 'http://localhost' : '',
     contentType,
     userAgent,
     pretendToBeVisual: true, // 启用模拟渲染
