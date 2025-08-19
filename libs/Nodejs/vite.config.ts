@@ -74,6 +74,7 @@ export default defineConfig({
     alias: {
       // 相对路径
       '@': resolve(__dirname, './src'),
+      '@plugins': resolve(__dirname, 'src/plugins') // 示例别名[2](@ref)
       // 绝对路径
     }
   },

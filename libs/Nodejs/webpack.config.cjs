@@ -5,7 +5,7 @@ const remarkGfm = require('remark-gfm');
 const rehypeHighlight = require('rehype-highlight');
 
 // 导入插件
-const { WebpackPropsToFormilyPlugin } = require('./src/plugins/props-to-schema/webpack-plugin-props-to-formily');
+const { WebpackPropsToFormilyPlugin } = require('./src/plugins/props-to-schema/webpack-plugin-props-to-formily.ts');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
@@ -16,9 +16,10 @@ module.exports = {
     clean: true,
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.jsx'],
+    extensions: ['.tsx', '.ts', '.js', '.jsx', '.cjs', '.mjs', '.json', '.mts'],
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@plugins': path.resolve(__dirname, 'src/plugins') // 示例别名[2](@ref)
     },
   },
   module: {

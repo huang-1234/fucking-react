@@ -67,9 +67,7 @@ export class WebpackPropsToFormilyPlugin {
           }
 
           // 过滤出.tsx和.jsx文件
-          const changedTsxFiles = Array.from(changedFiles).filter(
-            (file: string) => /\.(tsx|jsx)$/.test(file)
-          );
+          const changedTsxFiles = Array.from(changedFiles).filter((file: unknown) => /\.(tsx|jsx)$/.test(file as string));
 
           if (changedTsxFiles.length > 0) {
             const generator = createSchemaGenerator(this.options);

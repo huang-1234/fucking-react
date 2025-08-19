@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { WebpackPropsToFormily } from './plugins/props-to-schema/webpack-plugin-props-to-formily';
+import { WebpackPropsToFormilyPlugin } from './src/plugins/props-to-schema/webpack-plugin-props-to-formily.mjs';
 
 // 获取 __dirname 等效值
 const __filename = fileURLToPath(import.meta.url);
@@ -17,9 +17,10 @@ export default {
     clean: true,
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.jsx'],
+    extensions: ['.tsx', '.ts', '.js', '.jsx', '.cjs', '.mjs', '.json', '.mts'],
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@plugins': path.resolve(__dirname, 'src/plugins') // 示例别名[2](@ref)
     },
   },
   module: {
@@ -83,7 +84,7 @@ export default {
       filename: '[name].[contenthash].css',
     }),
     // 添加 Props 转 Formily Schema 插件
-    new WebpackPropsToFormily(),
+    new WebpackPropsToFormilyPlugin(),
   ],
   optimization: {
     splitChunks: {

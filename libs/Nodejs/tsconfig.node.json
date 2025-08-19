@@ -28,5 +28,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["vite.config.ts", "src" ]
+  "include": ["src", "webpack.config.mjs", "webpack.config.cjs", "vite.config.ts", "vitest.config.ts"]
 }
