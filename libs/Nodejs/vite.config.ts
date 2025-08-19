@@ -5,7 +5,7 @@ import mdx from "@mdx-js/rollup";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { createHtmlPlugin } from 'vite-plugin-html'
-import VitePropsToFormilyPlugin from './plugins/props-to-schema/vite-plugin-props-to-formily';
+import { VitePropsToFormilyPlugin } from './src/plugins/props-to-schema/vite-plugin-props-to-formily'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'; // 引入插件
 
 // 将 https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js 加载script中去

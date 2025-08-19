@@ -1,0 +1,126 @@
+{
+  "schemas": {
+    "src\\test-plugins.tsx": {
+      "type": "object",
+      "properties": {}
+    },
+    "src\\plugins\\props-to-schema\\demos\\FormSimple.tsx": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "表单标题",
+          "type": "string",
+          "default": "登录表单",
+          "x-component": "Input",
+          "x-decorator": "FormItem"
+        },
+        "layout": {
+          "title": "表单布局方式",
+          "type": "string",
+          "default": "horizontal",
+          "enum": [
+            "\"horizontal\"",
+            "\"vertical\"",
+            "\"inline\""
+          ],
+          "x-component": "Select",
+          "x-decorator": "FormItem"
+        },
+        "showRemember": {
+          "title": "是否显示记住我选项",
+          "type": "boolean",
+          "default": "true",
+          "x-component": "Switch",
+          "x-decorator": "FormItem"
+        },
+        "submitText": {
+          "title": "提交按钮文本",
+          "type": "string",
+          "default": "Submit",
+          "x-component": "Input",
+          "x-decorator": "FormItem"
+        },
+        "onSubmit": {
+          "title": "表单提交处理函数",
+          "type": "string",
+          "default": "(values) => {\n  console.log('Success:', values);\n}",
+          "x-component": "Input",
+          "x-decorator": "FormItem"
+        }
+      }
+    },
+    "src\\plugins\\props-to-schema\\demos\\DemoButton.tsx": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "title": "按钮尺寸",
+          "type": "string",
+          "default": "medium",
+          "enum": [
+            "\"small\"",
+            "\"medium\"",
+            "\"large\""
+          ],
+          "x-component": "Select",
+          "x-decorator": "FormItem"
+        },
+        "type": {
+          "title": "按钮类型",
+          "type": "string",
+          "default": "default",
+          "enum": [
+            "\"default\"",
+            "\"primary\"",
+            "\"success\"",
+            "\"warning\"",
+            "\"danger\""
+          ],
+          "x-component": "Select",
+          "x-decorator": "FormItem"
+        },
+        "disabled": {
+          "title": "是否禁用",
+          "type": "boolean",
+          "default": "false",
+          "x-component": "Switch",
+          "x-decorator": "FormItem"
+        },
+        "round": {
+          "title": "是否为圆角按钮",
+          "type": "boolean",
+          "default": "false",
+          "x-component": "Switch",
+          "x-decorator": "FormItem"
+        },
+        "icon": {
+          "title": "图标类名",
+          "type": "string",
+          "default": "",
+          "x-component": "Input",
+          "x-decorator": "FormItem"
+        },
+        "loading": {
+          "title": "是否显示加载状态",
+          "type": "boolean",
+          "default": "false",
+          "x-component": "Switch",
+          "x-decorator": "FormItem"
+        },
+        "children": {
+          "title": "子元素",
+          "type": "string",
+          "x-component": "Input",
+          "x-decorator": "FormItem"
+        },
+        "onClick": {
+          "title": "点击事件处理函数",
+          "type": "string",
+          "x-component": "Input",
+          "x-decorator": "FormItem"
+        }
+      }
+    }
+  },
+  "timestamp": "2025-08-19T04:43:29.797Z",
+  "count": 3
+}

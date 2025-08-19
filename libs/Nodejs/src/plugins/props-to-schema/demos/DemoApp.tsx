@@ -3,8 +3,8 @@ import React, { useState, useMemo } from 'react';
 import { Layout, Typography, Card, Tabs, Select, Switch, Input, Checkbox, Button as AntButton, Divider } from 'antd';
 import { Splitter } from 'antd';
 import Button from './DemoButton';
-// 导入虚拟模块
-import formilySchemas from 'virtual:formily-props';
+// 导入本地生成的schema文件
+import formilySchemas from './formily-schemas.json';
 console.log('Loaded formily schemas:', formilySchemas);
 import FormSimple from './FormSimple';
 import './App.css';
@@ -68,7 +68,17 @@ function App() {
     const buttonPath = Object.keys(formilySchemas.schemas).find(path =>
       path.includes('DemoButton.tsx')
     );
-    return buttonPath ? formilySchemas.schemas[buttonPath] : null;
+
+    // 直接返回schema对象
+    const schema = buttonPath ? formilySchemas.schemas[buttonPath] : null;
+
+    // 构造完整的schema对象结构
+    return schema ? {
+      props: {},  // 原始props定义
+      jsonSchema: {},  // JSON Schema格式
+      formilySchema: schema,  // Formily Schema格式
+      filePath: buttonPath
+    } : null;
   }, [formilySchemas]);
 
   // 获取表单组件的 schema
@@ -78,7 +88,17 @@ function App() {
     const formPath = Object.keys(formilySchemas.schemas).find(path =>
       path.includes('FormSimple.tsx')
     );
-    return formPath ? formilySchemas.schemas[formPath] : null;
+
+    // 直接返回schema对象
+    const schema = formPath ? formilySchemas.schemas[formPath] : null;
+
+    // 构造完整的schema对象结构
+    return schema ? {
+      props: {},  // 原始props定义
+      jsonSchema: {},  // JSON Schema格式
+      formilySchema: schema,  // Formily Schema格式
+      filePath: formPath
+    } : null;
   }, [formilySchemas]);
 
   const buttonSchema = useMemo(() => {

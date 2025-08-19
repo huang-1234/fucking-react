@@ -4,31 +4,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const remarkGfm = require('remark-gfm');
 const rehypeHighlight = require('rehype-highlight');
 
-// 手动导入插件，避免ESM导入问题
-class WebpackPropsToFormily {
-  apply(compiler) {
-    const pluginName = 'WebpackPropsToFormily';
-    const outputFile = 'formily-props.json';
-
-    compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
-      compilation.hooks.processAssets.tapPromise(
-        {
-          name: pluginName,
-          stage: compilation.constructor.PROCESS_ASSETS_STAGE_ADDITIONS,
-        },
-        async () => {
-          const schemas = {};
-
-          // 简化版本，不实际解析组件，只生成一个空的schema
-          compilation.emitAsset(outputFile, {
-            source: () => JSON.stringify(schemas, null, 2),
-            size: () => JSON.stringify(schemas, null, 2).length
-          });
-        }
-      );
-    });
-  }
-}
+// 导入插件
+const { WebpackPropsToFormilyPlugin } = require('./src/plugins/props-to-schema/webpack-plugin-props-to-formily');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
@@ -110,7 +87,12 @@ module.exports = {
       filename: '[name].[contenthash].css',
     }),
     // 添加 Props 转 Formily Schema 插件
-    new WebpackPropsToFormily(),
+    new WebpackPropsToFormilyPlugin({
+      include: ['src/plugins/props-to-schema/demos/*.{tsx,jsx}'],
+      outputDir: 'src/plugins/props-to-schema/demos',
+      outputFileName: 'formily-schemas.json',
+      debug: true
+    }),
   ],
   optimization: {
     splitChunks: {
