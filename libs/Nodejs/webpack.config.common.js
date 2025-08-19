@@ -1,14 +1,13 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { WebpackPropsToFormilyPlugin } from './src/plugins/props-to-schema/webpack-plugin-props-to-formily.mjs';
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const remarkGfm = require('remark-gfm');
+const rehypeHighlight = require('rehype-highlight');
 
-// 获取 __dirname 等效值
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// 导入插件
+const { WebpackPropsToFormilyPlugin } = require('./src/plugins/props-to-schema/webpack-plugin-props-to-formily.ts');
 
-export default {
+module.exports = {
   mode: process.env.NODE_ENV || 'development',
   entry: './src/main.tsx',
   output: {
@@ -28,14 +27,15 @@ export default {
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        use: 'ts-loader',
-        options: {
-          transpileOnly: true,
-          configFile: 'tsconfig.app.json',
-          compilerOptions: {
-            jsx: 'react-jsx'
+        use: {
+          loader: 'ts-loader',
+          options: {
+            configFile: 'tsconfig.app.json',
+            compilerOptions: {
+              jsx: 'react-jsx'
+            }
           }
-        } // 开发环境加速
+        },
       },
       {
         test: /\.css$/,
@@ -72,8 +72,8 @@ export default {
           {
             loader: '@mdx-js/loader',
             options: {
-              remarkPlugins: [await import('remark-gfm').then(m => m.default)],
-              rehypePlugins: [await import('rehype-highlight').then(m => m.default)],
+              remarkPlugins: [remarkGfm],
+              rehypePlugins: [rehypeHighlight],
               providerImportSource: '@mdx-js/react',
             },
           },
@@ -91,7 +91,12 @@ export default {
       filename: '[name].[contenthash].css',
     }),
     // 添加 Props 转 Formily Schema 插件
-    new WebpackPropsToFormilyPlugin(),
+    new WebpackPropsToFormilyPlugin({
+      include: ['src/plugins/props-to-schema/demos/*.{tsx,jsx}'],
+      outputDir: 'src/plugins/props-to-schema/demos',
+      outputFileName: 'formily-schemas.json',
+      debug: true
+    }),
   ],
   optimization: {
     splitChunks: {
@@ -110,7 +115,7 @@ export default {
       directory: path.join(__dirname, 'public'),
     },
     compress: true,
-    port: 3000,
+    port: 3001,
     hot: true,
     historyApiFallback: true,
   },

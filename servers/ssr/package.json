@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "React 19 SSR server with Koa and TypeScript",
   "main": "dist/index.js",
+  "type": "module",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "files": [

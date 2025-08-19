@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="feat: fix props to schema plugin webpack@0.0.1"
+ciMessage="add vite.config.ts"
 git add .
 
 git ci -m "$ciAction $ciMessage"

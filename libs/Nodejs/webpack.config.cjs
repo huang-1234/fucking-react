@@ -27,12 +27,14 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            configFile: 'tsconfig.app.json'
+        use: 'ts-loader',
+        options: {
+          transpileOnly: true,
+          configFile: 'tsconfig.app.json',
+          compilerOptions: {
+            jsx: 'react-jsx'
           }
-        },
+        } // 开发环境加速
       },
       {
         test: /\.css$/,
