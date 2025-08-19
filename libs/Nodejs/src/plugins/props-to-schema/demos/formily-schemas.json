@@ -119,8 +119,19 @@
           "x-decorator": "FormItem"
         }
       }
+    },
+    "src\\plugins\\props-to-schema\\demos\\FormilySchemaRenderer\\index.tsx": {
+      "type": "object",
+      "properties": {
+        "onSubmit": {
+          "title": "onSubmit",
+          "type": "string",
+          "x-component": "Input",
+          "x-decorator": "FormItem"
+        }
+      }
     }
   },
-  "timestamp": "2025-08-19T06:22:07.689Z",
-  "count": 3
+  "timestamp": "2025-08-19T10:14:05.800Z",
+  "count": 4
 }

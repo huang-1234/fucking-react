@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="add vite.config.ts"
+ciMessage="init asyncPool"
 git add .
 
 git ci -m "$ciAction $ciMessage"

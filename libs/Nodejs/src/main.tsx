@@ -10,12 +10,15 @@ import TestPlugins from './test-plugins';
 // 导入演示组件
 import App from './plugins/props-to-schema/demos/DemoApp';
 
+// 导入Formily Schema渲染器
+import FormilySchemaRenderer from './plugins/props-to-schema/demos/FormilySchemaRenderer';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider locale={zhCN}>
       <App />
-      {/* 取消注释下面的行来测试插件 */}
-      <TestPlugins />
+      <FormilySchemaRenderer />
+      {/* <TestPlugins /> */}
     </ConfigProvider>
   </React.StrictMode>,
 );
