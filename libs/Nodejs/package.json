@@ -19,7 +19,7 @@
   "dependencies": {
     "@ant-design/icons": "6.0.0",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
-    "@formily/antd": "^2.3.7",
+    "@formily/antd-v5": "1.2.4",
     "@formily/core": "^2.3.7",
     "@formily/json-schema": "^2.3.7",
     "@formily/react": "^2.3.7",

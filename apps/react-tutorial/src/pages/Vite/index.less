@@ -1,0 +1,114 @@
+.bundle-comparator {
+  margin: 20px;
+
+  .build-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+  }
+
+  .comparison-result {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+  }
+
+  .comparison-progress {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+
+    .progress-label {
+      width: 80px;
+      font-weight: bold;
+    }
+
+    .ant-progress {
+      flex: 1;
+    }
+
+    .progress-value {
+      margin-left: 10px;
+      width: 80px;
+      text-align: right;
+    }
+  }
+
+  .comparison-chart {
+    height: 400px;
+    margin-top: 30px;
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+
+    th, td {
+      border: 1px solid #e8e8e8;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #fafafa;
+      font-weight: 500;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+  }
+
+  .theory-list {
+    li {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.plugin-lab {
+  margin: 20px;
+
+  .plugin-card {
+    margin-bottom: 20px;
+  }
+
+  .plugin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h4 {
+      margin: 0;
+    }
+  }
+
+  .plugin-item {
+    margin-bottom: 16px;
+    padding: 16px;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    background-color: #fafafa;
+  }
+
+  .code-preview {
+    margin-top: 20px;
+  }
+
+  .action-buttons {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+}

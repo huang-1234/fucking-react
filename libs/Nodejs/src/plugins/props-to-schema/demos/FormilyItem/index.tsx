@@ -14,7 +14,7 @@ import {
   ArrayItems,
   Editable,
   PreviewText,
-} from '@formily/antd'
+} from '@formily/antd-v5'
 import { action } from '@formily/reactive'
 import { Card, Button, Spin } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
