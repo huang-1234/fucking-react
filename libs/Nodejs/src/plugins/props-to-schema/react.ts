@@ -796,9 +796,14 @@ class PropsToSchemaWebpack {
     // 生成输出文件
     compiler.hooks.emit.tapAsync('PropsToSchema', (compilation, callback) => {
       const outputPath = this.options.outputPath || 'formily-schemas.json';
-      const content = JSON.stringify(schemas, null, 2); compilation.assets[outputPath] = {
+      const content = JSON.stringify(schemas, null, 2);
+      compilation.assets[outputPath as string] = {
         source: () => content,
-        size: () => content.length
+        size: () => content.length,
+        buffer: () => Buffer.from(content),
+        map: () => null,
+        sourceAndMap: () => ({ source: content, map: null }),
+        updateHash: () => {}
       };
 
       callback();
