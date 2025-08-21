@@ -25,6 +25,7 @@
     "d3": "^7.9.0",
     "dayjs": "1.11.13",
     "highlight.js": "^11.11.1",
+    "immer": "^10.1.1",
     "js-cookie": "3.0.5",
     "loadable-components": "2.2.3",
     "lodash-es": "4.17.21",
@@ -43,6 +44,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.0",
     "@types/d3": "^7.4.3",
     "@types/loadable__component": "5.13.10",
     "@types/lodash-es": "4.17.12",
@@ -58,9 +60,9 @@
     "typescript": "5.8.3",
     "typescript-eslint": "8.35.1",
     "vite": "5.4.19",
-    "vitest": "2.1.5",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-node-polyfills": "^0.24.0",
-    "vite-plugin-style-import": "^2.0.0"
+    "vite-plugin-style-import": "^2.0.0",
+    "vitest": "2.1.5"
   }
 }

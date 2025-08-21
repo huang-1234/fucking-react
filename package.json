@@ -25,5 +25,8 @@
     "vite": "6.0.0",
     "vitest": "2.1.5"
   },
-  "packageManager": "pnpm@10.13.1"
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "immer": "^10.1.1"
+  }
 }
