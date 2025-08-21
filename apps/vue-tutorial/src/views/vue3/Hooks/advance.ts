@@ -8,9 +8,24 @@ import {
   nextTick,
   unref,
   type Ref,
-  type ComputedRef
+  type ComputedRef,
+  type Reactive
 } from 'vue'
-
+import { useEventListener } from './base';
+/**
+ * @desc 对下面的 hooks 进行归纳总结
+ * useRequest - 用于请求数据的 Hook
+ * usePrevious - 用于获取上一次的值的 Hook
+ * useDebounce - 用于防抖的 Hook
+ * useThrottle - 用于节流的 Hook
+ * useMemoizedFn - 用于创建一个记忆化的函数的 Hook
+ * useImperativeHandle - 用于暴露 ref 的 Hook
+ * useExpose - 用于暴露 ref 的 Hook
+ * usePolling - 用于轮询的 Hook
+ * useInterval - 用于定时器的 Hook
+ * useFetchModel - 用于请求数据的 Hook
+ * useRequest - 强大的异步数据管理的 Hoo
+ */
 // ==================== Request Hooks ====================
 
 interface UseRequestOptions<T, P extends any[]> {
@@ -311,7 +326,7 @@ function depsAreSame(oldDeps: any[], newDeps: any[]): boolean {
 /**
  * useReactive - 返回一个响应式对象
  */
-export function useReactive<T extends Record<string, any>>(initialState: T): T {
+export function useReactive<T extends Record<string, any>>(initialState: T): Reactive<T> {
   return reactive(initialState)
 }
 
