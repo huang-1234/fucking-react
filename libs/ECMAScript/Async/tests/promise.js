@@ -4,7 +4,13 @@ async function async1() {
   console.log('async1 end')
 }
 async function async2() {
-  console.log('async2')
+  console.log('async2 start')
+  return new Promise((resolve) => {
+    console.log('async2: promise1')
+    resolve()
+  }).then(function () {
+    console.log('async2: promise2')
+  })
 }
 console.log('script start')
 setTimeout(function () {
