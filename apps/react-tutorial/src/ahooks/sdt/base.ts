@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // ==================== State Hooks ====================
 
@@ -10,7 +10,7 @@ export function useToggle<T = boolean>(
   reverseValue?: T
 ): [T, (value?: T) => void] {
   const [state, setState] = useState<T>(defaultValue);
-  
+
   const toggle = useCallback((value?: T) => {
     if (value !== undefined) {
       setState(value);
@@ -75,7 +75,7 @@ export function useSetState<T extends Record<string, any>>(
 export function useGetState<T>(initialState: T | (() => T)): [T, (value: T | ((prev: T) => T)) => void, () => T] {
   const [state, setState] = useState(initialState);
   const stateRef = useRef(state);
-  
+
   stateRef.current = state;
 
   const getState = useCallback(() => stateRef.current, []);
@@ -124,7 +124,7 @@ export function useUnmount(fn: () => void) {
  */
 export function useUnmountedRef() {
   const unmountedRef = useRef(false);
-  
+
   useEffect(() => {
     unmountedRef.current = false;
     return () => {
@@ -149,10 +149,10 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(
   savedHandler.current = handler;
 
   useEffect(() => {
-    const targetElement = element?.hasOwnProperty('current') 
-      ? (element as React.RefObject<Element>).current 
+    const targetElement = element?.hasOwnProperty('current')
+      ? (element as React.RefObject<Element>).current
       : element as Element;
-    
+
     if (!targetElement?.addEventListener) return;
 
     const eventListener = (event: Event) => savedHandler.current(event as HTMLElementEventMap[K]);
@@ -176,10 +176,10 @@ export function useClickAway(
 
   useEffect(() => {
     const handler = (event: MouseEvent | TouchEvent) => {
-      const targetElement = typeof target === 'function' 
-        ? target() 
-        : target?.hasOwnProperty('current') 
-          ? (target as React.RefObject<Element>).current 
+      const targetElement = typeof target === 'function'
+        ? target()
+        : target?.hasOwnProperty('current')
+          ? (target as React.RefObject<Element>).current
           : target as Element;
 
       if (!targetElement || targetElement.contains(event.target as Node)) {
@@ -205,8 +205,8 @@ export function useClickAway(
  * usePrevious - 保存上一次状态的 Hook
  */
 export function usePrevious<T>(state: T): T | undefined {
-  const prevRef = useRef<T>();
-  const curRef = useRef<T>();
+  const prevRef = useRef<T>(state);
+  const curRef = useRef<T>(state);
 
   if (curRef.current !== state) {
     prevRef.current = curRef.current;
@@ -221,7 +221,7 @@ export function usePrevious<T>(state: T): T | undefined {
  */
 export function useRafState<T>(initialState: T | (() => T)): [T, (value: T | ((prev: T) => T)) => void] {
   const [state, setState] = useState(initialState);
-  const rafIdRef = useRef<number>();
+  const rafIdRef = useRef<number>(0);
 
   const setRafState = useCallback((value: T | ((prev: T) => T)) => {
     if (rafIdRef.current) {
@@ -412,7 +412,7 @@ export function useCookieState(
     setState(newValue);
 
     let cookieString = `${cookieKey}=${newValue}`;
-    
+
     if (options.expires) {
       cookieString += `; expires=${options.expires.toUTCString()}`;
     }
@@ -568,9 +568,13 @@ export function useKeyPress(
   const eventHandlerRef = useLatest(eventHandler);
 
   useEffect(() => {
-    const targetElement = target?.hasOwnProperty('current') 
-      ? (target as React.RefObject<Element>).current 
-      : target || document;
+    let targetElement: Element | Document | Window;
+    
+    if (target && 'current' in target) {
+      targetElement = target.current || document;
+    } else {
+      targetElement = (target as Element | Document | Window) || document;
+    }
 
     if (!targetElement) return;
 
@@ -649,7 +653,7 @@ export function useTimeout(fn: () => void, delay?: number): void {
 
   useEffect(() => {
     if (delay === undefined || delay === null) return;
-    
+
     const timer = setTimeout(() => fnRef.current(), delay);
     return () => clearTimeout(timer);
   }, [delay, fnRef]);
@@ -694,11 +698,11 @@ export function useCountDown(options: {
     }
 
     const targetTime = new Date(target).getTime();
-    
+
     const updateTimeLeft = () => {
       const now = Date.now();
       const difference = targetTime - now;
-      
+
       if (difference > 0) {
         setTimeLeft(Math.floor(difference / 1000));
       } else {
