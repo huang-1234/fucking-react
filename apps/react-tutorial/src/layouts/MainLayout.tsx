@@ -44,7 +44,7 @@ const MainLayout = () => {
         >
           <FeatureMenu />
         </Sider>
-        <Content style={{  padding: '12px', minHeight: 'calc(100vh - 64px)' }}>
+        <Content style={{  padding: '12px', minHeight: 'calc(100vh - 64px)', minWidth: '880px', maxWidth: '100%' }}>
           <Outlet />
         </Content>
         <Sider
