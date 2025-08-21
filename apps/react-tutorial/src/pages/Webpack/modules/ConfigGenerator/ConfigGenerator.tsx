@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Form, Input, Select, Switch, Button, Card, Tabs } from 'antd';
 import MonacoEditor from '@monaco-editor/react';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import './index.less';
+import './ConfigGenerator.less';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -390,4 +390,4 @@ module.exports = {
   );
 };
 
-export default ConfigGenerator;
+export default React.memo(ConfigGenerator);

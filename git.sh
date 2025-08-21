@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="init webpack and vite"
+ciMessage="init @formily/antd-v5"
 git add .
 
 git ci -m "$ciAction $ciMessage"

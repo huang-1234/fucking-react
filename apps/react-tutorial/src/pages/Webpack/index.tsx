@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Tabs, Card } from 'antd';
-import ConfigGenerator from './ConfigGenerator';
-import DependencyGraph from './DependencyGraph';
+import ConfigGenerator from './modules/ConfigGenerator/ConfigGenerator';
+import ConfigFormily from './modules/ConfigFormily';
+import DependencyGraph from './modules/DependencyGraph/DependencyGraph';
 import { getWebpackStats } from '../../services/webpackService';
 import './index.less';
 
@@ -44,8 +45,11 @@ const WebpackPage: React.FC = () => {
       </Card>
 
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
-        <TabPane tab="配置生成器" key="config">
+        <TabPane tab="配置生成器 (普通)" key="config">
           <ConfigGenerator />
+        </TabPane>
+        <TabPane tab="配置生成器 (Formily)" key="formily">
+          <ConfigFormily />
         </TabPane>
         <TabPane tab="依赖关系图" key="dependency">
           <DependencyGraph statsData={statsData} loading={loading} />

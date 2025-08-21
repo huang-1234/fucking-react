@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createForm } from '@formily/core';
 import { createSchemaField } from '@formily/react';
-import * as ReactFormilyAntdComponents from '@formily/antd';
+import * as ReactFormilyAntdComponents from '@formily/antd-v5';
 import { Card, Drawer, Button, List, Typography, Space } from 'antd';
 import { ISchema } from '@formily/json-schema';
 import formilySchemas from '../formily-schemas.json';

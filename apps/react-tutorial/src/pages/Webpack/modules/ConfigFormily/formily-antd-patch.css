@@ -1,0 +1,87 @@
+/* Formily Antd 组件样式补丁 */
+.formily-array-base {
+  margin-bottom: 16px;
+}
+
+.formily-array-base-addition {
+  margin-bottom: 16px;
+}
+
+.formily-array-base-item {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  background-color: #fafafa;
+  position: relative;
+}
+
+.formily-array-base-item-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.formily-array-base-item-move-up,
+.formily-array-base-item-move-down {
+  margin-right: 8px;
+}
+
+.formily-form-collapse {
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+}
+
+.formily-form-collapse-item {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.formily-form-collapse-item-header {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.formily-form-collapse-item-content {
+  padding: 16px;
+}
+
+.key-value-list {
+  margin-bottom: 16px;
+}
+
+.key-value-header {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.key-title,
+.value-title {
+  flex: 1;
+  font-weight: 500;
+}
+
+.action-title {
+  width: 60px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.key-value-item {
+  margin-bottom: 8px;
+}
+
+.key-value-content {
+  display: flex;
+  width: 100%;
+}
+
+.key-value-content .ant-input {
+  flex: 1;
+}
+
+.key-value-content .ant-btn {
+  margin-left: 8px;
+}

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout, Image } from 'antd';
-import FeatureMenu from '@/layouts/FeatureMenu';
-import UserPanel from '@/components/UserPanel';
-import HotRecommendations from '@/components/HotRecommendations';
-import SearchBar from '@/components/SearchBar';
+import FeatureMenu from '../layouts/FeatureMenu';
+import UserPanel from '../components/UserPanel';
+import HotRecommendations from '../components/HotRecommendations';
+import SearchBar from '../components/SearchBar';
 import logo from '@/assets/react.svg';
 import React from 'react';
 const { Header, Sider, Content } = Layout;

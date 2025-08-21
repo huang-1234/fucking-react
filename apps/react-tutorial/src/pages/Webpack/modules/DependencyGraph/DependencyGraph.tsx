@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Card, Select, Slider, Switch, Empty, Spin, Button, Tooltip, Descriptions } from 'antd';
 import { FullscreenOutlined, ZoomInOutlined, ZoomOutOutlined, RedoOutlined } from '@ant-design/icons';
 import * as d3 from 'd3';
-import './index.less';
+import './DependencyGraph.less';
 
 const { Option } = Select;
 
@@ -130,7 +130,7 @@ const DependencyGraph: React.FC<DependencyGraphProps> = ({
       .force('link', d3.forceLink<ModuleNode, ModuleLink>(links).id(d => d.id).distance(100))
       .force('charge', d3.forceManyBody().strength(-300))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(d => d.radius + 5));
+      .force('collision', d3.forceCollide().radius(d => (d as ModuleNode).radius + 5));
 
     setSimulation(sim);
 
@@ -248,7 +248,7 @@ const DependencyGraph: React.FC<DependencyGraphProps> = ({
     if (svgRef.current) {
       const svg = d3.select(svgRef.current);
       const zoom = d3.zoom<SVGSVGElement, unknown>().scaleBy(svg, 1.2);
-      svg.transition().duration(200).call(zoom);
+      svg.transition().duration(200).call(zoom as any);
     }
   };
 
@@ -257,7 +257,7 @@ const DependencyGraph: React.FC<DependencyGraphProps> = ({
     if (svgRef.current) {
       const svg = d3.select(svgRef.current);
       const zoom = d3.zoom<SVGSVGElement, unknown>().scaleBy(svg, 1 / 1.2);
-      svg.transition().duration(200).call(zoom);
+      svg.transition().duration(200).call(zoom as any);
     }
   };
 
@@ -334,7 +334,7 @@ const DependencyGraph: React.FC<DependencyGraphProps> = ({
         </div>
       </Card>
 
-      {selectedModule && (
+      {selectedModule ? (
         <Card title="模块详情" className="node-info">
           <Descriptions bordered column={1}>
             <Descriptions.Item label="模块名称">{selectedModule.name}</Descriptions.Item>
@@ -351,9 +351,9 @@ const DependencyGraph: React.FC<DependencyGraphProps> = ({
             )}
           </Descriptions>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 };
 
-export default DependencyGraph;
+export default React.memo(DependencyGraph);
