@@ -8,22 +8,26 @@ import {
 } from '@ant-design/icons';
 import { reactVersionMenuItems } from './ReactVersionMenu';
 import AlgorithmPage from '@/pages/Algorithm';
+import loadable from '@loadable/component';
 
 // 首页
-const HomePage = lazy(() => import('../pages/HomePage'));
+const HomePage = loadable(() => import('@/pages/HomePage'));
 
 // 组件应用展示
-const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
+const ComponentsApplyPage = loadable(() => import('../pages/ComponentsApply'));
 
 // 画布面板
-const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
+const CanvasPanelPage = loadable(() => import('@/pages/CanvasPanel'));
 
 // SSR页面
-const SSRPage = lazy(() => import('../pages/SSR/SSRPage'));
+const SSRPage = loadable(() => import('@/pages/SSR/SSRPage'));
 
 // ECMAScript页面
-const ECMAScriptPage = lazy(() => import('../pages/ECMAScript'));
+const ECMAScriptPage = loadable(() => import('@/pages/ECMAScript'));
 
+// 打包工具
+const WebpackPage = loadable(() => import('@/pages/Webpack'));
+const VitePage = loadable(() => import('@/pages/Vite'));
 export interface IMenu {
   key: string;
   icon: React.ReactNode;
@@ -69,5 +73,17 @@ export const menuItems: IMenu[] = [
     label: '算法',
     icon: <CodeOutlined />,
     component: AlgorithmPage
+  },
+  {
+    key: '/webpack',
+    label: 'Webpack',
+    icon: <CodeOutlined />,
+    component: WebpackPage
+  },
+  {
+    key: '/vite',
+    label: 'Vite',
+    icon: <CodeOutlined />,
+    component: VitePage
   }
 ];

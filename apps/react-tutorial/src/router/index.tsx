@@ -1,57 +1,63 @@
-import { lazy, Suspense } from 'react';
+import {  Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import React15Sandbox from '../sandbox/React15Sandbox';
 import APIVersionLayout from '../components/APIVersionLayout';
-// import loadable from 'loadable-components';
+import loadable from '@loadable/component';
 
 // 页面组件懒加载
-const HomePage = lazy(() => import('../pages/HomePage'));
+const HomePage = loadable(() => import('@/pages/HomePage'));
 
 // 画布组件
-const CanvasPanelPage = lazy(() => import('../pages/CanvasPanel'));
+const CanvasPanelPage = loadable(() => import('@/pages/CanvasPanel'));
 
 // 算法可视化组件
-const AlgorithmPage = lazy(() => import('../pages/Algorithm'));
-const LengthOfLISPage = lazy(() => import('../pages/Algorithm/lengthOfLIS'));
-const HeapPage = lazy(() => import('../pages/Algorithm/Heap'));
+const AlgorithmPage = loadable(() => import('@/pages/Algorithm'));
+const LengthOfLISPage = loadable(() => import('@/pages/Algorithm/lengthOfLIS'));
+const HeapPage = loadable(() => import('@/pages/Algorithm/Heap'));
 
 // React 15 组件
-const React15Page = lazy(() => import('../pages/React15'));
-const React15Fragments = lazy(() => import('../pages/React15/Fragments'));
-const React15PropTypes = lazy(() => import('../pages/React15/PropTypes'));
+const React15Page = loadable(() => import('@/pages/React15'));
+const React15Fragments = loadable(() => import('@/pages/React15/Fragments'));
+const React15PropTypes = loadable(() => import('@/pages/React15/PropTypes'));
 
 // React 16 组件
-const React16Page = lazy(() => import('../pages/React16'));
-const React16Hooks = lazy(() => import('../pages/React16/hooks'));
-const React16ErrorBoundaries = lazy(() => import('../pages/React16/ErrorBoundaries'));
+const React16Page = loadable(() => import('@/pages/React16'));
+const React16Hooks = loadable(() => import('@/pages/React16/hooks'));
+const React16ErrorBoundaries = loadable(() => import('@/pages/React16/ErrorBoundaries'));
 
 // React 17 组件
-const React17Page = lazy(() => import('../pages/React17'));
-const React17Events = lazy(() => import('../pages/React17/EventDelegation'));
-const React17JSX = lazy(() => import('../pages/React17/NewJSX'));
+const React17Page = loadable(() => import('@/pages/React17'));
+const React17Events = loadable(() => import('@/pages/React17/EventDelegation'));
+const React17JSX = loadable(() => import('@/pages/React17/NewJSX'));
 
 // React 18 组件
-const React18Page = lazy(() => import('../pages/React18'));
-const React18Suspense = lazy(() => import('../pages/React18/SuspenseSSR'));
-const React18Transitions = lazy(() => import('../pages/React18/useTransition'));
+const React18Page = loadable(() => import('@/pages/React18'));
+const React18Suspense = loadable(() => import('@/pages/React18/SuspenseSSR'));
+const React18Transitions = loadable(() => import('@/pages/React18/useTransition'));
 
 // React 19 组件
-const React19Page = lazy(() => import('../pages/React19'));
-const React19Compiler = lazy(() => import('../pages/React19/ReactCompiler'));
-const React19FormState = lazy(() => import('../pages/React19/useFormState'));
+const React19Page = loadable(() => import('@/pages/React19'));
+const React19Compiler = loadable(() => import('@/pages/React19/ReactCompiler'));
+const React19FormState = loadable(() => import('@/pages/React19/useFormState'));
 
 // SSR组件
-const SSRPage = lazy(() => import('../pages/SSR/SSRPage'));
+const SSRPage = loadable(() => import('@/pages/SSR/SSRPage'));
 
 // 技术文档组件
-const MDXDemoPage = lazy(() => import('../pages/Tech/MDXDemo'));
+const MDXDemoPage = loadable(() => import('@/pages/Tech/MDXDemo'));
 
 // 组件应用展示
-const ComponentsApplyPage = lazy(() => import('../pages/ComponentsApply'));
+const ComponentsApplyPage = loadable(() => import('@/pages/ComponentsApply'));
 
 // ECMAScript组件
-const ECMAScriptPage = lazy(() => import('../pages/ECMAScript'));
+const ECMAScriptPage = loadable(() => import('@/pages/ECMAScript'));
+
+
+
+// 打包工具
+const WebpackPage = loadable(() => import('@/pages/Webpack'));
+const VitePage = loadable(() => import('@/pages/Vite'));
 
 // 加载中组件
 const LoadingComponent = () => <div>加载中...</div>;
@@ -303,6 +309,25 @@ const routerBrowser = createBrowserRouter([
         element: (
           <Suspense fallback={<LoadingComponent />}>
             <SSRPage />
+          </Suspense>
+        )
+      },
+      // Webpack路由
+      {
+        path: 'webpack',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <WebpackPage />
+          </Suspense>
+        )
+      },
+
+      // Vite路由
+      {
+        path: 'vite',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <VitePage />
           </Suspense>
         )
       }
