@@ -32,7 +32,7 @@ type MyDeepReadonly<T> = {
       : T[P];
 };
 
-(() => {
+(function (k: number) {
   switch (k) {
     case 1:
       const obj = {
@@ -79,4 +79,4 @@ type MyDeepReadonly<T> = {
     default:
       break;
   }
-})();
+})(1);
