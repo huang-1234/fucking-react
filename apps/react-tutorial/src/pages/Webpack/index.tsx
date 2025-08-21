@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, Card } from 'antd';
 import ConfigGenerator from './modules/ConfigGenerator/ConfigGenerator';
+import ConfigGeneratorFormily from './modules/ConfigGenerator/ConfigGeneratorFormily';
 import ConfigFormily from './modules/ConfigFormily';
 import DependencyGraph from './modules/DependencyGraph/DependencyGraph';
 import { getWebpackStats } from '../../services/webpackService';
@@ -48,8 +49,11 @@ const WebpackPage: React.FC = () => {
         <TabPane tab="配置生成器 (普通)" key="config">
           <ConfigGenerator />
         </TabPane>
-        <TabPane tab="配置生成器 (Formily)" key="formily">
+        <TabPane tab="配置生成器 (Formily JSON)" key="formily">
           <ConfigFormily />
+        </TabPane>
+        <TabPane tab="配置生成器 (Formily Schema)" key="formily-schema">
+          <ConfigGeneratorFormily />
         </TabPane>
         <TabPane tab="依赖关系图" key="dependency">
           <DependencyGraph statsData={statsData} loading={loading} />
