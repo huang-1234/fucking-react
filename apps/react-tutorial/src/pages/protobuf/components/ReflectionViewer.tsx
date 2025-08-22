@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tree, Card, Descriptions, Empty, Typography, Tag, Divider } from 'antd';
+import { Tree, Card, Descriptions, Empty, Typography, Tag, Divider, type TreeDataNode } from 'antd';
 import { FolderOutlined, FileOutlined, ApiOutlined, MessageOutlined, OrderedListOutlined } from '@ant-design/icons';
 import * as protobuf from 'protobufjs';
 import { getObjectIconType, isMessage, isService, isEnum, getFieldTypeName } from '../lib/protobuf-service';
@@ -20,7 +20,7 @@ const ReflectionViewer: React.FC<ReflectionViewerProps> = ({ root }) => {
   }
 
   // 递归构建树节点
-  const buildTreeNodes = (obj: protobuf.ReflectionObject) => {
+  const buildTreeNodes = (obj: protobuf.ReflectionObject): TreeDataNode => {
     const iconMap: Record<string, React.ReactNode> = {
       'folder': <FolderOutlined />,
       'file': <FileOutlined />,
@@ -30,7 +30,7 @@ const ReflectionViewer: React.FC<ReflectionViewerProps> = ({ root }) => {
     };
 
     const iconType = getObjectIconType(obj);
-    const icon = iconMap[iconType] || <FileOutlined />;
+    const icon: React.ReactNode = iconMap[iconType] || <FileOutlined />;
 
     // 如果是命名空间且有嵌套对象
     if (obj instanceof protobuf.Namespace && obj.nestedArray.length > 0) {
@@ -182,4 +182,4 @@ const ReflectionViewer: React.FC<ReflectionViewerProps> = ({ root }) => {
   );
 };
 
-export default ReflectionViewer;
+export default React.memo(ReflectionViewer);
