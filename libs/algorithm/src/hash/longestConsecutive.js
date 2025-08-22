@@ -14,7 +14,7 @@ var longestConsecutive = function (nums) {
         curLen++;
       }
     }
-    maxLen = maxLen > curLen ? maxLen : curLen;
+    maxLen = maxLen > curLen ? maxLen : cu
+    return maxLen;
   }
-  return maxLen;
-};
+}
