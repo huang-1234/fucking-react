@@ -11,7 +11,8 @@ var permute = function (nums) {
    * @param {number[]} nums
    * @param {number[]} track
    */
-  function backtrack(nums, track) {
+  let track = [];
+  function backtrack(nums) {
     if (track.length === nums.length) {
       res.push(track.slice());
       return;
@@ -23,9 +24,31 @@ var permute = function (nums) {
       track.pop();
     }
   }
-  backtrack(nums, []);
+  backtrack(nums);
   return res;
 };
+// var permute = function (nums) {
+//   let res = [];
+//   /**
+//    * @desc 回溯
+//    * @param {number[]} nums
+//    * @param {number[]} track
+//    */
+//   function backtrack(nums, track) {
+//     if (track.length === nums.length) {
+//       res.push(track.slice());
+//       return;
+//     }
+//     for (let i = 0;i < nums.length;i++) {
+//       if (track.includes(nums[i])) continue;
+//       track.push(nums[i]);
+//       backtrack(nums, track);
+//       track.pop();
+//     }
+//   }
+//   backtrack(nums, []);
+//   return res;
+// };
 
 
 (function test() {
