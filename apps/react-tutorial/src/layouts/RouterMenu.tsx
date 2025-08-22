@@ -28,6 +28,10 @@ const ECMAScriptPage = loadable(() => import('@/pages/ECMAScript'));
 // 打包工具
 const WebpackPage = loadable(() => import('@/pages/Webpack'));
 const VitePage = loadable(() => import('@/pages/Vite'));
+
+// protobuf
+const ProtobufPage = loadable(() => import('@/pages/protobuf'));
+
 export interface IMenu {
   key: string;
   icon: React.ReactNode;
@@ -85,5 +89,11 @@ export const menuItems: IMenu[] = [
     label: 'Vite',
     icon: <CodeOutlined />,
     component: VitePage
+  },
+  {
+    key: '/protobuf',
+    label: 'Protobuf',
+    icon: <CodeOutlined />,
+    component: ProtobufPage
   }
 ];
