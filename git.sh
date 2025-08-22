@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="init queue rotate"
+ciMessage="init find_sum_with_n_num_repeat_or_not"
 git add .
 
 git ci -m "$ciAction $ciMessage"
