@@ -28,6 +28,7 @@ if [[ $s1 == "ci" ]]; then
   # git ci
   ciAction="feat: "
   ciMessage=$s2
+  echo "ciMessage is $ciMessage"
   git add .
   git ci -m "$ciAction $ciMessage"
   git push origin $branch
