@@ -6,6 +6,7 @@
 import { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { type PluginObj, type PluginPass } from '@babel/core';
+import { JSXAttribute, JSXSpreadAttribute } from '@babel/types';
 
 interface BabelPluginOptions {
   [key: string]: any;
@@ -21,7 +22,7 @@ export default function transformJSX(): PluginObj<PluginPass> {
         const attributes = openingElement.attributes;
 
         // 转换JSX属性为对象属性
-        const props = attributes.map(attr => {
+        const props = attributes.map((attr: any) => {
           if (t.isJSXAttribute(attr)) {
             const key = t.identifier(attr.name.name as string);
             let value: t.Expression;
