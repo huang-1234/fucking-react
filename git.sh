@@ -12,7 +12,7 @@ echo "当前分支名: $branch"
 # git ci
 ciAction="feat: "
 
-ciMessage="ac mergeTwoLists"
+ciMessage="init jsx-compile test"
 git add .
 
 git ci -m "$ciAction $ciMessage"

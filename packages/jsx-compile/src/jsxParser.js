@@ -78,13 +78,15 @@ module.exports = {
   parseJSXWithSourceMap
 };
 
-
-(function test() {
-  const jsx = `
-    <div>
-      <h1>Hello, World!</h1>
-    </div>
-  `;
-  const js = parseJSX(jsx);
-  console.log(js);
-})()
+// 仅在直接运行此文件时执行测试函数
+if (require.main === module) {
+  (function test() {
+    const jsx = `
+      <div>
+        <h1>Hello, World!</h1>
+      </div>
+    `;
+    const js = parseJSX(jsx);
+    console.log(js);
+  })();
+}

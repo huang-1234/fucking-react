@@ -55,6 +55,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-jsx": "^7.27.1",
     "@testing-library/react": "^16.3.0",
     "@types/d3": "^7.4.3",
     "@types/loadable__component": "5.13.10",
