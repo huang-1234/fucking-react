@@ -62,7 +62,7 @@ var lengthOfLIS = function (nums) {
      * 解释: 最长递增子序列是 [2, 3, 7, 101]，它的长度是 4。
      * @desc 每次j都是从i开始，所以j的值是0到i-1
      */
-    for (let j = 0;j < i ;j++) {
+    for (let j = 0; j < i ;j++) {
       if (nums[i] > nums[j]) {
         dp[i] = Math.max(dp[i], dp[j] + 1); // dp[i] = Math.max(dp[i], dp[j] + 1);
         maxRes = Math.max(maxRes, dp[i]);

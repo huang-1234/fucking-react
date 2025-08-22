@@ -49,12 +49,12 @@ var rotate = function (nums, k) {
  * @param {number} k
  * @return {void} Do not return anything, modify nums in-place instead.
  */
-var rotateWtithQueue = function (nums, k) {
-  const queue = []
+var rotateWithQueue = function (nums, k) {
   while (k--) {
     const temp = nums.pop();
     nums.unshift(temp);
   }
+  return nums;
 };
 
 (function () {
@@ -63,5 +63,5 @@ var rotateWtithQueue = function (nums, k) {
   console.log(rotate(nums, k));
 
   const k2 = 2;
-  console.log(rotate(nums2, k2));
+  console.log(rotateWithQueue(nums, k2));
 })();
