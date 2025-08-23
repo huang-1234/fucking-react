@@ -19,6 +19,11 @@ const algorithmList = [
     title: '链表 (LinkTable)',
     description: '链表数据结构的可视化实现，支持单向链表、循环链表等各种操作',
     path: '/algorithm/linktable'
+  },
+  {
+    title: '图 (Graph)',
+    description: '图数据结构的可视化实现，支持有向图、无向图，以及BFS、DFS、拓扑排序等算法',
+    path: '/algorithm/graph'
   }
 ];
 
