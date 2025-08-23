@@ -1,12 +1,15 @@
+
+
+type LikeLinkNode = LinkNode | null | undefined;
+
 class LinkNode {
   val: number;
-  next: LinkNode | null;
-  constructor(val: number, next: LinkNode | null = null) {
+  next: LikeLinkNode;
+  constructor(val: number, next: LikeLinkNode = undefined) {
     this.val = val === undefined ? 0 : val;
     this.next = next === undefined ? null : next;
   }
 }
-
 /**
  * @desc 链表数据结构，支持单向链表，双向链表，循环链表
  * @param {LinkNode} head
@@ -36,15 +39,15 @@ class LinkNode {
  * @method getIntersectionNode
  */
 class LinkTableClass {
-  head: LinkNode | null;
-  tail: LinkNode | null;
+  head: LikeLinkNode;
+  tail: LikeLinkNode;
   length: number;
   isCircular: boolean;
   isDoubly: boolean;
   isSingly: boolean;
   constructor(head: LinkNode | null = null, tail: LinkNode | null = null, length = 0, isCircular = false, isDoubly = false, isSingly = true) {
-    this.head = head;
-    this.tail = tail;
+    this.head = head || new LinkNode(0);
+    this.tail = tail || new LinkNode(0);
     this.length = length;
     this.isCircular = isCircular;
     this.isDoubly = isDoubly;
@@ -66,7 +69,7 @@ class LinkTableClass {
    * @param {number} val
    * @returns {boolean}
    */
-  append(val: number) {
+  append(val: number): boolean {
     const newNode = new LinkNode(val);
     if (this.head === null) {
       this.head = newNode;
@@ -89,7 +92,7 @@ class LinkTableClass {
    * @param {number} val
    * @returns {boolean}
    */
-  prepend(val: number) {
+  prepend(val: number): boolean {
     const newNode = new LinkNode(val);
     if (this.head === null) {
       this.head = newNode;
@@ -113,7 +116,7 @@ class LinkTableClass {
    * @param {number} index
    * @returns {boolean}
    */
-  insert(val: number, index: number) {
+  insert(val: number, index: number): boolean {
     if (index < 0 || index > this.length) {
       return false;
     }
@@ -139,7 +142,7 @@ class LinkTableClass {
    * @param {number} index
    * @returns {boolean}
    */
-  remove(index: number) {
+  remove(index: number): boolean {
     if (index < 0 || index >= this.length) {
       return false;
     }
@@ -148,14 +151,14 @@ class LinkTableClass {
     let prev = null;
 
     if (index === 0) {
-      this.head = current!.next;
+      this.head = current!.next as LinkNode;
       if (this.length === 1) {
         this.tail = null;
       }
     } else {
       prev = this.getNode(index - 1);
-      current = prev!.next;
-      prev!.next = current!.next;
+      current = prev!.next as LinkNode;
+      prev!.next = current!.next as LinkNode;
 
       if (current === this.tail) {
         this.tail = prev;
@@ -175,7 +178,7 @@ class LinkTableClass {
    * @param {number} val
    * @returns {LinkNode}
    */
-  find(val: number) {
+  find(val: number): LinkNode {
     let current = this.head;
     let count = 0;
 
@@ -183,7 +186,7 @@ class LinkTableClass {
       if (current.val === val) {
         return current;
       }
-      current = current.next;
+      current = current.next as LinkNode;
       count++; // 防止循环链表无限循环
     }
     return null;
@@ -194,7 +197,7 @@ class LinkTableClass {
    * @param {number} val
    * @returns {boolean}
    */
-  update(index: number, val: number) {
+  update(index: number, val: number): boolean {
     if (index < 0 || index >= this.length) {
       return false;
     }
@@ -206,7 +209,7 @@ class LinkTableClass {
    * @desc 清空链表
    * @returns {void}
    */
-  clear() {
+  clear(): void {
     this.head = null;
     this.tail = null;
     this.length = 0;
@@ -215,7 +218,7 @@ class LinkTableClass {
    * @desc 反转链表
    * @returns {LinkTable}
    */
-  reverse() {
+  reverse(): LinkTable {
     if (!this.head || !this.head.next) {
       return this;
     }
@@ -292,7 +295,7 @@ class LinkTableClass {
    * @param {number} index
    * @returns {LinkTable}
    */
-  split(index: number) {
+  split(index: number): LinkTable {
     if (index < 0 || index >= this.length) {
       return false;
     }
@@ -332,7 +335,7 @@ class LinkTableClass {
    * @desc 打印链表
    * @returns {void}
    */
-  print() {
+  print(): void {
     let current = this.head;
     let count = 0;
     const values = [];
@@ -350,7 +353,7 @@ class LinkTableClass {
    * @param {number} index
    * @returns {LinkNode}
    */
-  getNode(index: number) {
+  getNode(index: number): LinkNode {
     if (index < 0 || index >= this.length) {
       return null;
     }
@@ -366,7 +369,7 @@ class LinkTableClass {
    * @param {number} n
    * @returns {boolean}
    */
-  removeNthFromEnd(n: number) {
+  removeNthFromEnd(n: number): boolean {
     if (n <= 0 || n > this.length) {
       return false;
     }
@@ -412,7 +415,7 @@ class LinkTableClass {
    * @param {LinkNode} l2
    * @returns {LinkNode}
    */
-  mergeTwoLists(l1: LinkNode, l2: LinkNode) {
+  mergeTwoLists(l1: LinkNode, l2: LinkNode): LinkNode {
     let prehead = new LinkNode();
     let prev = prehead;
 
@@ -434,7 +437,7 @@ class LinkTableClass {
    * @desc 判断链表是否有环
    * @returns {boolean}
    */
-  hasCycle() {
+  hasCycle(): boolean {
     if (!this.head || !this.head.next) {
       return false;
     }
@@ -457,18 +460,18 @@ class LinkTableClass {
    * @desc 检测链表是否有环，并返回入环节点
    * @returns {LinkNode|null}
    */
-  detectCycle() {
+  detectCycle(): LinkNode | null {
     if (!this.head || !this.head.next) {
       return null;
     }
 
-    let fast = this.head;
-    let slow = this.head;
+    let fast: LinkNode | null = this.head;
+    let slow: LinkNode | null = this.head;
     let hasCycle = false;
 
     while (fast !== null && fast.next !== null) {
       fast = fast.next.next;
-      slow = slow.next;
+      slow = slow?.next;
 
       if (fast === slow) {
         hasCycle = true;
@@ -493,7 +496,7 @@ class LinkTableClass {
    * @desc 判断链表是否为回文
    * @returns {boolean}
    */
-  isPalindrome() {
+  isPalindrome(): boolean {
     if (!this.head) return true;
 
     // 处理循环链表，暂时断开循环
@@ -504,32 +507,32 @@ class LinkTableClass {
     }
 
     // 快慢指针找中点
-    let slow = this.head;
-    let fast = this.head;
+    let slow: LinkNode | null = this.head;
+    let fast: LinkNode | null = this.head;
 
     while (fast && fast.next) {
-      slow = slow.next;
+      slow = slow!.next;
       fast = fast.next.next;
     }
 
     // 反转后半部分
-    let prev = null;
-    let curr = slow;
+    let prev: LinkNode | null = null;
+    let curr: LinkNode | null = slow;
 
     while (curr) {
-      const next = curr.next;
+      const next: LinkNode | null = curr.next;
       curr.next = prev;
       prev = curr;
       curr = next;
     }
 
     // 比较前后半部分
-    let left = this.head;
+    let left: LinkNode | null = this.head;
     let right = prev;
     let isPalindrome = true;
 
     while (right) {
-      if (left.val !== right.val) {
+      if (left?.val !== right.val) {
         isPalindrome = false;
         break;
       }
@@ -538,14 +541,17 @@ class LinkTableClass {
     }
 
     // 恢复链表结构（反转回来）
+    /**
+     * @TODO: 这里需要优化，因为prev是null，所以curr.next是undefined，所以需要优化
+     */
     prev = null;
     curr = prev;
 
     while (curr) {
-      const next = curr.next;
+      const _next: LinkNode | null = curr.next;
       curr.next = prev;
       prev = curr;
-      curr = next;
+      curr = _next;
     }
 
     // 恢复循环链表
@@ -559,13 +565,13 @@ class LinkTableClass {
    * @desc 获取两个链表的交点
    * @param {LinkNode} headA
    * @param {LinkNode} headB
-   * @returns {LinkNode}
+   * @returns {LinkNode | null}
    */
-  getIntersectionNode(headA: LinkNode, headB: LinkNode) {
+  getIntersectionNode(headA: LinkNode, headB: LinkNode): LinkNode | null {
     if (!headA || !headB) return null;
 
-    let pA = headA;
-    let pB = headB;
+    let pA: LinkNode | null = headA;
+    let pB: LinkNode | null = headB;
 
     while (pA !== pB) {
       pA = pA === null ? headB : pA.next;
