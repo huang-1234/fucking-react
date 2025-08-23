@@ -14,6 +14,11 @@ const algorithmList = [
     title: '堆 (Heap)',
     description: '堆数据结构的可视化实现',
     path: '/algorithm/heap'
+  },
+  {
+    title: '链表 (LinkTable)',
+    description: '链表数据结构的可视化实现，支持单向链表、循环链表等各种操作',
+    path: '/algorithm/linktable'
   }
 ];
 

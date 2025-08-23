@@ -19,3 +19,23 @@ var mergeTwoLists = function (l1, l2) {
 
   return prehead.next;
 };
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+var removeNthFromEnd = function (head, n) {
+  let fast = slow = head;
+  while (n--) {
+    fast = fast.next;
+  }
+  if (!fast) {
+    return head.next;
+  }
+  while (fast.next && slow.next) {
+    fast = fast.next;
+    slow = slow.next;
+  }
+  slow.next = slow.next.next;
+  return head;
+};

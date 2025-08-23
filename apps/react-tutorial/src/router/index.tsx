@@ -15,6 +15,7 @@ const CanvasPanelPage = loadable(() => import('@/pages/CanvasPanel'));
 const AlgorithmPage = loadable(() => import('@/pages/Algorithm'));
 const LengthOfLISPage = loadable(() => import('@/pages/Algorithm/lengthOfLIS'));
 const HeapPage = loadable(() => import('@/pages/Algorithm/Heap'));
+const LinkTablePage = loadable(() => import('@/pages/Algorithm/LinkTable'));
 
 // React 15 组件
 const React15Page = loadable(() => import('@/pages/React15'));
@@ -301,6 +302,14 @@ const routerBrowser = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <HeapPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'linktable',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <LinkTablePage />
               </Suspense>
             )
           }

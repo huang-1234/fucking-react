@@ -38,6 +38,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
       '~antd': path.resolve(__dirname, 'node_modules/antd'),
       '~antd/es/style/themes/index.less': path.resolve(__dirname, 'node_modules/antd/es/style/themes/index.less'),
+      '@fucking-algorithm/algorithm': path.resolve(__dirname, '../../libs/algorithm/src'),
     },
   },
   build: {
