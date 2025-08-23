@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Tabs, Input, Button, Space, Typography, Alert, Divider, Select } from 'antd';
-import { PlayCircleOutlined, PauseCircleOutlined, StepForwardOutlined, StepBackwardOutlined, ReloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined } from '@ant-design/icons';
 import LISVisualizerDP from './LISVisualizerDP';
 import LISVisualizerTails from './LISVisualizerTails';
 import './styles.less';
 import VisualLongestIncreasingSubsequenceInterval from './VisualLongestIncreasingSubsequenceInterval';
 
 const { TabPane } = Tabs;
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 // const DEFAULT_ARRAY = [10, 9, 2, 5, 5, 5, 3, 7, 4, 8, -1, -3, 1, 2, 3, 4, 5, 101, 18, 19, 10];

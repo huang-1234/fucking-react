@@ -59,6 +59,9 @@ const ECMAScriptPage = loadable(() => import('@/pages/ECMAScript'));
 const WebpackPage = loadable(() => import('@/pages/Webpack'));
 const VitePage = loadable(() => import('@/pages/Vite'));
 
+// protobuf
+const ProtobufPage = loadable(() => import('@/pages/protobuf'));
+
 // 加载中组件
 const LoadingComponent = () => <div>加载中...</div>;
 
@@ -328,6 +331,15 @@ const routerBrowser = createBrowserRouter([
         element: (
           <Suspense fallback={<LoadingComponent />}>
             <VitePage />
+          </Suspense>
+        )
+      },
+      // protobuf路由
+      {
+        path: 'protobuf',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <ProtobufPage />
           </Suspense>
         )
       }

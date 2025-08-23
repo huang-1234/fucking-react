@@ -43,6 +43,7 @@ export const runViteBuild = async (config: any): Promise<ViteBuildResult> => {
  * @returns 热更新结果
  */
 export const simulateHMR = async (file: string): Promise<{ time: number; success: boolean }> => {
+  console.log('file', file);
   // 模拟热更新延迟
   return new Promise(resolve => {
     setTimeout(() => {

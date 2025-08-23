@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Divider, Card, Space, Button, Alert, Switch, Tabs, Badge, List } from 'antd';
+import { Typography, Divider, Card, Space, Button, Alert, Switch, Tabs, Badge } from 'antd';
 import { CodeBlock } from '@/components/CodeBlock';
 import { reactCompilerAdvantages } from '../common';
 import { unoptimizedCode, optimizedCode, manualOptimizationCode } from '../hooks/compiler';

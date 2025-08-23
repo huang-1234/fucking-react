@@ -1,4 +1,3 @@
-import React from 'react';
 import ECMAScriptPage from './Page';
 import ErrorBoundary from 'antd/es/alert/ErrorBoundary';
 

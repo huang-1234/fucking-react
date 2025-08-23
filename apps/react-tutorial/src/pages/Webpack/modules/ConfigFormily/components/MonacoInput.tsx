@@ -41,6 +41,7 @@ const InternalMonacoInput: React.FC<MonacoInputProps> = ({
 export const MonacoInput = connect(
   InternalMonacoInput,
   mapProps((props) => {
+    const { onChange } = props || {};
     // 将字符串值转换为JSON对象
     let parsedValue = props.value;
     if (typeof props.value === 'object') {
@@ -58,10 +59,10 @@ export const MonacoInput = connect(
         try {
           // 尝试解析JSON
           const parsedValue = JSON.parse(value);
-          props.onChange(parsedValue);
+          onChange?.(parsedValue);
         } catch (e) {
           // 如果解析失败，保留原始字符串
-          props.onChange(value);
+          onChange?.(value);
         }
       },
     };

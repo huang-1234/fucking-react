@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Space, Card, Typography, Steps, Tag } from 'antd';
+import { Button, Card, Typography, Steps, Select } from 'antd';
 import { PlayCircleOutlined, PauseCircleOutlined, StepForwardOutlined, StepBackwardOutlined, ReloadOutlined } from '@ant-design/icons';
 
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 const { Step } = Steps;
 
 interface LISVisualizerTailsProps {
@@ -300,6 +300,7 @@ const LISVisualizerTails: React.FC<LISVisualizerTailsProps> = ({ array }) => {
 
   // 重建最长递增子序列的索引
   const reconstructLIS = (arr: number[], tailsIndices: number[], upToLength: number): number[] => {
+    console.log('arr', arr);
     const result: number[] = [];
 
     // 从 tails 数组中提取对应的原始索引
@@ -467,6 +468,12 @@ const LISVisualizerTails: React.FC<LISVisualizerTailsProps> = ({ array }) => {
         >
           下一步
         </Button>
+        {/* 播放速度选择 */}
+        <Select
+          options={[{ label: '慢速', value: 1000 }, { label: '中速', value: 500 }, { label: '快速', value: 100 }]}
+          value={speed}
+          onChange={(value) => setSpeed(value as number)}
+        />
         <Button
           icon={<ReloadOutlined />}
           onClick={resetVisualization}

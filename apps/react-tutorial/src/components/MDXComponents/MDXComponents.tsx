@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Typography, Alert, Divider } from 'antd';
 import CodePreview from '../CodePreview';
 import styles from './MDXComponents.module.less';

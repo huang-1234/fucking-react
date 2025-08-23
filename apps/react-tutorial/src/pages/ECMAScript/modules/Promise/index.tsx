@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Row, Col, Card, Typography, Button, Space, Divider, Steps, Input, Alert, Tabs, Tag } from 'antd';
-import { CodeBlock } from '../../../../components/CodeBlock';
-import CodePreview from '../../../../components/CodePreview';
+import { Row, Col, Card, Typography, Button, Space, Input, Alert, Tabs, Tag } from 'antd';
+import { CodeBlock } from '@/components/CodeBlock';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -21,7 +20,6 @@ import {
 } from './react-text';
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
-const { Step } = Steps;
 
 
 

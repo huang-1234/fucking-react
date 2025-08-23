@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import { TreeNode } from './base';
 import './HeapVisualizer.css';
@@ -94,7 +94,9 @@ export function HeapVisualizer<T>({
       .append("path")
       .attr("class", "link")
       .attr("d", d => {
-        return `M${d.source.x},${d.source.y}C${d.source.x},${(d.source.y + d.target.y) / 2} ${d.target.x},${(d.source.y + d.target.y) / 2} ${d.target.x},${d.target.y}`;
+        const sourceY = d.source.y || 0;
+        const targetY = d.target.y || 0;
+        return `M${d.source.x},${sourceY}C${d.source.x},${(sourceY + targetY) / 2} ${d.target.x},${(sourceY + targetY) / 2} ${d.target.x},${targetY}`;
       });
 
     // 创建节点组
@@ -108,6 +110,7 @@ export function HeapVisualizer<T>({
       })
       .attr("transform", d => `translate(${d.x},${d.y})`)
       .on("click", (event, d) => {
+        console.log('event', event);
         if (onNodeClick) {
           onNodeClick(d.data);
         }
@@ -145,7 +148,8 @@ export function HeapVisualizer<T>({
 
     // 高亮显示节点
     svg.selectAll(".node")
-      .filter(d => {
+      // @ts-ignore
+      .filter((d: any) => {
         const node = d as d3.HierarchyNode<TreeNode<T>>;
         return node.data.id && highlightedNodes.includes(node.data.id);
       })
@@ -153,6 +157,13 @@ export function HeapVisualizer<T>({
       .classed("highlighted", true);
 
   }, [highlightedNodes, nodes]);
+
+  // use animationDuration
+  useEffect(() => {
+    if (!svgRef.current || nodes.length === 0) return;
+    const svg = d3.select(svgRef.current);
+    svg.selectAll(".node").transition().duration(animationDuration).attr("transform", (d: any) => `translate(${d.x},${d.y})`);
+  }, [nodes, animationDuration]);
 
   return (
     <div className="heap-visualizer">

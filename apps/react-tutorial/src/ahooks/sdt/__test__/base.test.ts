@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import {
   useToggle,
@@ -9,26 +9,26 @@ import {
   useMount,
   useUnmount,
   useUnmountedRef,
-  useEventListener,
-  useClickAway,
   usePrevious,
-  useRafState,
-  useSafeState,
-  useCreation,
   useLatest,
   useCounter,
   useLocalStorageState,
   useSessionStorageState,
-  useCookieState,
-  useSize,
-  useHover,
-  useMouse,
-  useScroll,
-  useKeyPress,
-  useFocusWithin,
-  useTimeout,
-  useInterval,
-  useCountDown
+  // useEventListener,
+  // useClickAway,
+  // useRafState,
+  // useSafeState,
+  // useCreation,
+  // useCookieState,
+  // useSize,
+  // useHover,
+  // useMouse,
+  // useScroll,
+  // useKeyPress,
+  // useFocusWithin,
+  // useTimeout,
+  // useInterval,
+  // useCountDown
 } from '../base';
 
 const fakeGlobal = globalThis || {

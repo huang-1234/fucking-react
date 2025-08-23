@@ -1,0 +1,273 @@
+syntax = "proto3";
+
+package tutorial;
+
+// 用户服务
+service UserService {
+  // 获取用户信息
+  rpc GetUser (UserRequest) returns (User);
+
+  // 创建新用户
+  rpc CreateUser (User) returns (UserResponse);
+
+  // 更新用户信息
+  rpc UpdateUser (User) returns (UserResponse);
+
+  // 删除用户
+  rpc DeleteUser (UserRequest) returns (UserResponse);
+
+  // 列出所有用户
+  rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
+}
+
+// 用户请求
+message UserRequest {
+  // 用户ID
+  string user_id = 1;
+}
+
+// 列出用户请求
+message ListUsersRequest {
+  // 页码，从1开始
+  int32 page = 1;
+
+  // 每页数量
+  int32 page_size = 2;
+
+  // 排序字段
+  string sort_by = 3;
+
+  // 是否降序排序
+  bool desc = 4;
+}
+
+// 用户信息
+message User {
+  // 用户ID
+  string id = 1;
+
+  // 用户名
+  string username = 2;
+
+  // 电子邮件
+  string email = 3;
+
+  // 全名
+  string full_name = 4;
+
+  // 创建时间
+  int64 created_at = 5;
+
+  // 更新时间
+  int64 updated_at = 6;
+
+  // 用户角色
+  repeated Role roles = 7;
+
+  // 用户状态
+  UserStatus status = 8;
+
+  // 用户设置
+  map<string, string> settings = 9;
+
+  // 联系信息
+  ContactInfo contact_info = 10;
+}
+
+// 联系信息
+message ContactInfo {
+  // 电话号码
+  string phone = 1;
+
+  // 地址
+  Address address = 2;
+}
+
+// 地址信息
+message Address {
+  // 街道
+  string street = 1;
+
+  // 城市
+  string city = 2;
+
+  // 省/州
+  string state = 3;
+
+  // 国家
+  string country = 4;
+
+  // 邮政编码
+  string zip_code = 5;
+}
+
+// 角色信息
+message Role {
+  // 角色ID
+  string id = 1;
+
+  // 角色名称
+  string name = 2;
+
+  // 角色描述
+  string description = 3;
+
+  // 权限列表
+  repeated string permissions = 4;
+}
+
+// 用户状态枚举
+enum UserStatus {
+  // 未知状态
+  UNKNOWN = 0;
+
+  // 活跃状态
+  ACTIVE = 1;
+
+  // 已禁用
+  DISABLED = 2;
+
+  // 已删除
+  DELETED = 3;
+}
+
+// 用户响应
+message UserResponse {
+  // 是否成功
+  bool success = 1;
+
+  // 错误消息
+  string error = 2;
+
+  // 用户ID
+  string user_id = 3;
+}
+
+// 用户列表响应
+message ListUsersResponse {
+  // 用户列表
+  repeated User users = 1;
+
+  // 总数
+  int32 total = 2;
+
+  // 当前页
+  int32 page = 3;
+
+  // 每页数量
+  int32 page_size = 4;
+}
+
+// 产品服务
+service ProductService {
+  // 获取产品信息
+  rpc GetProduct (ProductRequest) returns (Product);
+
+  // 创建产品
+  rpc CreateProduct (Product) returns (ProductResponse);
+
+  // 更新产品
+  rpc UpdateProduct (Product) returns (ProductResponse);
+
+  // 删除产品
+  rpc DeleteProduct (ProductRequest) returns (ProductResponse);
+
+  // 列出产品
+  rpc ListProducts (ListProductsRequest) returns (ListProductsResponse);
+}
+
+// 产品请求
+message ProductRequest {
+  // 产品ID
+  string product_id = 1;
+}
+
+// 列出产品请求
+message ListProductsRequest {
+  // 页码
+  int32 page = 1;
+
+  // 每页数量
+  int32 page_size = 2;
+
+  // 分类ID
+  string category_id = 3;
+}
+
+// 产品信息
+message Product {
+  // 产品ID
+  string id = 1;
+
+  // 产品名称
+  string name = 2;
+
+  // 产品描述
+  string description = 3;
+
+  // 价格（分）
+  int32 price = 4;
+
+  // 库存
+  int32 stock = 5;
+
+  // 分类ID
+  string category_id = 6;
+
+  // 创建时间
+  int64 created_at = 7;
+
+  // 更新时间
+  int64 updated_at = 8;
+
+  // 产品图片
+  repeated string images = 9;
+
+  // 产品属性
+  map<string, string> attributes = 10;
+
+  // 产品状态
+  ProductStatus status = 11;
+}
+
+// 产品状态枚举
+enum ProductStatus {
+  // 未知状态
+  UNKNOWN = 0;
+
+  // 上架
+  AVAILABLE = 1;
+
+  // 下架
+  UNAVAILABLE = 2;
+
+  // 缺货
+  OUT_OF_STOCK = 3;
+}
+
+// 产品响应
+message ProductResponse {
+  // 是否成功
+  bool success = 1;
+
+  // 错误消息
+  string error = 2;
+
+  // 产品ID
+  string product_id = 3;
+}
+
+// 产品列表响应
+message ListProductsResponse {
+  // 产品列表
+  repeated Product products = 1;
+
+  // 总数
+  int32 total = 2;
+
+  // 当前页
+  int32 page = 3;
+
+  // 每页数量
+  int32 page_size = 4;
+}

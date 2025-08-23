@@ -13,7 +13,7 @@ import {
   FormCollapse,
 } from '@formily/antd-v5';
 import MonacoEditor from '@monaco-editor/react';
-import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
+// import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import './ConfigGenerator.less';
 
 const { TabPane } = Tabs;

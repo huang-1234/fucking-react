@@ -102,6 +102,7 @@ export const createIframeSandbox = (container: HTMLElement, srcDoc: string) => {
  * @returns 构建结果
  */
 export const simulateWebpackBuild = async (config: any) => {
+  console.log('config', config);
   // 这里是模拟实现，实际应用中可能需要与后端服务通信
   return new Promise((resolve) => {
     // 模拟构建延迟
@@ -128,6 +129,7 @@ export const simulateWebpackBuild = async (config: any) => {
  * @returns 构建结果
  */
 export const simulateViteBuild = async (config: any) => {
+  console.log('config', config);
   // 这里是模拟实现，实际应用中可能需要与后端服务通信
   return new Promise((resolve) => {
     // 模拟构建延迟

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { type HeapOperation, HeapOperationType } from './base';
 import './LogPanel.css';
 

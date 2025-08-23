@@ -1,0 +1,401 @@
+syntax = "proto3";
+
+package ecommerce;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+// 电子商务系统API
+service ECommerceService {
+  // 用户相关API
+  rpc RegisterUser (RegisterUserRequest) returns (UserResponse);
+  rpc LoginUser (LoginRequest) returns (AuthResponse);
+  rpc GetUserProfile (UserRequest) returns (User);
+  rpc UpdateUserProfile (UpdateUserRequest) returns (UserResponse);
+
+  // 产品相关API
+  rpc CreateProduct (Product) returns (ProductResponse);
+  rpc GetProduct (ProductRequest) returns (Product);
+  rpc UpdateProduct (Product) returns (ProductResponse);
+  rpc DeleteProduct (ProductRequest) returns (ProductResponse);
+  rpc SearchProducts (SearchRequest) returns (ProductList);
+
+  // 订单相关API
+  rpc CreateOrder (CreateOrderRequest) returns (Order);
+  rpc GetOrder (OrderRequest) returns (Order);
+  rpc UpdateOrderStatus (UpdateOrderStatusRequest) returns (OrderResponse);
+  rpc ListUserOrders (UserOrdersRequest) returns (OrderList);
+
+  // 购物车相关API
+  rpc AddToCart (CartItem) returns (CartResponse);
+  rpc RemoveFromCart (CartItemRequest) returns (CartResponse);
+  rpc GetCart (UserRequest) returns (Cart);
+  rpc ClearCart (UserRequest) returns (CartResponse);
+
+  // 支付相关API
+  rpc ProcessPayment (PaymentRequest) returns (PaymentResponse);
+  rpc GetPaymentStatus (PaymentStatusRequest) returns (PaymentStatus);
+
+  // 库存相关API
+  rpc CheckInventory (InventoryRequest) returns (InventoryResponse);
+  rpc UpdateInventory (UpdateInventoryRequest) returns (InventoryResponse);
+
+  // 评论相关API
+  rpc AddReview (Review) returns (ReviewResponse);
+  rpc GetProductReviews (ProductRequest) returns (ReviewList);
+}
+
+// 用户相关消息
+message User {
+  string id = 1;
+  string email = 2;
+  string username = 3;
+  string full_name = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  Address shipping_address = 7;
+  Address billing_address = 8;
+  repeated string roles = 9;
+  UserStatus status = 10;
+  map<string, string> preferences = 11;
+
+  oneof verification {
+    string phone_number = 12;
+    string email_verification_token = 13;
+  }
+}
+
+message Address {
+  string street_line1 = 1;
+  string street_line2 = 2;
+  string city = 3;
+  string state = 4;
+  string country = 5;
+  string postal_code = 6;
+  bool is_default = 7;
+  string label = 8; // 如"家庭"、"工作"等
+}
+
+enum UserStatus {
+  USER_STATUS_UNKNOWN = 0;
+  USER_STATUS_ACTIVE = 1;
+  USER_STATUS_INACTIVE = 2;
+  USER_STATUS_SUSPENDED = 3;
+  USER_STATUS_DELETED = 4;
+}
+
+message RegisterUserRequest {
+  string email = 1;
+  string password = 2;
+  string username = 3;
+  string full_name = 4;
+  Address shipping_address = 5;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+  string device_id = 3;
+}
+
+message AuthResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  google.protobuf.Timestamp expires_at = 3;
+  User user = 4;
+}
+
+message UserRequest {
+  string user_id = 1;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  google.protobuf.StringValue email = 2;
+  google.protobuf.StringValue username = 3;
+  google.protobuf.StringValue full_name = 4;
+  Address shipping_address = 5;
+  Address billing_address = 6;
+  map<string, string> preferences = 7;
+}
+
+message UserResponse {
+  bool success = 1;
+  string message = 2;
+  string user_id = 3;
+}
+
+// 产品相关消息
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int64 price = 4; // 以分为单位
+  string category_id = 5;
+  repeated string tags = 6;
+  repeated string image_urls = 7;
+  map<string, string> attributes = 8;
+  int32 stock_quantity = 9;
+  ProductStatus status = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  float average_rating = 13;
+  int32 review_count = 14;
+  repeated Discount discounts = 15;
+
+  message Discount {
+    string id = 1;
+    string name = 2;
+    DiscountType type = 3;
+    double value = 4;
+    google.protobuf.Timestamp start_date = 5;
+    google.protobuf.Timestamp end_date = 6;
+
+    enum DiscountType {
+      DISCOUNT_TYPE_UNKNOWN = 0;
+      DISCOUNT_TYPE_PERCENTAGE = 1;
+      DISCOUNT_TYPE_FIXED_AMOUNT = 2;
+    }
+  }
+}
+
+enum ProductStatus {
+  PRODUCT_STATUS_UNKNOWN = 0;
+  PRODUCT_STATUS_ACTIVE = 1;
+  PRODUCT_STATUS_OUT_OF_STOCK = 2;
+  PRODUCT_STATUS_DISCONTINUED = 3;
+  PRODUCT_STATUS_COMING_SOON = 4;
+}
+
+message ProductRequest {
+  string product_id = 1;
+}
+
+message ProductResponse {
+  bool success = 1;
+  string message = 2;
+  string product_id = 3;
+}
+
+message SearchRequest {
+  string query = 1;
+  string category_id = 2;
+  repeated string tags = 3;
+  int32 page = 4;
+  int32 page_size = 5;
+  string sort_by = 6;
+  bool sort_desc = 7;
+  PriceRange price_range = 8;
+
+  message PriceRange {
+    int64 min = 1;
+    int64 max = 2;
+  }
+}
+
+message ProductList {
+  repeated Product products = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// 订单相关消息
+message Order {
+  string id = 1;
+  string user_id = 2;
+  repeated OrderItem items = 3;
+  int64 subtotal = 4;
+  int64 tax = 5;
+  int64 shipping_cost = 6;
+  int64 discount = 7;
+  int64 total = 8;
+  OrderStatus status = 9;
+  PaymentStatus payment_status = 10;
+  ShippingInfo shipping_info = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  string notes = 14;
+}
+
+message OrderItem {
+  string product_id = 1;
+  string product_name = 2;
+  int32 quantity = 3;
+  int64 unit_price = 4;
+  int64 subtotal = 5;
+  map<string, string> selected_attributes = 6;
+}
+
+enum OrderStatus {
+  ORDER_STATUS_UNKNOWN = 0;
+  ORDER_STATUS_PENDING = 1;
+  ORDER_STATUS_PROCESSING = 2;
+  ORDER_STATUS_SHIPPED = 3;
+  ORDER_STATUS_DELIVERED = 4;
+  ORDER_STATUS_CANCELLED = 5;
+  ORDER_STATUS_RETURNED = 6;
+}
+
+message ShippingInfo {
+  string carrier = 1;
+  string tracking_number = 2;
+  Address shipping_address = 3;
+  string shipping_method = 4;
+  google.protobuf.Timestamp estimated_delivery = 5;
+}
+
+message CreateOrderRequest {
+  string user_id = 1;
+  repeated OrderItem items = 2;
+  Address shipping_address = 3;
+  Address billing_address = 4;
+  string shipping_method = 5;
+  string payment_method_id = 6;
+  string coupon_code = 7;
+  string notes = 8;
+}
+
+message OrderRequest {
+  string order_id = 1;
+}
+
+message UpdateOrderStatusRequest {
+  string order_id = 1;
+  OrderStatus status = 2;
+  string notes = 3;
+}
+
+message OrderResponse {
+  bool success = 1;
+  string message = 2;
+  string order_id = 3;
+}
+
+message UserOrdersRequest {
+  string user_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+  OrderStatus status = 4;
+}
+
+message OrderList {
+  repeated Order orders = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// 购物车相关消息
+message Cart {
+  string id = 1;
+  string user_id = 2;
+  repeated CartItem items = 3;
+  int64 subtotal = 4;
+  int32 item_count = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message CartItem {
+  string id = 1;
+  string cart_id = 2;
+  string product_id = 3;
+  int32 quantity = 4;
+  map<string, string> selected_attributes = 5;
+  google.protobuf.Timestamp added_at = 6;
+}
+
+message CartItemRequest {
+  string cart_id = 1;
+  string item_id = 2;
+}
+
+message CartResponse {
+  bool success = 1;
+  string message = 2;
+  Cart cart = 3;
+}
+
+// 支付相关消息
+message PaymentRequest {
+  string order_id = 1;
+  string payment_method_id = 2;
+  int64 amount = 3;
+  string currency = 4;
+  map<string, string> metadata = 5;
+}
+
+message PaymentResponse {
+  bool success = 1;
+  string message = 2;
+  string payment_id = 3;
+  PaymentStatus status = 4;
+  string transaction_id = 5;
+}
+
+message PaymentStatusRequest {
+  string payment_id = 1;
+}
+
+enum PaymentStatus {
+  PAYMENT_STATUS_UNKNOWN = 0;
+  PAYMENT_STATUS_PENDING = 1;
+  PAYMENT_STATUS_PROCESSING = 2;
+  PAYMENT_STATUS_SUCCEEDED = 3;
+  PAYMENT_STATUS_FAILED = 4;
+  PAYMENT_STATUS_REFUNDED = 5;
+}
+
+// 库存相关消息
+message InventoryRequest {
+  repeated string product_ids = 1;
+}
+
+message UpdateInventoryRequest {
+  repeated InventoryUpdate updates = 1;
+
+  message InventoryUpdate {
+    string product_id = 1;
+    int32 quantity_change = 2; // 正数增加，负数减少
+    string reason = 3;
+  }
+}
+
+message InventoryResponse {
+  bool success = 1;
+  string message = 2;
+  repeated ProductInventory inventory = 3;
+
+  message ProductInventory {
+    string product_id = 1;
+    int32 available_quantity = 2;
+    bool in_stock = 3;
+  }
+}
+
+// 评论相关消息
+message Review {
+  string id = 1;
+  string product_id = 2;
+  string user_id = 3;
+  string user_name = 4;
+  int32 rating = 5; // 1-5
+  string comment = 6;
+  google.protobuf.Timestamp created_at = 7;
+  repeated string image_urls = 8;
+  bool verified_purchase = 9;
+  int32 helpful_votes = 10;
+}
+
+message ReviewResponse {
+  bool success = 1;
+  string message = 2;
+  string review_id = 3;
+}
+
+message ReviewList {
+  repeated Review reviews = 1;
+  int32 total_count = 2;
+  double average_rating = 3;
+}
