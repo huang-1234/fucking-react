@@ -2,18 +2,18 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import {
   useRequest,
-  useAntdTable,
-  useWebSocket,
-  useDrop,
-  useDrag,
   useSelections,
   useDebounce,
   useThrottle,
   useDebounceFn,
   useThrottleFn,
-  useVirtualList,
-  useInfiniteScroll,
-  usePagination
+  // useAntdTable,
+  // useWebSocket,
+  // useDrop,
+  // useDrag,
+  // useVirtualList,
+  // useInfiniteScroll,
+  // usePagination
 } from '../advance';
 
 // Mock global objects
@@ -39,9 +39,8 @@ describe('useRequest', () => {
     expect(result.current.loading).toBe(false);
     expect(result.current.data).toBeUndefined();
 
-    let runPromise;
     act(() => {
-      runPromise = result.current.run('test-param');
+      result.current.run('test-param');
     });
 
     expect(result.current.loading).toBe(true);
@@ -66,9 +65,8 @@ describe('useRequest', () => {
       onFinally
     }));
 
-    let runPromise;
     act(() => {
-      runPromise = result.current.run('test-param');
+      result.current.run('test-param');
     });
 
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -156,7 +154,7 @@ describe('useRequest', () => {
     expect(result.current.data).toEqual({ data: 'mutated' });
 
     act(() => {
-      result.current.mutate(prev => ({ data: prev.data + '-updated' }));
+      result.current.mutate((prev: any) => ({ data: prev.data + '-updated' }));
     });
 
     expect(result.current.data).toEqual({ data: 'mutated-updated' });

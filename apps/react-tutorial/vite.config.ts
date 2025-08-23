@@ -9,7 +9,14 @@ import { cdnResources } from '../../global/cdn/base';
 export default defineConfig({
   plugins: [
     react(),
-    visualizer({ open: true }),
+    visualizer({
+      open: true,          // 构建后自动打开浏览器
+      filename: 'stats.html', // 输出文件路径
+      gzipSize: true,      // 显示 Gzip 压缩后体积
+      brotliSize: true,   // 显示 Brotli 压缩后体积
+      template: 'treemap', // 使用树状图模板
+      title: 'Vite Bundle Analyzer', // 设置标题
+    }),
     viteImagemin({ // 图片压缩
       mozjpeg: { quality: 50 },
       pngquant: { quality: [0.8, 0.9] },

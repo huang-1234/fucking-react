@@ -23,6 +23,7 @@ interface RpcMethod {
 const RpcSimulator: React.FC<RpcSimulatorProps> = ({ root }) => {
   const [form] = Form.useForm();
   const [services, setServices] = useState<protobuf.Service[]>([]);
+  console.log('services', services);
   const [methods, setMethods] = useState<RpcMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<RpcMethod | null>(null);
   const [requestJson, setRequestJson] = useState<string>('{}');
@@ -346,6 +347,11 @@ const RpcSimulator: React.FC<RpcSimulatorProps> = ({ root }) => {
                     onChange={(e) => setRequestJson(e.target.value)}
                   />
                 </Form.Item>
+              </TabPane>
+              <TabPane tab="call rpc" key="call-rpc">
+                <Button type="primary" onClick={callRpc}>
+                  call rpc
+                </Button>
               </TabPane>
 
               <TabPane tab="响应" key="response">

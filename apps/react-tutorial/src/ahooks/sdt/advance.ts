@@ -42,10 +42,6 @@ export function useRequest<T, P extends any[] = any[]>(
   const {
     manual = false,
     defaultParams = [] as unknown as P,
-    onBefore,
-    onSuccess,
-    onError,
-    onFinally,
     refreshDeps = [],
     loadingDelay,
     pollingInterval,
@@ -66,11 +62,6 @@ export function useRequest<T, P extends any[] = any[]>(
   const pollingTimerRef = useRef<NodeJS.Timeout>(null);
   const countRef = useRef(0);
 
-  const setState = useCallback((s: Partial<{ data: T; error: Error; loading: boolean }>) => {
-    setData(s.data);
-    setError(s.error);
-    setLoading(s.loading ?? false);
-  }, []);
 
   const runAsync = useCallback(async (...params: P): Promise<T> => {
     if (!ready) {
@@ -228,7 +219,7 @@ export function useRequest<T, P extends any[] = any[]>(
     data,
     error,
     loading,
-    run: asyncRun,
+    run: asyncRun as any,
     runAsync: debounceWait ? debounce(runAsync, debounceWait) : throttleWait ? throttle(runAsync, throttleWait) : runAsync,
     refresh,
     refreshAsync,
@@ -260,7 +251,6 @@ export function useAntdTable<T>(
     current,
     pageSize,
     total,
-    totalPage,
     changeCurrent,
     changePageSize,
     refresh,
@@ -307,7 +297,7 @@ export function useAntdTable<T>(
         showSizeChanger: true,
         showQuickJumper: true,
         onChange: changeCurrent,
-        onShowSizeChange: (current: number, size: number) => {
+        onShowSizeChange: (_current: number, size: number) => {
           changePageSize(size);
         },
       },
@@ -757,7 +747,7 @@ export function useVirtualList<T>(
     overscan?: number;
   }
 ) {
-  const { containerTarget, wrapperTarget, itemHeight, overscan = 5 } = options;
+  const { containerTarget, itemHeight, overscan = 5 } = options;
 
   const [targetList, setTargetList] = useState<{ data: T; index: number }[]>([]);
   const [wrapperStyle, setWrapperStyle] = useState<React.CSSProperties>({});
@@ -956,7 +946,6 @@ export function usePagination<T>(
   const {
     data = [],
     loading,
-    run,
     refresh,
   } = useRequest(
     async () => {

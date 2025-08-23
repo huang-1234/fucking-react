@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+
 import {
   HomeOutlined,
   AppstoreOutlined,

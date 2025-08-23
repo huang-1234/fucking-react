@@ -113,26 +113,25 @@ const React15Sandbox: React.FC<React15SandboxProps> = ({ children, title = 'Reac
         </Text>
       </div>
 
-      {/* 沙盒iframe */}
-      <iframe
-        ref={iframeRef}
-        id="version-sandbox"
-        title="React 15 Sandbox"
-        sandbox="allow-scripts allow-same-origin"
-        style={{
+      {React.createElement('iframe', {
+        key: 'sandbox-iframe',
+        ref: iframeRef,
+        id: 'version-sandbox',
+        title: 'React 15 Sandbox',
+        sandbox: 'allow-scripts allow-same-origin',
+        style: {
           width: '100%',
           height: '400px',
           border: '1px solid #f0f0f0',
           borderRadius: '4px',
-        }}
-      />
+        }
+      })}
 
-      {/* 可选的子组件渲染区域 */}
-      {children && (
+      {children ? (
         <div style={{ marginTop: 16 }}>
           {children}
         </div>
-      )}
+      ) : null}
     </Card>
   );
 };

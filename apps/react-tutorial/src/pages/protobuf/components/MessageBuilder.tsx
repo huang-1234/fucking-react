@@ -4,7 +4,7 @@ import * as protobuf from 'protobufjs';
 import { formatHex, isMessage } from '../lib/protobuf-service';
 import styles from '../index.module.less';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 const { Panel } = Collapse;
 

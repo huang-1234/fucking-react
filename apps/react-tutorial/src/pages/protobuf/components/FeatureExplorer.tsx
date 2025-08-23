@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Table, Tabs, Typography, Alert, Divider, Tag, Space, Tooltip } from 'antd';
-import { InfoCircleOutlined, CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { InfoCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
 import { getProtoFeatures } from '../lib/protobuf-service';
 import styles from '../index.module.less';
 

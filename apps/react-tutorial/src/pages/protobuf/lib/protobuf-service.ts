@@ -24,13 +24,7 @@ export const loadProto = async (url: string): Promise<protobuf.Root> => {
  */
 export const loadProtoFromString = (content: string): protobuf.Root => {
   try {
-    return protobuf.parse(content, {
-      keepCase: true,
-      alternateCommentMode: true,
-      preferTrailingComment: true,
-      // 安全限制，防止恶意嵌套
-      maximumNesting: 10
-    }).root;
+    return protobuf.parse(content).root;
   } catch (error) {
     console.error('解析Proto字符串失败:', error);
     throw error;
@@ -104,7 +98,7 @@ export const getFieldTypeName = (field: protobuf.Field): string => {
   }
 
   if (field.map) {
-    return `map<${field.keyType}, ${field.type}>`;
+    return `map<${(field as any).keyType}, ${field.type}>`;
   }
 
   if (field.repeated) {

@@ -42,6 +42,7 @@ export const runWebpackBuild = async (config: any): Promise<WebpackBuildResult> 
  * @returns 统计数据
  */
 export const getWebpackStats = async (configPath?: string): Promise<any> => {
+  console.log('configPath', configPath);
   try {
     // 模拟API调用，获取stats.json数据
     // 在实际应用中，这里应该从后端获取数据

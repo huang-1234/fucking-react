@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Row, Col, Card, Typography, Button, Input, Select, Space, Table, Divider, Alert } from 'antd';
-import { CodeBlock } from '../../../../components/CodeBlock';
-import CodePreview from '../../../../components/CodePreview';
+import { CodeBlock } from '@/components/CodeBlock';
 
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
-const { TextArea } = Input;
 
 // 字符串方法代码示例
 const stringMethodsCode = `// 字符串创建

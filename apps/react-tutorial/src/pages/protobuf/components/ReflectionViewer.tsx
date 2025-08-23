@@ -4,6 +4,7 @@ import { FolderOutlined, FileOutlined, ApiOutlined, MessageOutlined, OrderedList
 import * as protobuf from 'protobufjs';
 import { getObjectIconType, isMessage, isService, isEnum, getFieldTypeName } from '../lib/protobuf-service';
 import styles from '../index.module.less';
+import type { IconType } from 'antd/es/notification/interface';
 
 const { Title, Text } = Typography;
 const { DirectoryTree } = Tree;
@@ -37,7 +38,7 @@ const ReflectionViewer: React.FC<ReflectionViewerProps> = ({ root }) => {
       return {
         title: obj.name,
         key: obj.fullName,
-        icon,
+        icon: icon as IconType,
         children: obj.nestedArray.map(nested => buildTreeNodes(nested))
       };
     }
@@ -46,7 +47,7 @@ const ReflectionViewer: React.FC<ReflectionViewerProps> = ({ root }) => {
     return {
       title: obj.name,
       key: obj.fullName,
-      icon,
+      icon: icon as IconType,
       isLeaf: !(obj instanceof protobuf.Namespace) || obj.nestedArray.length === 0
     };
   };
@@ -55,6 +56,7 @@ const ReflectionViewer: React.FC<ReflectionViewerProps> = ({ root }) => {
 
   // 处理节点选择
   const handleSelect = (selectedKeys: React.Key[], info: any) => {
+    console.log('info', info);
     if (selectedKeys.length === 0) return;
 
     const fullName = selectedKeys[0].toString();

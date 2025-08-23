@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Row, Col, Card, Typography, Button, Space, Divider, Steps, Alert, Tabs } from 'antd';
-import { CodeBlock } from '../../../../components/CodeBlock';
+import { Row, Col, Card, Typography, Button, Divider, Steps, Alert, Tabs } from 'antd';
+import { CodeBlock } from '@/components/CodeBlock';
 import {
   LoadingOutlined,
   CheckCircleOutlined,

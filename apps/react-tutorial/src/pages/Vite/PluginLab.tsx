@@ -445,7 +445,7 @@ ${pluginInitializations}
                 height="400px"
                 language="javascript"
                 value={customPluginCode}
-                onChange={setCustomPluginCode}
+                onChange={(value) => setCustomPluginCode(value || '')}
               />
             </div>
 

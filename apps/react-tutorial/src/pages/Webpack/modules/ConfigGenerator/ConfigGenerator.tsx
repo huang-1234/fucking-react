@@ -308,7 +308,7 @@ module.exports = {
                 </Button>
               }
             >
-              {config.module.rules.map((rule, index) => (
+              {config.module.rules.map((_, index) => (
                 <div key={index} className="rule-item">
                   <div className="rule-header">
                     <h4>Rule #{index + 1}</h4>

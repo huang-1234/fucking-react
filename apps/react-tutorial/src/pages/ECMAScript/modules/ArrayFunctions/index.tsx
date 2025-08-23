@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Row, Col, Button, Card, Typography, Divider, Space, Alert, Input } from 'antd';
-import { CodeBlock } from '../../../../components/CodeBlock';
-import CodePreview from '../../../../components/CodePreview';
+import { Row, Col, Button, Card, Typography, Space, Alert, Input } from 'antd';
+import { CodeBlock } from '@/components/CodeBlock';
+import CodePreview from '@/components/CodePreview';
 
 const { Title, Paragraph, Text } = Typography;
-const { TextArea } = Input;
 
 // map 实现代码
 const mapCode = `// map 实现
