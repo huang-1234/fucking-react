@@ -17,6 +17,7 @@ const LengthOfLISPage = loadable(() => import('@/pages/Algorithm/lengthOfLIS'));
 const HeapPage = loadable(() => import('@/pages/Algorithm/Heap'));
 const LinkTablePage = loadable(() => import('@/pages/Algorithm/LinkTable'));
 const GraphPage = loadable(() => import('@/pages/Algorithm/Graph'));
+const ProbabilityTheoryPage = loadable(() => import('@/pages/Algorithm/ProbabilityTheory'));
 
 // React 15 组件
 const React15Page = loadable(() => import('@/pages/React15'));
@@ -319,6 +320,14 @@ const routerBrowser = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <GraphPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'probability-theory',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <ProbabilityTheoryPage />
               </Suspense>
             )
           }

@@ -24,6 +24,11 @@ const algorithmList = [
     title: '图 (Graph)',
     description: '图数据结构的可视化实现，支持有向图、无向图，以及BFS、DFS、拓扑排序等算法',
     path: '/algorithm/graph'
+  },
+  {
+    title: '概率论 (Probability Theory)',
+    description: '概率分布可视化和微信红包随机分配算法实现，包含红包金额分布实验',
+    path: '/algorithm/probability-theory'
   }
 ];
 

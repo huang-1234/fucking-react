@@ -5,4 +5,4 @@ const LinkTablePage: React.FC = () => {
   return <LinkTableVisualization />;
 };
 
-export default LinkTablePage;
+export default React.memo(LinkTablePage);
