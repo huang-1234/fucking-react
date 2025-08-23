@@ -275,13 +275,11 @@ ${pluginInitializations}
                   }
                 }}
                 value={undefined}
-              >
-                {pluginTemplates.map(template => (
-                  <Option key={template.name} value={template.name}>
-                    {template.name}
-                  </Option>
-                ))}
-              </Select>
+                options={pluginTemplates.map(template => ({
+                  label: template.name,
+                  value: template.name
+                }))}
+              />
             </Space>
           </div>
 
