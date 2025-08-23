@@ -690,7 +690,7 @@ function GraphVisualization() {
         </div>
       </Card>
 
-      <Card title="图可视化" style={{ marginBottom: 20 }}>
+      <Card title="图可视化" style={{ marginBottom: 20 }} >
         <div className="visualization-container">
           <svg ref={svgRef} className="graph-svg" viewBox="-200 -200 400 400">
             <g>
