@@ -4,42 +4,20 @@ import { RedEnvelopeOutlined, ExperimentOutlined, ReloadOutlined, BarChartOutlin
 import * as echarts from 'echarts';
 import { ProbabilityTheory } from '@fucking-algorithm/algorithm/ProbabilityTheory/base';
 import './WeChatPackets.less';
-
-const { Title, Text, Paragraph } = Typography;
+import { AlgorithmInfo, StatisticsContainer } from './AlgorithmInfo';
+import { useExperiment, useExperimentChart, usePackets } from './hooks';
+const { Title, Text } = Typography;
 
 // 微信红包可视化组件
 const WeChatPackets: React.FC = () => {
   // 红包参数
-  const [totalAmount, setTotalAmount] = useState<number>(100);
-  const [peopleCount, setPeopleCount] = useState<number>(10);
-  const [packets, setPackets] = useState<number[]>([]);
-  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
+  const {
+    totalAmount, peopleCount, packets, highlightIndex,
+    setTotalAmount, setPeopleCount, setPackets, setHighlightIndex
+  } = usePackets({ initTotalAmount: 100, initPeopleCount: 100 });
 
-  // 实验参数
-  const [experimentCount, setExperimentCount] = useState<number>(100);
-  const [targetIndex, setTargetIndex] = useState<number>(7);
-  const [experimentResults, setExperimentResults] = useState<number[]>([]);
-  const [experimentStatistics, setExperimentStatistics] = useState<{
-    min: number;
-    max: number;
-    avg: number;
-    median: number;
-    stdDev: number;
-  }>({
-    min: 0,
-    max: 0,
-    avg: 0,
-    median: 0,
-    stdDev: 0
-  });
-
-  // 图表引用
-  const distributionChartRef = useRef<HTMLDivElement>(null);
-  const experimentChartRef = useRef<HTMLDivElement>(null);
-
-  // 分布图表实例
-  const [distributionChart, setDistributionChart] = useState<echarts.ECharts | null>(null);
-  const [experimentChart, setExperimentChart] = useState<echarts.ECharts | null>(null);
+  const { distributionChartRef, experimentChartRef, distributionChart, experimentChart, setDistributionChart, setExperimentChart } = useExperimentChart();
+  const { experimentCount, targetIndex, experimentResults, experimentStatistics, setExperimentCount, setTargetIndex, setExperimentResults, setExperimentStatistics } = useExperiment();
 
   // 初始化
   useEffect(() => {
@@ -144,7 +122,7 @@ const WeChatPackets: React.FC = () => {
       const buckets: number[] = [];
 
       // 初始化桶
-      for (let i = min; i <= max; i += step) {
+      for (let i = min;i <= max;i += step) {
         buckets.push(0);
       }
 
@@ -158,7 +136,7 @@ const WeChatPackets: React.FC = () => {
 
       // 生成区间标签
       const labels = [];
-      for (let i = min; i <= max; i += step) {
+      for (let i = min;i <= max;i += step) {
         labels.push(`${i.toFixed(1)}-${(i + step).toFixed(1)}`);
       }
 
@@ -228,7 +206,7 @@ const WeChatPackets: React.FC = () => {
       const results: number[] = [];
 
       // 运行多次实验
-      for (let i = 0; i < experimentCount; i++) {
+      for (let i = 0;i < experimentCount; i++) {
         const result = ProbabilityTheory.splitMoney(totalAmount, peopleCount);
 
         // 记录目标位置的金额
@@ -400,89 +378,10 @@ const WeChatPackets: React.FC = () => {
 
         <div className="chart-container" ref={experimentChartRef}></div>
 
-        <div className="statistics-container">
-          <div className="statistic-item">
-            <div className="statistic-title">样本数量</div>
-            <div className="statistic-value">
-              {experimentResults.length}
-            </div>
-          </div>
-
-          <div className="statistic-item highlight">
-            <div className="statistic-title">平均值</div>
-            <div className="statistic-value">
-              {experimentStatistics.avg.toFixed(2)} 元
-            </div>
-          </div>
-
-          <div className="statistic-item">
-            <div className="statistic-title">中位数</div>
-            <div className="statistic-value">
-              {experimentStatistics.median.toFixed(2)} 元
-            </div>
-          </div>
-
-          <div className="statistic-item">
-            <div className="statistic-title">标准差</div>
-            <div className="statistic-value">
-              {experimentStatistics.stdDev.toFixed(2)}
-            </div>
-          </div>
-
-          <div className="statistic-item">
-            <div className="statistic-title">最小值</div>
-            <div className="statistic-value">
-              {experimentStatistics.min.toFixed(2)} 元
-            </div>
-          </div>
-
-          <div className="statistic-item">
-            <div className="statistic-title">最大值</div>
-            <div className="statistic-value">
-              {experimentStatistics.max.toFixed(2)} 元
-            </div>
-          </div>
-        </div>
+        <StatisticsContainer experimentResults={experimentResults} experimentStatistics={experimentStatistics} />
       </Card>
 
-      <Card title="算法原理" style={{ marginBottom: 20 }}>
-        <div className="algorithm-info">
-          <Paragraph>
-            <strong>微信红包算法</strong>使用二倍均值法实现公平的随机分配，核心原理是通过动态调整随机上限和期望值恒定的数学设计，确保每个参与者在概率意义上的平等。
-          </Paragraph>
-
-          <Title level={4}>二倍均值法原理</Title>
-          <Paragraph>
-            设当前剩余金额为M（单位：分），剩余人数为N，则：
-            <ul>
-              <li><strong>随机金额范围</strong>：[0, 2M/N]</li>
-              <li><strong>期望值计算</strong>：E = (0 + 2M/N) / 2 = M/N</li>
-            </ul>
-          </Paragraph>
-
-          <Title level={4}>公平性保证</Title>
-          <Paragraph>
-            无论分配顺序如何，每次抢红包的期望值严格等于当前剩余人均金额 M/N。这意味着：
-            <ul>
-              <li><strong>先抢者</strong>：面临更大的随机范围（上限较大），可能获得高额红包，也可能获得极小金额。</li>
-              <li><strong>后抢者</strong>：随机范围随M和N减少而收缩，但期望值始终与当前人均金额一致。</li>
-            </ul>
-          </Paragraph>
-
-          <Title level={4}>边界保护机制</Title>
-          <Paragraph>
-            <ul>
-              <li><strong>最小金额</strong>：通过 Math.max(amount, 1) 确保每份 ≥1分（0.01元），避免0元红包。</li>
-              <li><strong>安全上限</strong>：safeMax = remain - (n - i - 1) 保证剩余金额足够后续分配（每人至少1分）。</li>
-            </ul>
-          </Paragraph>
-
-          <Title level={4}>洗牌增强公平感</Title>
-          <Paragraph>
-            微信在算法完成后对红包序列随机排序，消除"越抢越少"的心理偏差，进一步增强公平性。
-          </Paragraph>
-        </div>
-      </Card>
+      <AlgorithmInfo />
     </div>
   );
 };
