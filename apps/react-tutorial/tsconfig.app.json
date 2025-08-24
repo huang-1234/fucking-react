@@ -25,7 +25,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@@/global/*": ["../../global/*"]
+      "@@/global/*": ["../../global/*"],
+      "@fucking-algorithm/algorithm/*": ["../../libs/algorithm/src/*"]
     }
   },
   "include": ["src", "../../global", "vite.config.ts"],

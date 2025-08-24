@@ -1,0 +1,203 @@
+.link-table-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .title {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .visualization-container {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    background-color: #fafafa;
+    min-height: 150px;
+    position: relative;
+    overflow-x: auto;
+
+    .node-container {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      min-height: 80px;
+
+      .node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 10px;
+        position: relative;
+        transition: all 0.3s;
+
+        .node-box {
+          width: 60px;
+          height: 60px;
+          border: 2px solid #1890ff;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #fff;
+          position: relative;
+          transition: all 0.3s;
+
+          &.head {
+            border-color: #52c41a;
+            background-color: #f6ffed;
+          }
+
+          &.tail {
+            border-color: #fa8c16;
+            background-color: #fff7e6;
+          }
+
+          .node-value {
+            font-size: 18px;
+            font-weight: bold;
+          }
+
+          .node-index {
+            position: absolute;
+            top: -20px;
+            font-size: 12px;
+            color: #666;
+          }
+        }
+
+        .node-pointer {
+          position: absolute;
+          right: -15px;
+          top: 30px;
+          width: 20px;
+          height: 2px;
+          background-color: #1890ff;
+          z-index: 1;
+
+          &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #1890ff;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+          }
+        }
+
+        &.circular-node {
+          .circular-pointer {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-top: 2px solid #1890ff;
+            border-right: 2px solid #1890ff;
+            top: -30px;
+            right: -30px;
+            border-top-right-radius: 20px;
+
+            &::after {
+              content: '';
+              position: absolute;
+              right: 0;
+              bottom: -4px;
+              width: 0;
+              height: 0;
+              border-top: 8px solid #1890ff;
+              border-left: 5px solid transparent;
+              border-right: 5px solid transparent;
+              transform: rotate(90deg);
+            }
+          }
+        }
+      }
+
+      .null-pointer {
+        width: 60px;
+        height: 60px;
+        border: 2px dashed #d9d9d9;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #d9d9d9;
+        font-weight: bold;
+        background-color: #f5f5f5;
+      }
+    }
+  }
+
+  .operations-container {
+    margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    .operation-group {
+      margin-bottom: 15px;
+
+      .group-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .group-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    }
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+
+    .input-label {
+      margin-right: 10px;
+      min-width: 80px;
+    }
+
+    .input-field {
+      width: 100px;
+      margin-right: 10px;
+    }
+  }
+
+  .status-container {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    background-color: #fafafa;
+
+    .status-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .status-content {
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+  }
+
+  .algorithm-info {
+    margin: 20px 0;
+
+    .info-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .info-content {
+      line-height: 1.6;
+    }
+  }
+}

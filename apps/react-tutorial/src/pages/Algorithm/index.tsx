@@ -14,6 +14,21 @@ const algorithmList = [
     title: '堆 (Heap)',
     description: '堆数据结构的可视化实现',
     path: '/algorithm/heap'
+  },
+  {
+    title: '链表 (LinkTable)',
+    description: '链表数据结构的可视化实现，支持单向链表、循环链表等各种操作',
+    path: '/algorithm/linktable'
+  },
+  {
+    title: '图 (Graph)',
+    description: '图数据结构的可视化实现，支持有向图、无向图，以及BFS、DFS、拓扑排序等算法',
+    path: '/algorithm/graph'
+  },
+  {
+    title: '概率论 (Probability Theory)',
+    description: '概率分布可视化和微信红包随机分配算法实现，包含红包金额分布实验',
+    path: '/algorithm/probability-theory'
   }
 ];
 
