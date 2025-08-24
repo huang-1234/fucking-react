@@ -1,4 +1,74 @@
+import ProbabilityTheory from "@fucking-algorithm/algorithm/ProbabilityTheory/base";
 import { useRef, useState } from "react";
+
+
+export function calcExperimentResults(totalAmount: number, peopleCount: number, targetIndex: number, experimentCount: number) {
+  try {
+    const results: number[] = [];
+
+    // 运行多次实验
+    for (let i = 0;i < experimentCount;i++) {
+      const result = ProbabilityTheory.splitMoney(totalAmount, peopleCount);
+
+      // 记录目标位置的金额
+      if (targetIndex > 0 && targetIndex <= result.length) {
+        results.push(result[targetIndex - 1]);
+      }
+    }
+    // 如果实验结果为空，则返回空结果
+    if (results.length === 0) {
+      return {
+        experimentResults: [],
+        experimentStatistics: {
+          min: 0,
+          max: 0,
+          avg: 0,
+          median: 0,
+          stdDev: 0
+        }
+      }
+    }
+    // 排序用于计算中位数
+    const sorted = [...results].sort((a, b) => a - b);
+    // 计算最小值
+    const min = Math.min(...results);
+    // 计算最大值
+    const max = Math.max(...results);
+
+    // 计算平均值
+    const avg = results.reduce((sum, val) => sum + val, 0) / results.length;
+    // 计算中位数
+    const median = results.length % 2 === 0
+      ? (sorted[results.length / 2 - 1] + sorted[results.length / 2]) / 2
+      : sorted[Math.floor(results.length / 2)];
+
+    // 计算标准差
+    const variance = results.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / results.length;
+    const stdDev = Math.sqrt(variance);
+    return {
+      experimentResults: results,
+      experimentStatistics: {
+        min,
+        max,
+        avg,
+        median,
+        stdDev
+      }
+    }
+  } catch (error) {
+    console.error('运行实验失败:', error);
+    return {
+      experimentResults: [],
+      experimentStatistics: {
+        min: 0,
+        max: 0,
+        avg: 0,
+        median: 0,
+        stdDev: 0
+      }
+    }
+  }
+}
 
 export interface ExperimentStatistics {
   /** 平均值 */

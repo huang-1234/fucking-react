@@ -5,7 +5,7 @@ import * as echarts from 'echarts';
 import { ProbabilityTheory } from '@fucking-algorithm/algorithm/ProbabilityTheory/base';
 import './WeChatPackets.less';
 import { AlgorithmInfo, StatisticsContainer } from './AlgorithmInfo';
-import { useExperiment, useExperimentChart, usePackets } from './hooks';
+import { calcExperimentResults, useExperiment, useExperimentChart, usePackets } from './hooks';
 const { Title, Text } = Typography;
 
 // 微信红包可视化组件
@@ -202,52 +202,9 @@ const WeChatPackets: React.FC = () => {
 
   // 运行实验
   const runExperiment = () => {
-    try {
-      const results: number[] = [];
-
-      // 运行多次实验
-      for (let i = 0;i < experimentCount; i++) {
-        const result = ProbabilityTheory.splitMoney(totalAmount, peopleCount);
-
-        // 记录目标位置的金额
-        if (targetIndex > 0 && targetIndex <= result.length) {
-          results.push(result[targetIndex - 1]);
-        }
-      }
-
-      setExperimentResults(results);
-
-      // 计算统计数据
-      if (results.length > 0) {
-        // 排序用于计算中位数
-        const sorted = [...results].sort((a, b) => a - b);
-        // 计算最小值
-        const min = Math.min(...results);
-        // 计算最大值
-        const max = Math.max(...results);
-
-        // 计算平均值
-        const avg = results.reduce((sum, val) => sum + val, 0) / results.length;
-        // 计算中位数
-        const median = results.length % 2 === 0
-          ? (sorted[results.length / 2 - 1] + sorted[results.length / 2]) / 2
-          : sorted[Math.floor(results.length / 2)];
-
-        // 计算标准差
-        const variance = results.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / results.length;
-        const stdDev = Math.sqrt(variance);
-
-        setExperimentStatistics({
-          min,
-          max,
-          avg,
-          median,
-          stdDev
-        });
-      }
-    } catch (error) {
-      console.error('运行实验失败:', error);
-    }
+    const { experimentResults, experimentStatistics } = calcExperimentResults(totalAmount, peopleCount, targetIndex, experimentCount) || {};
+    setExperimentResults(experimentResults);
+    setExperimentStatistics(experimentStatistics);
   };
 
   // 处理红包点击
