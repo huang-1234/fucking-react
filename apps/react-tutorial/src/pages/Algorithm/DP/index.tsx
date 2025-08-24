@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, Typography, Tabs, Alert } from 'antd';
-import { CodeOutlined, QuestionCircleOutlined, LineChartOutlined } from '@ant-design/icons';
+import { CodeOutlined, QuestionCircleOutlined, LineChartOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { HouseRobberQuestion } from './questions';
+import ExactKnapsackQuestion from './Visualizer/question2548';
 import styles from './index.module.less';
 
 const { Title, Paragraph } = Typography;
@@ -94,7 +95,7 @@ const DynamicProgrammingPage: React.FC = () => {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  <CodeOutlined style={{ fontSize: 64, color: 'white' }} />
+                  <ShoppingOutlined style={{ fontSize: 64, color: 'white' }} />
                 </div>
               }
             >
@@ -108,10 +109,17 @@ const DynamicProgrammingPage: React.FC = () => {
         </TabPane>
 
         <TabPane
-          tab={<span><CodeOutlined />详细实现</span>}
+          tab={<span><CodeOutlined />打家劫舍问题</span>}
           key="2"
         >
           <HouseRobberQuestion />
+        </TabPane>
+
+        <TabPane
+          tab={<span><ShoppingOutlined />恰好装满背包问题</span>}
+          key="3"
+        >
+          <ExactKnapsackQuestion />
         </TabPane>
       </Tabs>
     </div>
