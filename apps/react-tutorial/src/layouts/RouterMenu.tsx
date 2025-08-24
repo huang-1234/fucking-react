@@ -19,11 +19,11 @@ const ComponentsApplyPage = loadable(() => import('../pages/ComponentsApply'));
 // 画布面板
 const CanvasPanelPage = loadable(() => import('@/pages/CanvasPanel'));
 
-// SSR页面
-const SSRPage = loadable(() => import('@/pages/SSR/SSRPage'));
-
 // ECMAScript页面
 const ECMAScriptPage = loadable(() => import('@/pages/ECMAScript'));
+
+// 模块加载页面
+const ModulesPage = loadable(() => import('@/pages/Modules'));
 
 // 打包工具
 const WebpackPage = loadable(() => import('@/pages/Webpack'));
@@ -31,6 +31,10 @@ const VitePage = loadable(() => import('@/pages/Vite'));
 
 // protobuf
 const ProtobufPage = loadable(() => import('@/pages/protobuf'));
+
+// SSR与性能优化页面
+const SSRPage = loadable(() => import('@/pages/SSR/SSRPage'));
+const PerformancePage = loadable(() => import('@/pages/Performance'));
 
 export interface IMenu {
   key: string;
@@ -61,12 +65,6 @@ export const menuItems: IMenu[] = [
     component: CanvasPanelPage
   },
   {
-    key: '/ssr',
-    label: 'React SSR',
-    icon: <CloudServerOutlined />,
-    component: SSRPage
-  },
-  {
     key: '/ecmascript',
     label: 'ECMAScript',
     icon: <CodeOutlined />,
@@ -95,5 +93,23 @@ export const menuItems: IMenu[] = [
     label: 'Protobuf',
     icon: <CodeOutlined />,
     component: ProtobufPage
+  },
+  {
+    key: '/modules',
+    label: '模块加载',
+    icon: <CodeOutlined />,
+    component: ModulesPage
+  },
+  {
+    key: '/ssr',
+    label: 'React SSR',
+    icon: <CloudServerOutlined />,
+    component: SSRPage
+  },
+  {
+    key: '/performance',
+    label: '性能优化',
+    icon: <CodeOutlined />,
+    component: PerformancePage
   }
 ];

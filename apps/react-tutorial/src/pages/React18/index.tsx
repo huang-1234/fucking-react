@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography, Divider, List, Card } from 'antd';
 import { Link } from 'react-router-dom';
 
+import stylesLayout from '@/layouts/container.module.less';
 const { Title, Paragraph } = Typography;
 
 /**
@@ -27,7 +28,7 @@ const React18Page: React.FC = () => {
   ];
 
   return (
-    <div className="react18-page">
+    <div className={stylesLayout.contentLayout}>
       <Typography>
         <Title level={2}>React 18 特性概览</Title>
         <Paragraph>

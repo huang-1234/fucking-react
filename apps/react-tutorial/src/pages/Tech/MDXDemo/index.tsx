@@ -2,7 +2,8 @@ import React from 'react';
 import { Typography, Card } from 'antd';
 import MDXLoader from '../../../components/MDXLoader';
 import styles from './index.module.less';
-
+import stylesLayout from '@/layouts/container.module.less';
+import classNames from 'classnames';
 const { Title } = Typography;
 
 /**
@@ -11,7 +12,7 @@ const { Title } = Typography;
  */
 const MDXDemoPage: React.FC = () => {
   return (
-    <div className={styles.mdxDemoPage}>
+    <div className={classNames(styles.mdxDemoPage, stylesLayout.contentLayout)}>
       <Card bordered={false} className={styles.mdxCard}>
         <Title level={2} className={styles.pageTitle}>
           MDX技术文档演示

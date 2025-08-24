@@ -5,7 +5,7 @@ import LeftCanvasMaterials from './modules/LeftCanvasMaterials';
 import HeaderCanvasToolBar from './modules/HeaderCanvasToolBar';
 import ShanghaicompositeIndex from './modules/KLineGraph/ShanghaicompositeIndex';
 import { Tabs } from 'antd';
-
+import stylesLayout from '@/layouts/container.module.less';
 
 function KLineGraph() {
   return (
@@ -42,7 +42,7 @@ function ModuleCanvasPanel() {
 
 function CanvasPanelPage() {
   return (
-    <div>
+    <div className={stylesLayout.contentLayout}>
       <Tabs>
         <Tabs.TabPane tab="KLineGraph" key="KLineGraph">
           <KLineGraph />

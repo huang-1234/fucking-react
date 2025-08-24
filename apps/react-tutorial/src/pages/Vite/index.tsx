@@ -6,6 +6,7 @@ import { applyVitePlugins } from '../../services/viteService';
 import { type VitePlugin } from '../../utils/viteUtils';
 import './index.less';
 
+import stylesLayout from '@/layouts/container.module.less';
 const { TabPane } = Tabs;
 
 const VitePage: React.FC = () => {
@@ -21,7 +22,7 @@ const VitePage: React.FC = () => {
   };
 
   return (
-    <div className="vite-page">
+    <div className={stylesLayout.contentLayout}>
       <Card>
         <h1>Vite 学习中心</h1>
         <p>

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Card, Typography, List, Layout, Tabs } from 'antd';
+import { Card, Typography, List } from 'antd';
 import { Link } from 'react-router-dom';
-import { Content } from 'antd/es/layout/layout';
+import stylesLayout from '@/layouts/container.module.less';
 
 const { Title, Paragraph } = Typography;
 
@@ -35,6 +35,11 @@ const algorithmList = [
     title: '队列 (Queue)',
     description: '队列数据结构的可视化实现，支持队列的各种操作',
     path: '/algorithm/queue'
+  },
+  {
+    title: '动态规划 (DP)',
+    description: '动态规划算法可视化实现，支持打家劫舍、最长递增子序列等常见问题',
+    path: '/algorithm/dp'
   }
 ];
 
@@ -45,7 +50,7 @@ const AlgorithmPage: React.FC = () => {
   }));
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className={stylesLayout.contentLayout}>
       <Title level={2}>算法可视化</Title>
       <Paragraph>
       </Paragraph>
