@@ -221,10 +221,14 @@ const WeChatPackets: React.FC = () => {
       if (results.length > 0) {
         // 排序用于计算中位数
         const sorted = [...results].sort((a, b) => a - b);
-
+        // 计算最小值
         const min = Math.min(...results);
+        // 计算最大值
         const max = Math.max(...results);
+
+        // 计算平均值
         const avg = results.reduce((sum, val) => sum + val, 0) / results.length;
+        // 计算中位数
         const median = results.length % 2 === 0
           ? (sorted[results.length / 2 - 1] + sorted[results.length / 2]) / 2
           : sorted[Math.floor(results.length / 2)];

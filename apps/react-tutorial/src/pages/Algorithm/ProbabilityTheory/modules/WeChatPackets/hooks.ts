@@ -1,10 +1,15 @@
 import { useRef, useState } from "react";
 
 export interface ExperimentStatistics {
+  /** 平均值 */
   avg: number;
+  /** 中位数 */
   median: number;
+  /** 标准差 */
   stdDev: number;
+  /** 最小值 */
   min: number;
+  /** 最大值 */
   max: number;
 }
 export interface UseExperimentOptions {
