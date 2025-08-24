@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, Typography, List } from 'antd';
+import { Card, Typography, List, Layout, Tabs } from 'antd';
 import { Link } from 'react-router-dom';
+import { Content } from 'antd/es/layout/layout';
 
 const { Title, Paragraph } = Typography;
 
@@ -29,16 +30,43 @@ const algorithmList = [
     title: '概率论 (Probability Theory)',
     description: '概率分布可视化和微信红包随机分配算法实现，包含红包金额分布实验',
     path: '/algorithm/probability-theory'
+  },
+  {
+    title: '队列 (Queue)',
+    description: '队列数据结构的可视化实现，支持队列的各种操作',
+    path: '/algorithm/queue'
   }
 ];
 
 const AlgorithmPage: React.FC = () => {
+  const items = algorithmList.map(item => ({
+    key: item.path,
+    label: item.title,
+  }));
+
   return (
     <div style={{ padding: '20px' }}>
       <Title level={2}>算法可视化</Title>
       <Paragraph>
-        这个页面包含了各种算法的可视化实现，帮助你更好地理解算法的工作原理。
       </Paragraph>
+
+      {/* <Layout style={{ padding: '24px' }}>
+        <Content>
+          <Typography>
+            <Title level={2}>算法可视化</Title>
+            <Paragraph>
+              本页面展示了各种算法可视化实现，包括最长递增子序列、堆、链表、图、概率论等。
+            </Paragraph>
+          </Typography>
+
+          <Tabs
+            defaultActiveKey="lengthoflis"
+            items={items}
+            tabPosition="left"
+            style={{ marginTop: 20 }}
+          />
+        </Content>
+      </Layout> */}
 
       <List
         grid={{ gutter: 16, column: 2 }}

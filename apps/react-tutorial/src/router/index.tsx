@@ -18,6 +18,7 @@ const HeapPage = loadable(() => import('@/pages/Algorithm/Heap'));
 const LinkTablePage = loadable(() => import('@/pages/Algorithm/LinkTable'));
 const GraphPage = loadable(() => import('@/pages/Algorithm/Graph'));
 const ProbabilityTheoryPage = loadable(() => import('@/pages/Algorithm/ProbabilityTheory'));
+const QueuePage = loadable(() => import('@/pages/Algorithm/Queue'));
 
 // React 15 组件
 const React15Page = loadable(() => import('@/pages/React15'));
@@ -328,6 +329,14 @@ const routerBrowser = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <ProbabilityTheoryPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'queue',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <QueuePage />
               </Suspense>
             )
           }
