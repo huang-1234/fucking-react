@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Button, Input, Select, message } from 'antd';
 import MonacoEditor from '@monaco-editor/react';
-import { loadModule, detectModuleType, ModuleType } from './base';
+import { loadModule, detectModuleType, ModuleType } from '../UniversalModuleLoad/base';
 import {
   amdModuleExample,
   cjsModuleExample,
   esmModuleExample,
   umdModuleExample,
   iifeModuleExample
-} from './examples';
+} from '../UniversalModuleLoad/examples';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
-const { TextArea } = Input;
 
-const ModuleLoaderDemo: React.FC = () => {
+const DemoModuleLoader: React.FC = () => {
   const [code, setCode] = useState<string>(cjsModuleExample);
   const [moduleType, setModuleType] = useState<ModuleType | null>(null);
   const [moduleId, setModuleId] = useState<string>('example-module');
@@ -61,6 +60,7 @@ const ModuleLoaderDemo: React.FC = () => {
 
     try {
       const moduleExports = await loadModule(code, moduleId);
+      console.log('code', moduleExports);
       setResult(JSON.stringify(moduleExports, null, 2));
       message.success('模块加载成功');
     } catch (error) {
@@ -164,4 +164,4 @@ const ModuleLoaderDemo: React.FC = () => {
   );
 };
 
-export default ModuleLoaderDemo;
+export default React.memo(DemoModuleLoader);

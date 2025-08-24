@@ -338,6 +338,8 @@ export async function loadModule(code: string, moduleId?: string): Promise<any> 
     const type = detectModuleType(code);
     const sandbox = createSandbox();
 
+    console.log('loadModule', moduleCache, moduleId)
+
     let exports;
     switch (type) {
       case ModuleType.AMD:

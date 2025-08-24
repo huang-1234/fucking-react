@@ -1,4 +1,4 @@
-import {  Suspense } from 'react';
+import { Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import React15Sandbox from '../sandbox/React15Sandbox';
@@ -46,8 +46,9 @@ const React19Page = loadable(() => import('@/pages/React19'));
 const React19Compiler = loadable(() => import('@/pages/React19/ReactCompiler'));
 const React19FormState = loadable(() => import('@/pages/React19/useFormState'));
 
-// SSR组件
+// SSR与性能优化组件
 const SSRPage = loadable(() => import('@/pages/SSR/SSRPage'));
+const PerformancePage = loadable(() => import('@/pages/Performance'));
 
 // 技术文档组件
 const MDXDemoPage = loadable(() => import('@/pages/Tech/MDXDemo'));
@@ -58,7 +59,8 @@ const ComponentsApplyPage = loadable(() => import('@/pages/ComponentsApply'));
 // ECMAScript组件
 const ECMAScriptPage = loadable(() => import('@/pages/ECMAScript'));
 
-
+// 模块加载组件
+const ModulesPage = loadable(() => import('@/pages/Modules'));
 
 // 打包工具
 const WebpackPage = loadable(() => import('@/pages/Webpack'));
@@ -385,6 +387,24 @@ const routerBrowser = createBrowserRouter([
         element: (
           <Suspense fallback={<LoadingComponent />}>
             <ProtobufPage />
+          </Suspense>
+        )
+      },
+      // 模块加载路由
+      {
+        path: 'modules',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <ModulesPage />
+          </Suspense>
+        )
+      },
+      // 性能优化路由
+      {
+        path: 'performance',
+        element: (
+          <Suspense fallback={<LoadingComponent />}>
+            <PerformancePage />
           </Suspense>
         )
       }
