@@ -35,6 +35,11 @@ const algorithmList = [
     title: '队列 (Queue)',
     description: '队列数据结构的可视化实现，支持队列的各种操作',
     path: '/algorithm/queue'
+  },
+  {
+    title: '动态规划 (DP)',
+    description: '动态规划算法可视化实现，支持打家劫舍、最长递增子序列等常见问题',
+    path: '/algorithm/dp'
   }
 ];
 
