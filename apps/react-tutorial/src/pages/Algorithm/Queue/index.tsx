@@ -11,6 +11,7 @@ import PriorityQueue from './PriorityQueue';
 import BlockingQueue from './BlockingQueue';
 import DelayQueue from './DelayQueue';
 import CircularQueue from './CircularQueue';
+import Deque from './Deque';
 
 const { TabPane } = Tabs;
 const { Title, Paragraph, Text } = Typography;
@@ -33,6 +34,33 @@ interface QueueType {
  * 队列类型数据
  */
 const queueTypes: QueueType[] = [
+  // 双端队列可视化
+  {
+    key: 'deque',
+    title: '双端队列 (Deque)',
+    icon: <OrderedListOutlined />,
+    description: '基于数组实现的双端队列',
+    path: '/algorithm/queue/deque',
+    component: <Deque />,
+    features: [
+      '基于数组实现的双端队列',
+      '支持在队列两端进行插入和删除操作',
+      '支持在队列两端进行插入和删除操作',
+    ],
+    applications: [
+      '滑动窗口',
+      '单调队列',
+      '单调栈',
+      '双端队列',
+      // 常用算法
+      '滑动窗口最大值',
+      '滑动窗口最小值',
+      '滑动窗口中位数',
+      '滑动窗口最大值',
+      '滑动窗口最小值',
+      '滑动窗口中位数',
+    ]
+  },
   {
     key: 'priority-queue',
     title: '优先队列 (Priority Queue)',
