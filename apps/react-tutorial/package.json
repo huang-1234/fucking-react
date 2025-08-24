@@ -10,6 +10,7 @@
     "ts:build": "pnpm run ts && pnpm run build",
     "lint": "eslint .",
     "test": "vitest",
+    "test:module": "vitest run src/pages/Modules/UniversalModuleLoad/base.test.js",
     "coverage": "vitest run --coverage",
     "preview": "vite preview"
   },
