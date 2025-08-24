@@ -9,7 +9,7 @@ import EventLoopModule from './modules/EventLoop';
 import PromiseModule from './modules/Promise';
 import AsyncAwaitModule from './modules/AsyncAwait';
 import StringMethodsModule from './modules/StringMethods';
-
+import stylesLayout from '@/layouts/container.module.less';
 const { Title, Paragraph } = Typography;
 const { Content } = Layout;
 
@@ -63,7 +63,7 @@ const ECMAScriptPage: React.FC = () => {
   ];
 
   return (
-    <Layout style={{ padding: '24px' }}>
+    <Layout className={stylesLayout.contentLayout}>
       <Content>
         <Typography>
           <Title level={2}>ECMAScript 核心概念</Title>

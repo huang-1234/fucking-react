@@ -1,7 +1,7 @@
 import React from 'react';
-import { Card, Typography, List, Layout, Tabs } from 'antd';
+import { Card, Typography, List } from 'antd';
 import { Link } from 'react-router-dom';
-import { Content } from 'antd/es/layout/layout';
+import stylesLayout from '@/layouts/container.module.less';
 
 const { Title, Paragraph } = Typography;
 
@@ -45,7 +45,7 @@ const AlgorithmPage: React.FC = () => {
   }));
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className={stylesLayout.contentLayout}>
       <Title level={2}>算法可视化</Title>
       <Paragraph>
       </Paragraph>

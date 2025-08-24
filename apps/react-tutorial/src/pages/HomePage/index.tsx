@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import { CodeBlock } from '../../components/CodeBlock';
 import { reactText } from './react-text';
+import stylesLayout from '@/layouts/container.module.less';
 
 const { Title, Paragraph } = Typography;
 
@@ -56,7 +57,7 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="home-page">
+    <div className={stylesLayout.contentLayout}>
       <Card bordered={false}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
