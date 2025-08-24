@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Row, Col, Input, Button, Space, Divider, Typography, Alert, List, Tag, InputNumber } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, DeleteOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useDeque } from './hooks';
+import { queueConfig } from './common';
 
 const { Title, Text } = Typography;
 
@@ -9,8 +10,8 @@ interface DequeVisualizerProps {
   title?: string;
 }
 
-const initialItems = [1, 2, 3, 4, 5];
-const initialInputValue = 1;
+const initialItems = queueConfig.complex.initialArray;
+const initialInputValue = queueConfig.complex.initialInputValue;
 function getNumberValue(value: number | string) {
   return typeof value === 'number' ? value : Number(value?.toString()?.trim());
 }

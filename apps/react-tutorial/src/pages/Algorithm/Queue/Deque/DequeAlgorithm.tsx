@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Row, Col, Button, Slider, InputNumber, Space, Divider, Typography, Alert, Table, Tag } from 'antd';
 import { PlayCircleOutlined, PauseCircleOutlined, StepForwardOutlined, ReloadOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useSlidingWindow } from './hooks';
+import { queueConfig } from './common';
 
 const { Title, Text } = Typography;
 
@@ -10,7 +11,7 @@ interface DequeAlgorithmProps {
 }
 
 const DequeAlgorithm: React.FC<DequeAlgorithmProps> = ({ title = '滑动窗口最值算法' }) => {
-  const [customArray, setCustomArray] = useState<string>('3,1,4,1,5,9,2,6,5,3,5');
+  const [customArray, setCustomArray] = useState<string>(queueConfig.complex.initialArray.join(','));
 
   const {
     state,
