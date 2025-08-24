@@ -28,6 +28,10 @@ if [[ $s1 == "ci" ]]; then
   # git ci
   ciAction="feat: "
   ciMessage=$s2
+  # s2 为空，则使用当前分支名
+  if [[ -z $ciMessage ]]; then
+    ciMessage=$branch
+  fi
   echo "ciMessage is $ciMessage"
   git add .
   git ci -m "$ciAction $ciMessage"

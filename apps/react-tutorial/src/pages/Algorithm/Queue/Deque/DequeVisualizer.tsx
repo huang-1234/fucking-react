@@ -165,7 +165,7 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
         addBack(value);
         setInputValue(initialInputValue);
         setAnimatingItem(null);
-      }, 500); // 动画持续时间
+      }, 2000); // 动画持续时间
     }
   };
 
