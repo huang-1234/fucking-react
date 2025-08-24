@@ -22,12 +22,15 @@ export enum ModuleType {
  * @returns 模块类型
  */
 export const detectModuleType = (code: string): ModuleType => {
+  // 修改ESM检测正则，使其更准确地匹配export语句
+  if (/\bexport\s+(default\b|\{|\*|const\s+|let\s+|var\s+|function\s+|class\s+)|import\s+/.test(code)) return ModuleType.ESM;
   if (/define\(.*?function\s*\(/.test(code)) return ModuleType.AMD;
+  // UMD检测需要在CJS之前，因为UMD通常也包含CJS的特征
+  if (/\(function\s*\([^)]*\broot\b[^)]*,\s*\bfactory\b[^)]*\)/.test(code)) return ModuleType.UMD;
   if (/exports.*?\=|\bmodule\.exports\b/.test(code)) return ModuleType.CJS;
-  if (/export\s+(default|{.*})|import\s+/.test(code)) return ModuleType.ESM;
-  if (/\(function\s*\(.*root,\s*factory\)/.test(code)) return ModuleType.UMD;
   return ModuleType.IIFE; // 兜底为立即执行函数
 };
+
 export interface SandboxContext {
   require: (path: string) => any;
   exports: any;
@@ -42,6 +45,7 @@ export interface SandboxContext {
   self: SandboxContext;
   returnExports: any;
 }
+
 /**
  * @description 创建沙箱环境
  * @returns 沙箱上下文对象
@@ -60,11 +64,16 @@ export const createSandbox = (): SandboxContext => {
     },
     setTimeout: setTimeout.bind(fakeWindow),
     clearTimeout: clearTimeout.bind(fakeWindow),
-    window: fakeWindow as unknown as SandboxContext,
-    global: fakeWindow as unknown as SandboxContext,
-    self: fakeWindow as unknown as SandboxContext,
+    window: {} as SandboxContext, // 初始化为空对象，避免循环引用
+    global: {} as SandboxContext,
+    self: {} as SandboxContext,
     returnExports: {},
   };
+
+  // 设置循环引用
+  context.window = context;
+  context.global = context;
+  context.self = context;
 
   // 使用 Proxy 进行安全访问控制
   return new Proxy(context, {
@@ -85,16 +94,22 @@ export const createSandbox = (): SandboxContext => {
     },
     set(target, key, value) {
       if (key === 'module' || key === 'exports') {
-        throw new Error(`禁止覆盖关键属性 ${key}`);
+        // 允许修改module.exports的内容，但不允许完全替换对象
+        if (typeof value === 'object') {
+          Object.assign(target[key as keyof typeof target], value);
+        } else {
+          target.module.exports = value;
+          target.exports = value;
+        }
+        return true;
       } else if (key === 'require') {
         target[key as keyof typeof target] = value;
         return true;
       }
-      // 阻止修改其他属性
-      console.warn(`[Sandbox] 阻止修改属性: ${String(key)}`);
-      /**
-       * @TODO: 这里需要实现一个安全的属性设置，避免污染沙箱环境
-       */
+
+      // 允许设置其他属性，但发出警告
+      console.warn(`[Sandbox] 设置属性: ${String(key)}`);
+      (target as any)[key] = value;
       return true;
     }
   });
@@ -119,15 +134,18 @@ const customRequire = (path: string) => {
  */
 export const executeAMD = (code: string, sandbox: SandboxContext) => {
   // 实现 AMD 的 define 函数
+  let moduleExports: any = undefined;
+
   sandbox.define = (deps: string[] = [], factory: Function) => {
     // 简化版本，不处理实际依赖
     const resolvedDeps = deps.map(() => ({}));
-    return factory(...resolvedDeps);
+    moduleExports = factory(...resolvedDeps);
+    return moduleExports;
   };
 
   // 使用 Function 构造函数执行代码，绑定沙箱上下文
   try {
-    const moduleExports = new Function('define', 'require', 'module', 'exports', code)(
+    new Function('define', 'require', 'module', 'exports', code)(
       sandbox.define,
       sandbox.require,
       sandbox.module,
@@ -149,22 +167,16 @@ export const executeAMD = (code: string, sandbox: SandboxContext) => {
  */
 export const executeCJS = (code: string, sandbox: SandboxContext) => {
   // 包装 CJS 模块代码
-  const wrappedCode = `
-    (function(module, exports, require) {
-      ${code}
-      return module.exports;
-    })
-  `;
-
   try {
-    // 执行包装后的代码
-    const moduleFactory = new Function('module', 'exports', 'require', `return ${wrappedCode}`)
-    if (typeof moduleFactory !== 'function') {
-      throw new Error('CJS 模块工厂函数不是函数');
-    }
+    // 直接执行代码，不需要包装
+    new Function('module', 'exports', 'require', code)(
+      sandbox.module,
+      sandbox.exports,
+      sandbox.require
+    );
 
-    // 调用工厂函数获取导出
-    return moduleFactory(sandbox.module, sandbox.exports, sandbox.require);
+    // 返回模块导出
+    return sandbox.module.exports;
   } catch (error) {
     console.error('[Sandbox] CJS 执行错误:', error);
     throw error;
@@ -172,9 +184,11 @@ export const executeCJS = (code: string, sandbox: SandboxContext) => {
 };
 
 interface ESMModuleExports {
-  exports: any;
-  default: any;
+  exports?: any;
+  default?: any;
+  [key: string]: any;
 }
+
 /**
  * 执行 ESM 模块
  * @param code ESM 模块代码
@@ -205,24 +219,19 @@ export const executeESM = async (code: string): Promise<ESMModuleExports> => {
  * @returns 模块导出
  */
 export const executeUMD = (code: string, sandbox: SandboxContext) => {
-  // 为 UMD 模块提供必要的全局对象
-  sandbox.window = sandbox;
-  sandbox.global = sandbox;
-  sandbox.self = sandbox;
-  sandbox.returnExports = {}; // UMD 导出容器
-
-  // 包装 UMD 代码
-  const wrappedCode = `
-    (function(sandbox) {
-      ${code}
-      return sandbox.returnExports;
-    })
-  `;
-
   try {
-    // 执行包装后的代码
-    const umdFactory = new Function('sandbox', `return ${wrappedCode}`)(sandbox);
-    return umdFactory(sandbox);
+    // 直接在沙箱环境中执行UMD代码
+    new Function('window', 'module', 'exports', 'require', 'global', 'self', code)(
+      sandbox,
+      sandbox.module,
+      sandbox.exports,
+      sandbox.require,
+      sandbox,
+      sandbox
+    );
+
+    // UMD模块可能会设置returnExports、module.exports或全局变量
+    return sandbox.module.exports;
   } catch (error) {
     console.error('[Sandbox] UMD 执行错误:', error);
     throw error;
@@ -236,18 +245,17 @@ export const executeUMD = (code: string, sandbox: SandboxContext) => {
  * @returns 模块导出
  */
 export const executeIIFE = (code: string, sandbox: SandboxContext) => {
-  // 包装 IIFE 代码
-  const wrappedCode = `
-    (function(sandbox) {
-      ${code}
-      return sandbox.exports;
-    })
-  `;
-
   try {
-    // 执行包装后的代码
-    const iifeFactory = new Function('sandbox', `return ${wrappedCode}`)(sandbox);
-    return iifeFactory(sandbox);
+    // 直接在沙箱环境中执行IIFE代码
+    new Function('window', 'document', 'exports', 'module', code)(
+      sandbox,
+      {},  // 提供空的document对象
+      sandbox.exports,
+      sandbox.module
+    );
+
+    // IIFE可能会设置全局变量或修改exports
+    return sandbox.exports || sandbox.module.exports;
   } catch (error) {
     console.error('[Sandbox] IIFE 执行错误:', error);
     throw error;
@@ -261,6 +269,11 @@ export const executeIIFE = (code: string, sandbox: SandboxContext) => {
  * @returns 安全的模块导出代理
  */
 export const createSafeExports = (exports: any, sandbox: SandboxContext) => {
+  // 确保exports是一个对象
+  if (!exports || typeof exports !== 'object') {
+    exports = { default: exports };
+  }
+
   return new Proxy(exports, {
     get(target, key) {
       const value = target[key];
@@ -287,7 +300,7 @@ export const createSafeExports = (exports: any, sandbox: SandboxContext) => {
 };
 
 // 模块加载缓存
-const moduleCache = new Map<string, ESMModuleExports>();
+const moduleCache = new Map<string, any>();
 
 /**
  * 检测循环依赖
@@ -301,10 +314,10 @@ const MAX_DEPTH = 20; // 最大依赖深度
  * @param moduleId 可选的模块ID，用于缓存
  * @returns Promise，解析为模块导出
  */
-export async function loadModule(code: string, moduleId?: string): Promise<ESMModuleExports> {
+export async function loadModule(code: string, moduleId?: string): Promise<any> {
   // 如果提供了模块ID且已缓存，直接返回
   if (moduleId && moduleCache.has(moduleId)) {
-    return moduleCache.get(moduleId) as ESMModuleExports;
+    return moduleCache.get(moduleId);
   }
 
   // 检测循环依赖
@@ -359,7 +372,7 @@ export async function loadModule(code: string, moduleId?: string): Promise<ESMMo
       loadingModules.delete(moduleId);
     }
   }
-};
+}
 
 /**
  * 卸载模块

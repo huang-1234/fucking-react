@@ -1,2 +1,6 @@
-// 在node环境下，模拟使用浏览器下的全局对象window
-export const fakeWindow = Object.create(globalThis);
+// 创建一个假的全局对象，用于沙箱环境
+export const fakeWindow = {
+  setTimeout,
+  clearTimeout,
+  console
+};
