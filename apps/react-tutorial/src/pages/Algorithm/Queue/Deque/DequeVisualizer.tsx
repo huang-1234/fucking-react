@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Input, Button, Space, Divider, Typography, Alert, List, Tag, InputNumber } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, DeleteOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import React, { useState, useRef, useEffect } from 'react';
+import { Card, Row, Col, Button, Space, Divider, Typography, Alert, List, Tag, InputNumber } from 'antd';
+import { ArrowLeftOutlined, ArrowRightOutlined, DeleteOutlined, MinusOutlined } from '@ant-design/icons';
 import { useDeque } from './hooks';
 import { queueConfig } from './common';
 
@@ -10,8 +10,8 @@ interface DequeVisualizerProps {
   title?: string;
 }
 
-const initialItems = queueConfig.complex.initialArray;
-const initialInputValue = queueConfig.complex.initialInputValue;
+const initialItems = queueConfig.simple.initialArray;
+const initialInputValue = queueConfig.simple.initialInputValue;
 function getNumberValue(value: number | string) {
   return typeof value === 'number' ? value : Number(value?.toString()?.trim());
 }
@@ -29,28 +29,184 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
     size
   } = useDeque<number>(initialItems);
 
+  // 动画相关状态
+  const [animatingItem, setAnimatingItem] = useState<{
+    value: number;
+    type: 'addFront' | 'addBack' | 'removeFront' | 'removeBack';
+    position: { x: number; y: number };
+    target: { x: number; y: number };
+  } | null>(null);
+
+  // 动画进度状态 - 移到组件顶层
+  const [progress, setProgress] = useState(0);
+
+  // 引用
+  const frontButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const queueContainerRef = useRef<HTMLDivElement>(null);
+  const frontRemoveButtonRef = useRef<HTMLButtonElement>(null);
+  const backRemoveButtonRef = useRef<HTMLButtonElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(0);
+
+  // 计算元素的目标位置
+  const calculateTargetPosition = (type: 'addFront' | 'addBack' | 'removeFront' | 'removeBack') => {
+    if (!queueContainerRef.current) return { x: 0, y: 0 };
+
+    const containerRect = queueContainerRef.current.getBoundingClientRect();
+    const containerCenterY = containerRect.top + containerRect.height / 2;
+
+    if (type === 'addFront' || type === 'removeFront') {
+      // 前端位置 (左侧)
+      return {
+        x: containerRect.left + 40,
+        y: containerCenterY
+      };
+    } else {
+      // 后端位置 (右侧)
+      return {
+        x: containerRect.right - 40,
+        y: containerCenterY
+      };
+    }
+  };
+
+  // 计算按钮位置
+  const calculateButtonPosition = (type: 'addFront' | 'addBack' | 'removeFront' | 'removeBack') => {
+    let buttonRef;
+
+    switch (type) {
+      case 'addFront':
+        buttonRef = frontButtonRef;
+        break;
+      case 'addBack':
+        buttonRef = backButtonRef;
+        break;
+      case 'removeFront':
+        buttonRef = frontRemoveButtonRef;
+        break;
+      case 'removeBack':
+        buttonRef = backRemoveButtonRef;
+        break;
+    }
+
+    if (!buttonRef.current) return { x: 0, y: 0 };
+
+    const rect = buttonRef.current.getBoundingClientRect();
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+  };
+
+  // 处理动画效果 - 使用顶层useEffect
+  useEffect(() => {
+    if (!animatingItem) return;
+
+    // 重置进度
+    setProgress(0);
+    startTimeRef.current = Date.now();
+
+    const animationDuration = 500; // 毫秒
+
+    const animationFrame = () => {
+      const elapsed = Date.now() - startTimeRef.current;
+      const currentProgress = Math.min(elapsed / animationDuration, 1);
+      setProgress(currentProgress);
+
+      if (currentProgress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animationFrame);
+      }
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animationFrame);
+
+    // 清理函数
+    return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [animatingItem]); // 只在animatingItem变化时重新执行
+
   const handleAddFront = () => {
     const value = getNumberValue(inputValue);
     if (value) {
-      addFront(value);
-      setInputValue(initialInputValue);
+      // 设置动画起始状态
+      setAnimatingItem({
+        value,
+        type: 'addFront',
+        position: calculateButtonPosition('addFront'),
+        target: calculateTargetPosition('addFront')
+      });
+
+      // 延迟执行实际的添加操作，等待动画完成
+      setTimeout(() => {
+        addFront(value);
+        setInputValue(initialInputValue);
+        setAnimatingItem(null);
+      }, 500); // 动画持续时间
     }
   };
 
   const handleAddBack = () => {
     const value = getNumberValue(inputValue);
     if (value) {
-      addBack(value);
-      setInputValue(initialInputValue);
+      // 设置动画起始状态
+      setAnimatingItem({
+        value,
+        type: 'addBack',
+        position: calculateButtonPosition('addBack'),
+        target: calculateTargetPosition('addBack')
+      });
+
+      // 延迟执行实际的添加操作，等待动画完成
+      setTimeout(() => {
+        addBack(value);
+        setInputValue(initialInputValue);
+        setAnimatingItem(null);
+      }, 500); // 动画持续时间
     }
   };
 
   const handleRemoveFront = () => {
-    removeFront();
+    if (!isEmpty()) {
+      const value = items[0];
+
+      // 设置动画起始状态
+      setAnimatingItem({
+        value,
+        type: 'removeFront',
+        position: calculateTargetPosition('removeFront'),
+        target: calculateButtonPosition('removeFront')
+      });
+
+      // 延迟执行实际的移除操作，等待动画完成
+      setTimeout(() => {
+        removeFront();
+        setAnimatingItem(null);
+      }, 500); // 动画持续时间
+    }
   };
 
   const handleRemoveBack = () => {
-    removeBack();
+    if (!isEmpty()) {
+      const value = items[items.length - 1];
+
+      // 设置动画起始状态
+      setAnimatingItem({
+        value,
+        type: 'removeBack',
+        position: calculateTargetPosition('removeBack'),
+        target: calculateButtonPosition('removeBack')
+      });
+
+      // 延迟执行实际的移除操作，等待动画完成
+      setTimeout(() => {
+        removeBack();
+        setAnimatingItem(null);
+      }, 500); // 动画持续时间
+    }
   };
 
   const handleClear = () => {
@@ -69,18 +225,21 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
         />
       );
     }
-    console.log('items', items);
 
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
-        marginBottom: 20,
-        overflowX: 'auto',
-        padding: '10px 0'
-      }}>
+      <div
+        ref={queueContainerRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 20,
+          marginBottom: 20,
+          overflowX: 'auto',
+          padding: '10px 0',
+          position: 'relative'
+        }}
+      >
         {items.map((item, index) => (
           <div
             key={index}
@@ -174,12 +333,12 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
 
           return (
             <List.Item>
-              <Tag color={color} icon={icon}>
+              <Tag color={color} icon={icon as any}>
                 {op.type}
               </Tag>
               {op.value !== undefined && (
                 <span style={{ marginLeft: 8 }}>
-                  值: {op.value}
+                  值: {op?.value?.toString?.() ?? ''}
                 </span>
               )}
               <span style={{ marginLeft: 8, color: '#999' }}>
@@ -192,6 +351,54 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
     );
   };
 
+  // 渲染动画元素
+  const renderAnimatingItem = () => {
+    if (!animatingItem) return null;
+
+    // 计算当前位置
+    const currentX = animatingItem.position.x + (animatingItem.target.x - animatingItem.position.x) * progress;
+    const currentY = animatingItem.position.y + (animatingItem.target.y - animatingItem.position.y) * progress;
+
+    // 计算缩放和透明度
+    const scale = animatingItem.type.startsWith('remove') ? 1 - progress * 0.5 : 0.5 + progress * 0.5;
+    const opacity = animatingItem.type.startsWith('remove') ? 1 - progress : progress;
+
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 1000
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: currentX - 30,
+            top: currentY - 30,
+            width: 60,
+            height: 60,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            border: '2px solid #1890ff',
+            borderRadius: 4,
+            backgroundColor: '#e6f7ff',
+            transform: `scale(${scale})`,
+            opacity,
+            transition: 'transform 0.1s ease-out, opacity 0.1s ease-out'
+          }}
+        >
+          <Text strong>{animatingItem.value}</Text>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Card title={title} style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
@@ -199,18 +406,13 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
           <Space direction="vertical" style={{ width: '100%' }}>
             <Title level={5}>队列操作</Title>
             <Space.Compact style={{ width: '100%' }}>
-              {/* <Input
-                placeholder="输入元素值"
-                value={inputValue}
-                onChange={(e) => setInputValue(Number(e.target.value))}
-                onPressEnter={handleAddBack}
-              /> */}
               <InputNumber
                 value={inputValue}
                 onChange={(value) => setInputValue(value || 0)}
                 onPressEnter={handleAddBack}
               />
               <Button
+                ref={frontButtonRef}
                 type="primary"
                 icon={<ArrowLeftOutlined />}
                 onClick={handleAddFront}
@@ -219,6 +421,7 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
                 前端添加
               </Button>
               <Button
+                ref={backButtonRef}
                 type="primary"
                 icon={<ArrowRightOutlined />}
                 onClick={handleAddBack}
@@ -230,6 +433,7 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
 
             <Space style={{ width: '100%', justifyContent: 'center' }}>
               <Button
+                ref={frontRemoveButtonRef}
                 danger
                 icon={<MinusOutlined />}
                 onClick={handleRemoveFront}
@@ -239,6 +443,7 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
                 前端移除
               </Button>
               <Button
+                ref={backRemoveButtonRef}
                 danger
                 icon={<MinusOutlined />}
                 onClick={handleRemoveBack}
@@ -276,6 +481,9 @@ const DequeVisualizer: React.FC<DequeVisualizerProps> = ({ title = '双端队列
           {renderOperationHistory()}
         </Col>
       </Row>
+
+      {/* 渲染动画元素 */}
+      {renderAnimatingItem()}
     </Card>
   );
 };
