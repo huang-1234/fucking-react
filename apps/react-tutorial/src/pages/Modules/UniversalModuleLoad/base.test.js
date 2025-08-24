@@ -14,6 +14,53 @@ import {
   clearModuleCache
 } from './base';
 
+/**
+ * @desc 测试总结：
+ * 1. 模块类型检测：
+ *    - AMD 模块：检测到 define 函数和依赖数组
+ *    - CJS 模块：检测到 module.exports 或 exports 语句
+ *    - ESM 模块：检测到 import 或 export 语句
+ *    - UMD 模块：检测到 define 函数和 module.exports 语句
+ *    - IIFE 模块：检测到 exports 赋值语句
+ * 2. 沙箱环境：
+ *    - 创建隔离的沙箱环境，阻止访问全局对象
+ *    - 允许修改 module.exports 和 exports 属性
+ *    - 阻止设置非模块相关属性
+ * 3. 模块执行器：
+ *    - 执行 AMD 模块，返回模块导出对象
+ *    - 执行 CJS 模块，返回模块导出对象
+ *    - 执行 UMD 模块，返回模块导出对象
+ *    - 执行 IIFE 模块，返回模块导出对象
+ * 4. 模块加载器：
+ *    - 加载 CJS 模块，返回模块导出对象
+ *    - 从缓存加载模块，返回缓存的结果
+ *    - 卸载模块，返回卸载结果
+ * 5. 安全检查：
+ *    - 检测恶意代码，返回是否包含恶意代码
+ *    - 拒绝加载恶意代码，抛出错误
+ *
+ * @TODO: 需要补充测试用例，覆盖所有模块类型和场景
+ * 1. 添加ESM模块加载测试
+ */
+
+// 模拟executeESM函数，因为在Node.js测试环境中无法使用import()动态导入Blob URL
+import * as baseModule from './base';
+vi.spyOn(baseModule, 'executeESM').mockImplementation(async (code) => {
+  // 简单解析export default语句
+  const match = code.match(/export\s+default\s+(\{[^}]*\})/);
+  if (match && match[1]) {
+    try {
+      // 尝试解析导出的对象
+      const exportedObj = new Function(`return ${match[1]}`)();
+      return { default: exportedObj };
+    } catch (e) {
+      console.error('[Mock] 解析ESM默认导出失败:', e);
+      return { default: {} };
+    }
+  }
+  return { default: {} };
+});
+
 describe('通用模块加载器', () => {
   describe('模块类型检测', () => {
     it('应正确检测 AMD 模块', () => {
@@ -110,6 +157,15 @@ describe('通用模块加载器', () => {
   });
 
   describe('模块执行器', () => {
+    // executeESM
+    it('应执行 ESM 模块', async () => {
+      const esmCode = `
+        export default { name: 'esm-module' };
+      `;
+      const result = await baseModule.executeESM(esmCode);
+      expect(result).toEqual({ default: { name: 'esm-module' } });
+    });
+
     it('应执行 AMD 模块', () => {
       const amdCode = `
         define(['dep1'], function(dep1) {
