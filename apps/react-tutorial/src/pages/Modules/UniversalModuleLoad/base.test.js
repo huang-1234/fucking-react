@@ -1,18 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+// 模拟executeESM函数，因为在Node.js测试环境中无法使用import()动态导入Blob URL
+import * as baseModule from './base';
+
 import {
-  detectModuleType,
   ModuleType,
-  createSandbox,
+  clearModuleCache,
+  containsMaliciousCode,
+  detectModuleType,
   executeAMD,
   executeCJS,
-  executeUMD,
   executeIIFE,
+  executeUMD,
   loadModule,
   safeLoadModule,
-  containsMaliciousCode,
-  unloadModule,
-  clearModuleCache
+  unloadModule
 } from './base';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { createSandbox } from "../Global/base";
 
 /**
  * @desc 测试总结：
@@ -43,8 +47,6 @@ import {
  * 1. 添加ESM模块加载测试
  */
 
-// 模拟executeESM函数，因为在Node.js测试环境中无法使用import()动态导入Blob URL
-import * as baseModule from './base';
 vi.spyOn(baseModule, 'executeESM').mockImplementation(async (code) => {
   // 简单解析export default语句
   const match = code.match(/export\s+default\s+(\{[^}]*\})/);
