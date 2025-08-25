@@ -1,14 +1,15 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-  detectModuleType,
   ModuleType,
-  systemJSLoader,
-  safeLoadModule,
   containsMaliciousCode,
-  moduleExamples
+  detectModuleType,
+  moduleExamples,
+  safeLoadModule,
+  systemJSLoader
 } from './base';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createSandbox } from '../Global/base';
+
 /**
  * SystemJS模块加载器测试套件
  * 测试模块类型检测、沙箱环境、模块加载等功能
