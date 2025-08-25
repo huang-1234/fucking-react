@@ -8,7 +8,7 @@ function runWithRetry(fn, retryTimes, timeout) {
         reject(lastError || new Error('Retry attempts exhausted'));
         return;
       }
-
+      console.log('retry:start')
       try {
         // 创建超时控制器
         const controller = new AbortController();
@@ -16,6 +16,7 @@ function runWithRetry(fn, retryTimes, timeout) {
           controller.abort();
           reject(new Error('Timeout error'));
         }, timeout);
+        console.log('retry', remainingAttempts)
 
         // 执行异步函数并监听中止信号
         const result = await Promise.race([
@@ -50,8 +51,10 @@ function asyncFn(params = {}) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       if (Math.random() < 0.2) {
+        console.log('success')
         resolve('success');
       } else {
+        console.log('failed')
         reject('failed');
       }
     }, 5000 * Math.random());
@@ -67,5 +70,5 @@ function asyncFn(params = {}) {
 }
 
 // 测试用例
-runWithRetry(asyncFn, 3, 10000)
+runWithRetry(asyncFn, 3, 3000)
   .then(console.log, console.error);
