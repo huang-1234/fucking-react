@@ -17,9 +17,9 @@ function find_sum_with_n_num_no_repeat(array, target) {
     }
   }
 
-  function dfs(startIdx, sum, sumArr = []) {
+  function dfs(startIdx, sum, path = []) {
     if (sum === target) {
-      ans.push([...sumArr])
+      ans.push([...path])
       return;
     }
     /**
@@ -35,11 +35,11 @@ function find_sum_with_n_num_no_repeat(array, target) {
         continue;
       }
       // 添加当前数字
-      sumArr.push(currentEle)
+      path.push(currentEle)
       // 递归
-      dfs(i + 1, sum + currentEle, sumArr)
+      dfs(i + 1, sum + currentEle, path)
       // 回溯
-      sumArr.pop()
+      path.pop()
     }
   }
   dfs(0, 0, []);

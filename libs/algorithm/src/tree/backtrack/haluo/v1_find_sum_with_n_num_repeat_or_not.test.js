@@ -7,9 +7,9 @@
 let target, targetIdx, arraySort, ans, is_should_repeat;
 
 // 被测函数
-function dfs(startIdx, sum, sumArr = []) {
+function dfs(startIdx, sum, path = []) {
   if (sum === target) {
-    ans.push([...sumArr])
+    ans.push([...path])
     return;
   }
 
@@ -23,11 +23,11 @@ function dfs(startIdx, sum, sumArr = []) {
       continue;
     }
     // 添加当前数字
-    sumArr.push(currentEle)
+    path.push(currentEle)
     const nextIdx = is_should_repeat ? i : i + 1
-    dfs(nextIdx, sum + currentEle, sumArr)
+    dfs(nextIdx, sum + currentEle, path)
     // 回溯、撤销选择
-    sumArr.pop()
+    path.pop()
   }
 }
 
@@ -217,10 +217,10 @@ describe('DFS Function Tests', () => {
     arraySort = [1, 2, 3];
     is_should_repeat = false;
 
-    const initialSumArr = [];
-    dfs(0, 0, initialSumArr);
+    const initialpath = [];
+    dfs(0, 0, initialpath);
 
     // 验证回溯后原始数组未被污染
-    expect(initialSumArr).toEqual([]);
+    expect(initialpath).toEqual([]);
   });
 });

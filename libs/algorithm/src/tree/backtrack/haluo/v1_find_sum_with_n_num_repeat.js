@@ -17,9 +17,9 @@ function find_sum_with_n_num_repeat_or_not(array, target) {
     }
   }
 
-  function dfs(startIdx, sum, sumArr = []) {
+  function dfs(startIdx, sum, path = []) {
     if (sum === target) {
-      ans.push([...sumArr])
+      ans.push([...path])
       return;
     }
     /**
@@ -35,7 +35,7 @@ function find_sum_with_n_num_repeat_or_not(array, target) {
         continue;
       }
       // 添加当前数字
-      sumArr.push(currentEle)
+      path.push(currentEle)
       /**
        * @desc 递归
        * @argument 1. 当前数字索引；
@@ -45,9 +45,9 @@ function find_sum_with_n_num_repeat_or_not(array, target) {
        * @argument 2. 当前数字和；
        * @argument 3. 当前数字数组
        */
-      dfs(i, sum + currentEle, sumArr)
+      dfs(i, sum + currentEle, path)
       // 回溯、撤销选择
-      sumArr.pop()
+      path.pop()
     }
   }
   dfs(0, 0, []);
