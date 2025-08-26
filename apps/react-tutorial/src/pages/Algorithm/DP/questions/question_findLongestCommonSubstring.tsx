@@ -4,6 +4,7 @@ import { PlayCircleOutlined, PauseCircleOutlined, StepForwardOutlined, ReloadOut
 import * as echarts from 'echarts';
 import { generateLCSSteps, findLongestCommonSubstringAsync } from '../al/findLongestCommonSubstring';
 import type { StepCallback } from '../al/findLongestCommonSubstring';
+import CodeDisplay from '../components/CodeDisplay';
 import './styles.less';
 
 const { Title, Text, Paragraph } = Typography;
@@ -22,6 +23,90 @@ interface DPCell {
   isMatched: boolean;
   isPath: boolean;
 }
+
+// 核心算法代码
+const coreCode = `function findLongestCommonSubstring(str1: string, str2: string): string {
+  if (str1.length === 0 || str2.length === 0) {
+    return '';
+  }
+
+  // 定义一个二维dp数组
+  const m = str1.length;
+  const n = str2.length;
+  const dp: number[][] = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+  // 记录最长子串的长度和结束位置
+  let maxLength = 0;
+  let endIndex = 0;
+
+  // 填充dp数组
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (str1[i - 1] === str2[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1;
+
+        // 更新最长子串信息
+        if (dp[i][j] > maxLength) {
+          maxLength = dp[i][j];
+          endIndex = i - 1;
+        }
+      } else {
+        dp[i][j] = 0;
+      }
+    }
+  }
+
+  // 提取最长公共子串
+  return str1.substring(endIndex - maxLength + 1, endIndex + 1);
+}
+
+// 带返回DP表格的版本
+function findLongestCommonSubstringWithDP(str1: string, str2: string): {
+  result: string;
+  dp: number[][];
+  maxLength: number;
+  endIndex: number;
+} {
+  if (str1.length === 0 || str2.length === 0) {
+    return { result: '', dp: [[0]], maxLength: 0, endIndex: 0 };
+  }
+
+  // 定义一个二维dp数组
+  const m = str1.length;
+  const n = str2.length;
+  const dp: number[][] = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+  // 记录最长子串的长度和结束位置
+  let maxLength = 0;
+  let endIndex = 0;
+
+  // 填充dp数组
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (str1[i - 1] === str2[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1;
+
+        // 更新最长子串信息
+        if (dp[i][j] > maxLength) {
+          maxLength = dp[i][j];
+          endIndex = i - 1;
+        }
+      } else {
+        dp[i][j] = 0;
+      }
+    }
+  }
+
+  // 提取最长公共子串
+  const commonSubstring = str1.substring(endIndex - maxLength + 1, endIndex + 1);
+
+  return {
+    result: commonSubstring,
+    dp,
+    maxLength,
+    endIndex
+  };
+}`;
 
 const LongestCommonSubstringVisualizer: React.FC = () => {
   // 输入字符串
@@ -495,121 +580,54 @@ const LongestCommonSubstringVisualizer: React.FC = () => {
     <div className="lcs-visualizer">
       <Title level={2}>最长公共子串算法可视化</Title>
 
-      <Card title="算法输入" style={{ marginBottom: 20 }}>
-        <Row gutter={16}>
-          <Col span={12}>
-            <div className="input-group">
-              <Text>字符串1:</Text>
-              <Input
-                value={str1}
-                onChange={e => setStr1(e.target.value)}
-                placeholder="输入第一个字符串"
-              />
-            </div>
-          </Col>
-          <Col span={12}>
-            <div className="input-group">
-              <Text>字符串2:</Text>
-              <Input
-                value={str2}
-                onChange={e => setStr2(e.target.value)}
-                placeholder="输入第二个字符串"
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row style={{ marginTop: 16 }}>
-          <Col span={24}>
-            <Space>
-              <Button type="primary" onClick={calculateDP}>计算</Button>
-              <Button
-                type="primary"
-                onClick={calculateDPAsync}
-                loading={isCalculating}
-                disabled={isCalculating}
-              >
-                实时可视化计算
-              </Button>
-            </Space>
-          </Col>
-        </Row>
-      </Card>
-
-      <Card title="动态规划表格" style={{ marginBottom: 20 }}>
-        <div className="controls">
-          <Space>
-            <Button
-              type="primary"
-              icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
-              onClick={handlePlay}
-              disabled={isCalculating}
-            >
-              {isPlaying ? '暂停' : '播放'}
-            </Button>
-            <Button
-              icon={<StepForwardOutlined />}
-              onClick={handleStep}
-              disabled={currentStep >= steps.length - 1 || isCalculating}
-            >
-              下一步
-            </Button>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={handleReset}
-              disabled={isCalculating}
-            >
-              重置
-            </Button>
-            <Text>速度:</Text>
-            <Slider
-              min={1}
-              max={10}
-              value={playSpeed}
-              onChange={value => setPlaySpeed(value)}
-              style={{ width: 100 }}
-              disabled={isCalculating}
-            />
-          </Space>
-        </div>
-
-        <div className="step-info">
-          <Text>{isCalculating ? '正在实时计算...' : getCurrentStepInfo()}</Text>
-        </div>
-
-        <div className="dp-table-container">
-          <Table
-            columns={columns}
-            dataSource={tableData}
-            pagination={false}
-            bordered
-            size="small"
-            scroll={{ x: 'max-content' }}
-          />
-        </div>
-
-        <div className="result-info">
-          <Text strong>最长公共子串: </Text>
-          <Text mark>{result}</Text>
-          <Text>, 长度: {maxLength}</Text>
-        </div>
-      </Card>
-
       <Row gutter={16}>
-        <Col span={16}>
-          <Card title="状态转移路径可视化" style={{ marginBottom: 20 }}>
-            <div className="path-chart" ref={pathChartRef} style={{ height: 400 }}></div>
-            <div style={{ marginTop: 16 }}>
-              <Button
-                type={highlightPath ? 'primary' : 'default'}
-                onClick={() => setHighlightPath(!highlightPath)}
-              >
-                {highlightPath ? '隐藏最优路径' : '显示最优路径'}
-              </Button>
-            </div>
-          </Card>
-        </Col>
-
         <Col span={8}>
+          <CodeDisplay
+            title="最长公共子串问题核心算法"
+            code={coreCode}
+            language="typescript"
+          />
+
+          <Card title="算法输入" style={{ marginBottom: 20 }}>
+            <Row gutter={16}>
+              <Col span={24}>
+                <div className="input-group">
+                  <Text>字符串1:</Text>
+                  <Input
+                    value={str1}
+                    onChange={e => setStr1(e.target.value)}
+                    placeholder="输入第一个字符串"
+                  />
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="input-group">
+                  <Text>字符串2:</Text>
+                  <Input
+                    value={str2}
+                    onChange={e => setStr2(e.target.value)}
+                    placeholder="输入第二个字符串"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row style={{ marginTop: 16 }}>
+              <Col span={24}>
+                <Space>
+                  <Button type="primary" onClick={calculateDP}>计算</Button>
+                  <Button
+                    type="primary"
+                    onClick={calculateDPAsync}
+                    loading={isCalculating}
+                    disabled={isCalculating}
+                  >
+                    实时可视化计算
+                  </Button>
+                </Space>
+              </Col>
+            </Row>
+          </Card>
+
           <Card title="性能分析" style={{ marginBottom: 20 }}>
             <div className="performance-info">
               <p><Text strong>时间复杂度:</Text> {getPerformanceInfo().timeComplexity}</p>
@@ -648,6 +666,79 @@ else:
               <Paragraph>
                 最长公共子串的长度为dp数组中的最大值，位置需要记录最大值出现的位置。
               </Paragraph>
+            </div>
+          </Card>
+        </Col>
+
+        <Col span={16}>
+          <Card title="动态规划表格" style={{ marginBottom: 20 }}>
+            <div className="controls">
+              <Space>
+                <Button
+                  type="primary"
+                  icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+                  onClick={handlePlay}
+                  disabled={isCalculating}
+                >
+                  {isPlaying ? '暂停' : '播放'}
+                </Button>
+                <Button
+                  icon={<StepForwardOutlined />}
+                  onClick={handleStep}
+                  disabled={currentStep >= steps.length - 1 || isCalculating}
+                >
+                  下一步
+                </Button>
+                <Button
+                  icon={<ReloadOutlined />}
+                  onClick={handleReset}
+                  disabled={isCalculating}
+                >
+                  重置
+                </Button>
+                <Text>速度:</Text>
+                <Slider
+                  min={1}
+                  max={10}
+                  value={playSpeed}
+                  onChange={value => setPlaySpeed(value)}
+                  style={{ width: 100 }}
+                  disabled={isCalculating}
+                />
+              </Space>
+            </div>
+
+            <div className="step-info">
+              <Text>{isCalculating ? '正在实时计算...' : getCurrentStepInfo()}</Text>
+            </div>
+
+            <div className="dp-table-container">
+              <Table
+                columns={columns}
+                dataSource={tableData}
+                pagination={false}
+                bordered
+                size="small"
+                scroll={{ x: 'max-content' }}
+              />
+            </div>
+
+            <div className="result-info">
+              <Text strong>最长公共子串: </Text>
+              <Text mark>{result}</Text>
+              <Text>, 长度: {maxLength}</Text>
+            </div>
+          </Card>
+
+          <Card title="状态转移路径可视化" style={{ marginBottom: 20 }}>
+            <div className="path-chart" ref={pathChartRef} style={{ height: 400 }}></div>
+            <div style={{ marginTop: 16 }}>
+              <Button
+                type={highlightPath ? 'primary' : 'default'}
+                onClick={() => setHighlightPath(!highlightPath)}
+              >
+                {highlightPath ? '隐藏最优路径' : '显示最优路径'}
+              </Button>
             </div>
           </Card>
         </Col>
