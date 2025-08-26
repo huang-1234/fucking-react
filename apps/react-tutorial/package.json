@@ -47,6 +47,7 @@
     "markdown-it": "^14.1.0",
     "moment": "^2.30.1",
     "monaco-editor": "^0.52.2",
+    "perfor-monitor": "^1.0.0",
     "protobufjs": "^7.5.4",
     "qs": "6.9.7",
     "react": "^19.1.0",

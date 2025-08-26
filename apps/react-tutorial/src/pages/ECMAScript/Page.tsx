@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tabs, Typography, Layout } from 'antd';
 import DeepCloneModule from './modules/DeepClone';
 import ArrayFunctionsModule from './modules/ArrayFunctions';
@@ -61,6 +61,27 @@ const ECMAScriptPage: React.FC = () => {
       children: <AsyncAwaitModule />
     }
   ];
+  function monitorPerformance() {
+    // 创建一个 PerformanceObserver 实例来监听性能事件
+    const observer = new PerformanceObserver((entryList) => {
+      // getEntries() 返回一个性能条目数组
+      const entries = entryList.getEntries();
+      for (const entry of entries) {
+        // entry.startTime 是 LCP 时间
+        console.log(`最大内容绘制 (LCP): ${entry.startTime.toFixed(2)}ms`);
+        // entry.element 是触发 LCP 的 DOM 元素
+        console.log("LCP 元素:", entry?.element);
+      }
+    });
+
+    // 开始监听 'largest-contentful-paint' 类型的事件
+    // buffered: true 确保在观察者创建之前发生的事件也能被捕获
+    observer.observe({ type: "largest-contentful-paint", buffered: true });
+  }
+
+  useEffect(() => {
+    monitorPerformance();
+  }, []);
 
   return (
     <Layout className={stylesLayout.contentLayout}>
