@@ -84,7 +84,7 @@ const ECMAScriptPage: React.FC = () => {
   }
 
   useEffect(() => {
-    monitorPerformance();
+    // monitorPerformance();
   }, []);
 
   return (
