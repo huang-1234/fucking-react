@@ -76,7 +76,11 @@ const ECMAScriptPage: React.FC = () => {
 
     // 开始监听 'largest-contentful-paint' 类型的事件
     // buffered: true 确保在观察者创建之前发生的事件也能被捕获
-    observer.observe({ type: "largest-contentful-paint", buffered: true });
+    observer.observe({
+      entryTypes: ["largest-contentful-paint"],
+      type: "largest-contentful-paint",
+      buffered: true
+    });
   }
 
   useEffect(() => {
