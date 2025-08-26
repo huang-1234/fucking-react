@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, Row, Col, Input, Button, Table, Typography, Space, Slider, Divider } from 'antd';
 import { PlayCircleOutlined, PauseCircleOutlined, StepForwardOutlined, ReloadOutlined } from '@ant-design/icons';
 import * as echarts from 'echarts';
-import { generateLCSSteps } from '../al/findLongestCommonSubstring';
+import { generateLCSSteps, findLongestCommonSubstringAsync } from '../al/findLongestCommonSubstring';
+import type { StepCallback } from '../al/findLongestCommonSubstring';
 import './styles.less';
 
 const { Title, Text, Paragraph } = Typography;
@@ -39,6 +40,7 @@ const LongestCommonSubstringVisualizer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playSpeed, setPlaySpeed] = useState<number>(2);
   const [highlightPath, setHighlightPath] = useState<boolean>(false);
+  const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
   // 图表引用
   const pathChartRef = useRef<HTMLDivElement>(null);
@@ -175,6 +177,81 @@ const LongestCommonSubstringVisualizer: React.FC = () => {
     setSteps(newSteps);
     setCurrentStep(-1);
     setIsPlaying(false);
+  };
+
+  // 异步计算DP表，实时可视化每一步
+  const calculateDPAsync = async () => {
+    if (!str1 || !str2) return;
+
+    setIsCalculating(true);
+    setIsPlaying(false);
+
+    const m = str1.length;
+    const n = str2.length;
+
+    // 初始化DP表
+    const newDp: DPCell[][] = Array(m + 1).fill(0).map(() =>
+      Array(n + 1).fill(0).map(() => ({
+        value: 0,
+        isHighlighted: false,
+        isMatched: false,
+        isPath: false
+      }))
+    );
+
+    setDp(newDp);
+    setSteps([]);
+
+    const newSteps: Step[] = [];
+
+    // 定义每一步的回调函数
+    const onStep: StepCallback = (step) => {
+      newSteps.push({ ...step });
+
+      // 更新DP表
+      const dpCopy = [...newDp];
+
+      // 重置高亮
+      for (let i = 0; i < dpCopy.length; i++) {
+        for (let j = 0; j < dpCopy[i].length; j++) {
+          dpCopy[i][j] = { ...dpCopy[i][j], isHighlighted: false };
+        }
+      }
+
+      // 设置当前单元格的值和高亮
+      if (step.i >= 0 && step.i < dpCopy.length && step.j >= 0 && step.j < dpCopy[step.i].length) {
+        dpCopy[step.i][step.j] = {
+          value: step.value,
+          isHighlighted: true,
+          isMatched: step.matched,
+          isPath: false
+        };
+      }
+
+      // 高亮依赖单元格
+      if (step.prev) {
+        const { i, j } = step.prev;
+        if (i >= 0 && i < dpCopy.length && j >= 0 && j < dpCopy[i].length) {
+          dpCopy[i][j] = { ...dpCopy[i][j], isHighlighted: true };
+        }
+      }
+
+      setDp([...dpCopy]);
+    };
+
+    // 执行异步算法
+    const result = await findLongestCommonSubstringAsync(
+      str1,
+      str2,
+      onStep,
+      1000 / playSpeed
+    );
+
+    setMaxLength(result.maxLength);
+    setEndIndex(result.endIndex);
+    setResult(result.result);
+    setSteps(newSteps);
+    setIsCalculating(false);
   };
 
   // 更新可视化状态
@@ -443,7 +520,17 @@ const LongestCommonSubstringVisualizer: React.FC = () => {
         </Row>
         <Row style={{ marginTop: 16 }}>
           <Col span={24}>
-            <Button type="primary" onClick={calculateDP}>计算</Button>
+            <Space>
+              <Button type="primary" onClick={calculateDP}>计算</Button>
+              <Button
+                type="primary"
+                onClick={calculateDPAsync}
+                loading={isCalculating}
+                disabled={isCalculating}
+              >
+                实时可视化计算
+              </Button>
+            </Space>
           </Col>
         </Row>
       </Card>
@@ -455,19 +542,21 @@ const LongestCommonSubstringVisualizer: React.FC = () => {
               type="primary"
               icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
               onClick={handlePlay}
+              disabled={isCalculating}
             >
               {isPlaying ? '暂停' : '播放'}
             </Button>
             <Button
               icon={<StepForwardOutlined />}
               onClick={handleStep}
-              disabled={currentStep >= steps.length - 1}
+              disabled={currentStep >= steps.length - 1 || isCalculating}
             >
               下一步
             </Button>
             <Button
               icon={<ReloadOutlined />}
               onClick={handleReset}
+              disabled={isCalculating}
             >
               重置
             </Button>
@@ -478,12 +567,13 @@ const LongestCommonSubstringVisualizer: React.FC = () => {
               value={playSpeed}
               onChange={value => setPlaySpeed(value)}
               style={{ width: 100 }}
+              disabled={isCalculating}
             />
           </Space>
         </div>
 
         <div className="step-info">
-          <Text>{getCurrentStepInfo()}</Text>
+          <Text>{isCalculating ? '正在实时计算...' : getCurrentStepInfo()}</Text>
         </div>
 
         <div className="dp-table-container">
