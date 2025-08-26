@@ -4,6 +4,7 @@ import { CodeOutlined, QuestionCircleOutlined, LineChartOutlined, ShoppingOutlin
 import { HouseRobberQuestion } from './questions';
 import ExactKnapsackQuestion from './Visualizer/question2548';
 import styles from './index.module.less';
+import LongestCommonSubstringVisualizer from './questions/question_findLongestCommonSubstring';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -120,6 +121,10 @@ const DynamicProgrammingPage: React.FC = () => {
           key="3"
         >
           <ExactKnapsackQuestion />
+        </TabPane>
+
+        <TabPane tab="最长公共子串" key="lcs">
+          <LongestCommonSubstringVisualizer />
         </TabPane>
       </Tabs>
     </div>
