@@ -336,32 +336,13 @@ importers:
         specifier: 2.2.12
         version: 2.2.12(typescript@5.8.3)
 
-  libs/algorithm:
-    dependencies:
-      '@antv/g6':
-        specifier: ^5.0.49
-        version: 5.0.49(workerize-loader@2.0.2(webpack@5.101.2))
-      react:
-        specifier: 19.1.1
-        version: 19.1.1
-      typescript:
-        specifier: 5.8.3
-        version: 5.8.3
-    devDependencies:
-      rspress:
-        specifier: ^1.45.1
-        version: 1.45.1(webpack@5.101.2)
-      vitest:
-        specifier: 2.1.5
-        version: 2.1.5(@types/node@22.17.0)(jsdom@24.1.3)(less@4.4.0)(sass-embedded@1.90.0)(sass@1.90.0)(terser@5.43.1)
-
-  libs/ecmascript:
+  libs/ECMAScript:
     devDependencies:
       vitest:
         specifier: 2.1.5
         version: 2.1.5(@types/node@22.17.0)(jsdom@24.1.3)(less@4.4.0)(sass-embedded@1.90.0)(sass@1.90.0)(terser@5.43.1)
 
-  libs/nodejs:
+  libs/Nodejs:
     dependencies:
       '@ant-design/icons':
         specifier: 6.0.0
@@ -544,6 +525,25 @@ importers:
       webpack-dev-server:
         specifier: ^5.0.2
         version: 5.2.2(webpack-cli@5.1.4)(webpack@5.101.2)
+
+  libs/algorithm:
+    dependencies:
+      '@antv/g6':
+        specifier: ^5.0.49
+        version: 5.0.49(workerize-loader@2.0.2(webpack@5.101.2))
+      react:
+        specifier: 19.1.1
+        version: 19.1.1
+      typescript:
+        specifier: 5.8.3
+        version: 5.8.3
+    devDependencies:
+      rspress:
+        specifier: ^1.45.1
+        version: 1.45.1(webpack@5.101.2)
+      vitest:
+        specifier: 2.1.5
+        version: 2.1.5(@types/node@22.17.0)(jsdom@24.1.3)(less@4.4.0)(sass-embedded@1.90.0)(sass@1.90.0)(terser@5.43.1)
 
   packages/Reconciler:
     dependencies:
