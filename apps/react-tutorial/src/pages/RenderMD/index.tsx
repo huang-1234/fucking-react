@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Layout, Card, Typography, Tabs, message } from 'antd';
 import { BookOutlined, SettingOutlined, EditOutlined } from '@ant-design/icons';
 import MarkdownRenderer from './components/MarkdownRenderer';
@@ -30,25 +30,28 @@ const MarkdownLearningPage: React.FC = () => {
     setConfig(prev => ({ ...prev, theme }));
   }, [theme]);
 
-  // 处理配置变更
-  const handleConfigChange = (newConfig: MarkdownConfig) => {
-    setConfig(newConfig);
+  // 处理配置变更 - 使用useCallback优化
+  const handleConfigChange = useCallback((newConfig: MarkdownConfig) => {
+    // 只在配置真正变化时才更新状态
+    if (JSON.stringify(newConfig) !== JSON.stringify(config)) {
+      setConfig(newConfig);
 
-    // 同步主题
-    if (newConfig.theme !== theme) {
-      setTheme(newConfig.theme);
+      // 只在主题变化时才更新主题
+      if (newConfig.theme !== theme) {
+        setTheme(newConfig.theme);
+      }
+
+      message.success('配置已更新');
     }
+  }, [config, theme, setTheme]);
 
-    message.success('配置已更新');
-  };
-
-  // 处理标题变化
-  const handleHeadingsChange = (newHeadings: Heading[]) => {
+  // 处理标题变化 - 使用useCallback优化
+  const handleHeadingsChange = useCallback((newHeadings: Heading[]) => {
     setHeadings(newHeadings);
-  };
+  }, []);
 
-  // 渲染Markdown内容
-  const renderMarkdownContent = () => {
+  // 渲染Markdown内容 - 使用useMemo优化
+  const renderedContent = useMemo(() => {
     // 根据配置决定是否使用虚拟滚动
     if (config.enableVirtualScroll && content.length > 5000) {
       return (
@@ -71,9 +74,36 @@ const MarkdownLearningPage: React.FC = () => {
         onHeadingsChange={handleHeadingsChange}
       />
     );
-  };
+  }, [content, config.enableVirtualScroll, config.linkTarget, config.enableSanitize, handleHeadingsChange]);
 
-  console.log(config, 'config');
+  // 优化编辑器组件 - 使用useMemo
+  const editorComponent = useMemo(() => (
+    <MonacoEditor
+      language="markdown"
+      theme={theme === 'dark' ? 'vs-dark' : 'light'}
+      value={content}
+      onChange={(value) => setContent(value || '')}
+      options={{
+        wordWrap: 'on',
+        minimap: { enabled: true },
+        fontSize: 14,
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+      }}
+    />
+  ), [content, theme]);
+
+  // 优化目录组件 - 使用useMemo
+  const tocComponent = useMemo(() => {
+    if (config.enableToc && headings.length > 0) {
+      return (
+        <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
+          <TableOfContents headings={headings} affixed={false} />
+        </Card>
+      );
+    }
+    return null;
+  }, [config.enableToc, headings]);
 
   return (
     <Layout className={styles.markdownPage}>
@@ -91,11 +121,7 @@ const MarkdownLearningPage: React.FC = () => {
 
         <ControlPanel config={config} onChange={handleConfigChange} />
 
-        {config.enableToc && headings.length > 0 && (
-          <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
-            <TableOfContents headings={headings} affixed={false} />
-          </Card>
-        )}
+        {tocComponent}
       </Sider>
 
       <Layout>
@@ -124,7 +150,7 @@ const MarkdownLearningPage: React.FC = () => {
                     borderColor: themeConfig.borderColor
                   }}
                 >
-                  {renderMarkdownContent()}
+                  {renderedContent}
                 </div>
               </TabPane>
 
@@ -136,19 +162,7 @@ const MarkdownLearningPage: React.FC = () => {
                   className={styles.editorContainer}
                   style={{ borderColor: themeConfig.borderColor }}
                 >
-                  <MonacoEditor
-                    language="markdown"
-                    theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                    value={content}
-                    onChange={(value) => setContent(value || '')}
-                    options={{
-                      wordWrap: 'on',
-                      minimap: { enabled: true },
-                      fontSize: 14,
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                    }}
-                  />
+                  {editorComponent}
                 </div>
               </TabPane>
 
@@ -168,4 +182,4 @@ const MarkdownLearningPage: React.FC = () => {
   );
 };
 
-export default MarkdownLearningPage;
+export default React.memo(MarkdownLearningPage);

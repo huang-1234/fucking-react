@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
@@ -9,6 +9,7 @@ import type { MarkdownRendererProps, CustomComponents } from '../types/markdown'
 import type { Heading } from '../types/markdown';
 import { sanitizeSchema } from '../utils/sanitizeSchema';
 import { markdownConfig } from '../config/markdownConfig';
+import markdownCache from '../utils/cache';
 import styles from './MarkdownRenderer.module.less';
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
@@ -22,6 +23,24 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   ...props
 }) => {
   const headingsRef = useRef<Heading[]>([]);
+  const markdownRef = useRef<HTMLDivElement>(null);
+  const [cachedHtml, setCachedHtml] = useState<string | null>(null);
+
+  // 生成缓存键
+  const cacheKey = useMemo(() => {
+    return `${content}_${allowHtml}_${linkTarget}_${skipHtml}`;
+  }, [content, allowHtml, linkTarget, skipHtml]);
+
+  // 检查缓存
+  useEffect(() => {
+    // 如果启用了缓存，尝试从缓存中获取
+    const cached = markdownCache.getCachedMarkdown(cacheKey);
+    if (cached) {
+      setCachedHtml(cached);
+    } else {
+      setCachedHtml(null);
+    }
+  }, [cacheKey]);
 
   // 提取标题并生成目录
   useEffect(() => {
@@ -39,8 +58,17 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     }
   }, [content, onHeadingsChange]);
 
+  // 缓存渲染结果
+  useEffect(() => {
+    // 如果已经渲染完成，且不是使用的缓存内容，则缓存结果
+    if (markdownRef.current && !cachedHtml) {
+      const html = markdownRef.current.innerHTML;
+      markdownCache.cacheMarkdown(cacheKey, html);
+    }
+  }, [cacheKey, cachedHtml]);
+
   // 自定义组件配置
-  const components: CustomComponents = {
+  const components: CustomComponents = useMemo(() => ({
     h1: ({ children, ...props }) => {
       const id = `heading-${String(children).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
       return (
@@ -144,20 +172,34 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         {...props}
       />
     )
-  };
+  }), [linkTarget]);
 
   // 构建rehype插件列表
-  const rehypePlugins = [];
+  const rehypePlugins = useMemo(() => {
+    const plugins = [];
 
-  if (allowHtml) {
-    rehypePlugins.push(rehypeRaw);
+    if (allowHtml) {
+      plugins.push(rehypeRaw);
+    }
+
+    plugins.push([rehypeSanitize, sanitizeSchema]);
+    plugins.push([rehypeExternalLinks, { target: linkTarget, rel: ['nofollow', 'noopener', 'noreferrer'] }]);
+
+    return plugins;
+  }, [allowHtml, linkTarget]);
+
+  // 如果有缓存，直接使用缓存的HTML
+  if (cachedHtml) {
+    return (
+      <div
+        className={`${styles.markdownContainer} ${className}`}
+        dangerouslySetInnerHTML={{ __html: cachedHtml }}
+      />
+    );
   }
 
-  rehypePlugins.push([rehypeSanitize, sanitizeSchema]);
-  rehypePlugins.push([rehypeExternalLinks, { target: linkTarget, rel: ['nofollow', 'noopener', 'noreferrer'] }]);
-
   return (
-    <div className={`${styles.markdownContainer} ${className}`}>
+    <div ref={markdownRef} className={`${styles.markdownContainer} ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={rehypePlugins as any}
