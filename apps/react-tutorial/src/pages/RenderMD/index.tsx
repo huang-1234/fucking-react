@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { produce } from 'immer';
+import { performanceMonitor } from './tools/performance';
 import { Layout, Card, Typography, Tabs, message } from 'antd';
-import { BookOutlined, SettingOutlined, EditOutlined } from '@ant-design/icons';
+import { BookOutlined, SettingOutlined, EditOutlined, LineChartOutlined } from '@ant-design/icons';
+import PerformancePanel from './components/PerformancePanel';
 import MarkdownRenderer from './components/MarkdownRenderer';
 import VirtualizedMarkdown from './components/VirtualizedMarkdown';
 import ControlPanel from './components/ControlPanel';
@@ -30,28 +33,39 @@ const MarkdownLearningPage: React.FC = () => {
     setConfig(prev => ({ ...prev, theme }));
   }, [theme]);
 
-  // 处理配置变更 - 使用useCallback优化
+  // 使用Immer优化配置更新逻辑
   const handleConfigChange = useCallback((newConfig: MarkdownConfig) => {
+    performanceMonitor.start('config_update');
+
     // 只在配置真正变化时才更新状态
     if (JSON.stringify(newConfig) !== JSON.stringify(config)) {
-      setConfig(newConfig);
+      setConfig(produce(draft => {
+        // 只更新变化的属性，避免不必要的重新渲染
+        Object.keys(newConfig).forEach(key => {
+          if (draft[key as keyof MarkdownConfig] !== newConfig[key as keyof MarkdownConfig]) {
+            (draft[key as keyof MarkdownConfig] as any) = newConfig[key as keyof MarkdownConfig];
+          }
+        });
+      }));
 
-      // 只在主题变化时才更新主题
+      // 同步主题（如果变化）
       if (newConfig.theme !== theme) {
         setTheme(newConfig.theme);
       }
 
       message.success('配置已更新');
     }
-  }, [config, theme, setTheme]);
 
-  // 处理标题变化 - 使用useCallback优化
-  const handleHeadingsChange = useCallback((newHeadings: Heading[]) => {
+    performanceMonitor.end('config_update');
+  }, [config, theme]);
+
+  // 处理标题变化
+  const handleHeadingsChange = (newHeadings: Heading[]) => {
     setHeadings(newHeadings);
-  }, []);
+  };
 
-  // 渲染Markdown内容 - 使用useMemo优化
-  const renderedContent = useMemo(() => {
+  // 渲染Markdown内容
+  const renderMarkdownContent = () => {
     // 根据配置决定是否使用虚拟滚动
     if (config.enableVirtualScroll && content.length > 5000) {
       return (
@@ -74,36 +88,9 @@ const MarkdownLearningPage: React.FC = () => {
         onHeadingsChange={handleHeadingsChange}
       />
     );
-  }, [content, config.enableVirtualScroll, config.linkTarget, config.enableSanitize, handleHeadingsChange]);
+  };
 
-  // 优化编辑器组件 - 使用useMemo
-  const editorComponent = useMemo(() => (
-    <MonacoEditor
-      language="markdown"
-      theme={theme === 'dark' ? 'vs-dark' : 'light'}
-      value={content}
-      onChange={(value) => setContent(value || '')}
-      options={{
-        wordWrap: 'on',
-        minimap: { enabled: true },
-        fontSize: 14,
-        scrollBeyondLastLine: false,
-        automaticLayout: true,
-      }}
-    />
-  ), [content, theme]);
-
-  // 优化目录组件 - 使用useMemo
-  const tocComponent = useMemo(() => {
-    if (config.enableToc && headings.length > 0) {
-      return (
-        <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
-          <TableOfContents headings={headings} affixed={false} />
-        </Card>
-      );
-    }
-    return null;
-  }, [config.enableToc, headings]);
+  console.log(config, 'config');
 
   return (
     <Layout className={styles.markdownPage}>
@@ -121,7 +108,11 @@ const MarkdownLearningPage: React.FC = () => {
 
         <ControlPanel config={config} onChange={handleConfigChange} />
 
-        {tocComponent}
+        {config.enableToc && headings.length > 0 && (
+          <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
+            <TableOfContents headings={headings} affixed={false} />
+          </Card>
+        )}
       </Sider>
 
       <Layout>
@@ -150,7 +141,7 @@ const MarkdownLearningPage: React.FC = () => {
                     borderColor: themeConfig.borderColor
                   }}
                 >
-                  {renderedContent}
+                  {renderMarkdownContent()}
                 </div>
               </TabPane>
 
@@ -162,7 +153,19 @@ const MarkdownLearningPage: React.FC = () => {
                   className={styles.editorContainer}
                   style={{ borderColor: themeConfig.borderColor }}
                 >
-                  {editorComponent}
+                  <MonacoEditor
+                    language="markdown"
+                    theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                    value={content}
+                    onChange={(value) => setContent(value || '')}
+                    options={{
+                      wordWrap: 'on',
+                      minimap: { enabled: true },
+                      fontSize: 14,
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                    }}
+                  />
                 </div>
               </TabPane>
 
@@ -174,6 +177,13 @@ const MarkdownLearningPage: React.FC = () => {
                   <ControlPanel config={config} onChange={handleConfigChange} />
                 </Card>
               </TabPane>
+
+              <TabPane
+                tab={<span><LineChartOutlined />性能</span>}
+                key="performance"
+              >
+                <PerformancePanel />
+              </TabPane>
             </Tabs>
           </Card>
         </Content>
@@ -182,4 +192,4 @@ const MarkdownLearningPage: React.FC = () => {
   );
 };
 
-export default React.memo(MarkdownLearningPage);
+export default MarkdownLearningPage;

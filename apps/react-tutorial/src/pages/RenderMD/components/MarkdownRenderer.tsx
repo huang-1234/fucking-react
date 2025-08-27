@@ -10,6 +10,8 @@ import type { Heading } from '../types/markdown';
 import { sanitizeSchema } from '../utils/sanitizeSchema';
 import { markdownConfig } from '../config/markdownConfig';
 import markdownCache from '../utils/cache';
+import { performanceMonitor } from '../tools/performance';
+import { produce } from 'immer';
 import styles from './MarkdownRenderer.module.less';
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
@@ -33,37 +35,58 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
   // 检查缓存
   useEffect(() => {
+    performanceMonitor.start('check_cache');
     // 如果启用了缓存，尝试从缓存中获取
     const cached = markdownCache.getCachedMarkdown(cacheKey);
     if (cached) {
       setCachedHtml(cached);
+      performanceMonitor.end('check_cache');
+      performanceMonitor.start('render_from_cache');
+      performanceMonitor.end('render_from_cache');
     } else {
       setCachedHtml(null);
+      performanceMonitor.end('check_cache');
     }
   }, [cacheKey]);
 
-  // 提取标题并生成目录
-  useEffect(() => {
-    if (onHeadingsChange) {
-      const regex = /^(#{1,6})\s+(.+)$/gm;
-      const matches = Array.from(content.matchAll(regex));
-      const headingList: Heading[] = matches.map((match) => {
+  // 使用useMemo提取标题，避免重复计算
+  const extractedHeadings = useMemo(() => {
+    if (!onHeadingsChange) return [];
+
+    performanceMonitor.start('extract_headings');
+    const regex = /^(#{1,6})\s+(.+)$/gm;
+    const matches = Array.from(content.matchAll(regex));
+
+    // 使用Immer创建标题列表
+    const headingList = produce([] as Heading[], draft => {
+      matches.forEach(match => {
         const level = match[1].length;
         const text = match[2];
         const id = `heading-${text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
-        return { id, text, level };
+        draft.push({ id, text, level });
       });
-      headingsRef.current = headingList;
-      onHeadingsChange(headingList);
-    }
+    });
+
+    performanceMonitor.end('extract_headings');
+    return headingList;
   }, [content, onHeadingsChange]);
+
+  // 更新引用和通知父组件
+  useEffect(() => {
+    if (extractedHeadings.length > 0 && onHeadingsChange) {
+      headingsRef.current = extractedHeadings;
+      onHeadingsChange(extractedHeadings);
+    }
+  }, [extractedHeadings, onHeadingsChange]);
 
   // 缓存渲染结果
   useEffect(() => {
     // 如果已经渲染完成，且不是使用的缓存内容，则缓存结果
     if (markdownRef.current && !cachedHtml) {
+      performanceMonitor.start('cache_result');
       const html = markdownRef.current.innerHTML;
       markdownCache.cacheMarkdown(cacheKey, html);
+      performanceMonitor.end('cache_result');
     }
   }, [cacheKey, cachedHtml]);
 
@@ -197,6 +220,16 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       />
     );
   }
+
+  // 开始渲染计时
+  performanceMonitor.start('markdown_render');
+
+  // 渲染完成后结束计时
+  useEffect(() => {
+    if (!cachedHtml && markdownRef.current) {
+      performanceMonitor.end('markdown_render');
+    }
+  }, [cachedHtml]);
 
   return (
     <div ref={markdownRef} className={`${styles.markdownContainer} ${className}`}>

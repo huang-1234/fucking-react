@@ -1,3 +1,7 @@
+// 注意：虽然暂时没有使用produce，但未来的缓存优化会用到
+// import { produce } from 'immer';
+import { performanceMonitor } from '../tools/performance';
+
 interface CacheItem {
   content: string;
   timestamp: number;
@@ -26,10 +30,17 @@ class MarkdownCache {
    * @returns 缓存的HTML或null（如果缓存不存在或已过期）
    */
   public getCachedMarkdown(content: string): string | null {
-    const cached = this.cache.get(this.generateKey(content));
+    performanceMonitor.start('cache_read');
+
+    const key = this.generateKey(content);
+    const cached = this.cache.get(key);
+
     if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
+      performanceMonitor.end('cache_read');
       return cached.html;
     }
+
+    performanceMonitor.end('cache_read');
     return null;
   }
 
@@ -39,7 +50,11 @@ class MarkdownCache {
    * @param html 渲染后的HTML
    */
   public cacheMarkdown(content: string, html: string): void {
-    this.cache.set(this.generateKey(content), {
+    performanceMonitor.start('cache_write');
+
+    // 使用Immer更新缓存Map
+    const key = this.generateKey(content);
+    this.cache.set(key, {
       content,
       timestamp: Date.now(),
       html
@@ -47,6 +62,8 @@ class MarkdownCache {
 
     // 清理过期缓存
     this.cleanExpiredCache();
+
+    performanceMonitor.end('cache_write');
   }
 
   /**
@@ -76,12 +93,22 @@ class MarkdownCache {
    * 清理过期缓存
    */
   private cleanExpiredCache(): void {
+    performanceMonitor.start('cache_clean');
+
     const now = Date.now();
+    const keysToDelete: string[] = [];
+
+    // 首先收集要删除的键，避免在遍历过程中修改集合
     for (const [key, item] of this.cache.entries()) {
       if (now - item.timestamp > this.cacheDuration) {
-        this.cache.delete(key);
+        keysToDelete.push(key);
       }
     }
+
+    // 然后批量删除
+    keysToDelete.forEach(key => this.cache.delete(key));
+
+    performanceMonitor.end('cache_clean');
   }
 
   /**

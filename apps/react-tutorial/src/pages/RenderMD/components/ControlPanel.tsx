@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { Card, Switch, Select, Divider, Typography, Tooltip, Button, message } from 'antd';
+import React from 'react';
+import { Card, Switch, Select, Divider, Typography, Tooltip, Button } from 'antd';
 import {
   EyeOutlined,
   SafetyOutlined,
@@ -21,41 +21,12 @@ interface ControlPanelProps {
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
-  // 使用useCallback优化配置更改处理函数
-  const handleConfigChange = useCallback(<K extends keyof MarkdownConfig>(key: K, value: MarkdownConfig[K]) => {
-    // 创建新的配置对象
-    const newConfig = {
+  const handleConfigChange = <K extends keyof MarkdownConfig>(key: K, value: MarkdownConfig[K]) => {
+    onChange({
       ...config,
       [key]: value
-    };
-
-    // 调用onChange回调
-    onChange(newConfig);
-
-    // 显示反馈提示
-    message.success(`已${value ? '启用' : '禁用'} ${getSettingName(key)}`);
-  }, [config, onChange]);
-
-  // 获取设置项的中文名称
-  const getSettingName = (key: keyof MarkdownConfig): string => {
-    const nameMap: Record<keyof MarkdownConfig, string> = {
-      theme: '主题',
-      enableCache: '缓存',
-      enableVirtualScroll: '虚拟滚动',
-      enableToc: '目录导航',
-      enableMath: '数学公式',
-      enableGfm: 'GFM扩展',
-      enableSanitize: '安全过滤',
-      linkTarget: '链接目标'
-    };
-    return nameMap[key] || String(key);
+    });
   };
-
-  // 应用所有设置
-  const handleApplySettings = useCallback(() => {
-    onChange({...config});
-    message.success('已应用所有设置');
-  }, [config, onChange]);
 
   return (
     <Card className={styles.controlPanel} bordered={true}>
@@ -73,10 +44,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Select
             value={config.theme}
             style={{ width: 120 }}
-            onChange={(value) => {
-              handleConfigChange('theme', value);
-              message.success(`已切换至${value === 'light' ? '浅色' : value === 'dark' ? '深色' : '护眼'}主题`);
-            }}
+            onChange={(value) => handleConfigChange('theme', value)}
           >
             <Option value="light">浅色</Option>
             <Option value="dark">深色</Option>
@@ -97,10 +65,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Switch
             checked={config.enableCache}
             onChange={(checked) => handleConfigChange('enableCache', checked)}
-            onClick={(checked, event) => {
-              // 阻止事件冒泡，确保事件不会被父元素捕获
-              event.stopPropagation();
-            }}
           />
         </div>
 
@@ -114,9 +78,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Switch
             checked={config.enableVirtualScroll}
             onChange={(checked) => handleConfigChange('enableVirtualScroll', checked)}
-            onClick={(checked, event) => {
-              event.stopPropagation();
-            }}
           />
         </div>
 
@@ -130,9 +91,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Switch
             checked={config.enableToc}
             onChange={(checked) => handleConfigChange('enableToc', checked)}
-            onClick={(checked, event) => {
-              event.stopPropagation();
-            }}
           />
         </div>
 
@@ -146,9 +104,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Switch
             checked={config.enableMath}
             onChange={(checked) => handleConfigChange('enableMath', checked)}
-            onClick={(checked, event) => {
-              event.stopPropagation();
-            }}
           />
         </div>
 
@@ -162,9 +117,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Switch
             checked={config.enableGfm}
             onChange={(checked) => handleConfigChange('enableGfm', checked)}
-            onClick={(checked, event) => {
-              event.stopPropagation();
-            }}
           />
         </div>
 
@@ -178,9 +130,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Switch
             checked={config.enableSanitize}
             onChange={(checked) => handleConfigChange('enableSanitize', checked)}
-            onClick={(checked, event) => {
-              event.stopPropagation();
-            }}
           />
         </div>
 
@@ -194,10 +143,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
           <Select
             value={config.linkTarget}
             style={{ width: 120 }}
-            onChange={(value) => {
-              handleConfigChange('linkTarget', value);
-              message.success(`已设置链接在${value === '_blank' ? '新窗口' : '当前窗口'}打开`);
-            }}
+            onChange={(value) => handleConfigChange('linkTarget', value)}
           >
             <Option value="_blank">新窗口</Option>
             <Option value="_self">当前窗口</Option>
@@ -207,7 +153,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
 
       <Divider />
       <div className={styles.actionButton}>
-        <Button type="primary" onClick={handleApplySettings}>
+        <Button type="primary" onClick={() => onChange({...config})}>
           应用设置
         </Button>
       </div>
@@ -215,5 +161,4 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ config, onChange }) => {
   );
 };
 
-// 使用React.memo优化渲染性能
 export default React.memo(ControlPanel);
