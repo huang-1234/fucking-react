@@ -1,0 +1,25 @@
+---
+description: SSR 服务端渲染规则
+globs:
+  - "servers/ssr/**/*.ts"
+alwaysApply: true
+priority: medium
+---
+
+# SSR 规范
+## 性能优化
+1. **流式渲染**
+   - 使用 `renderToPipeableStream` 替代 `renderToString`
+2. **多级缓存**
+   - 页面级：Redis 缓存 HTML 字符串
+   - 组件级：`react-cache` 缓存静态组件
+
+## 安全要求
+- 用户输入必须转义（`escapeHtml` 工具）
+- 禁用 `eval()` 动态执行
+
+## 错误处理
+- 全局错误边界捕获 `SSRErrorBoundary`
+- 日志记录到 `logs/ssr-error.log`
+
+---

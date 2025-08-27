@@ -1,0 +1,35 @@
+---
+description:
+globs:
+  - "packages/hooks/**/*.ts"
+alwaysApply: true
+priority: high
+---
+# Hooks 实现要求
+## 实现逻辑
+1. **链表存储**
+   - Hooks 状态按调用顺序存储在 `Fiber.memoizedState` 链表
+   - `useEffect` 依赖数组需深度比较（参考 `depsAreEqual`）
+2. **批量更新**
+   - 使用 `batchUpdates` 合并 `setState` 触发
+   - 异步任务调度用 `scheduler` 模块
+
+## 禁止行为
+- ❌ 在循环/条件中调用 Hook
+- ❌ 修改 Hook 链表顺序
+- ❌ 直接修改 `currentFiber.memoizedState`
+
+## 示例代码规范
+
+ts
+
+// ✅ 正确：显式定义返回值类型
+```ts
+function useState<T>(initial: T): [T, Dispatch<T>] {
+
+const hook = mountWorkInProgressHook();
+
+hook.memoizedState = initial;
+
+}
+```

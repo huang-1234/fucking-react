@@ -1,0 +1,75 @@
+.markdownPage {
+  min-height: 100vh;
+  display: flex;
+}
+
+.sidebar {
+  width: 300px;
+  height: 100vh;
+  overflow: auto;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  padding: 16px;
+  transition: all 0.3s;
+  z-index: 10;
+
+  // 确保不遮挡系统菜单
+  padding-top: 60px;
+}
+
+.pageTitle {
+  margin-bottom: 16px;
+}
+
+.content {
+  margin-left: 300px;
+  padding: 24px;
+  transition: all 0.3s;
+  flex: 1;
+  min-width: 0;
+
+  // 确保不遮挡系统菜单
+  padding-top: 60px;
+}
+
+.tabContent {
+  margin-bottom: 24px;
+}
+
+.previewContainer {
+  padding: 20px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.editorContainer {
+  height: calc(100vh - 200px);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.settingsContainer {
+  margin-top: 16px;
+}
+
+// 响应式布局
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+    padding-top: 16px;
+  }
+
+  .content {
+    margin-left: 0;
+    padding-top: 16px;
+  }
+
+  .markdownPage {
+    flex-direction: column;
+  }
+}

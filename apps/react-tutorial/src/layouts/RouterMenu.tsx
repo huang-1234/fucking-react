@@ -9,6 +9,7 @@ import {
 import { reactVersionMenuItems } from './ReactVersionMenu';
 import AlgorithmPage from '@/pages/Algorithm';
 import loadable from '@loadable/component';
+import RichTextHomePage from '@/pages/RichTextHomePage';
 
 // 首页
 const HomePage = loadable(() => import('@/pages/HomePage'));
@@ -35,6 +36,13 @@ const ProtobufPage = loadable(() => import('@/pages/protobuf'));
 // SSR与性能优化页面
 const SSRPage = loadable(() => import('@/pages/SSR/SSRPage'));
 const PerformancePage = loadable(() => import('@/pages/Performance'));
+
+// 富文本
+const RichTextPage = loadable(() => import('@/pages/RichTextHomePage/subpage/RichText'));
+
+// Markdown渲染
+const RenderMDPage = loadable(() => import('@/pages/RenderMD'));
+
 
 export interface IMenu {
   key: string;
@@ -77,6 +85,38 @@ export const menuItems: IMenu[] = [
     component: AlgorithmPage
   },
   {
+    key: '/rich-text',
+    label: '富文本',
+    icon: <CodeOutlined />,
+    component: RichTextHomePage,
+    children: [
+      {
+        key: '/markdown',
+        label: 'Markdown渲染',
+        icon: <CodeOutlined />,
+        component: RenderMDPage
+      },
+      {
+        key: '/quill',
+        label: 'Quill',
+        icon: <CodeOutlined />,
+        component: RichTextPage
+      },
+      {
+        key: '/editor',
+        label: 'Editor',
+        icon: <CodeOutlined />,
+        component: RichTextPage
+      },
+      {
+        key: '/tinymce',
+        label: 'Tinymce',
+        icon: <CodeOutlined />,
+        component: RichTextPage
+      },
+    ]
+  },
+  {
     key: '/webpack',
     label: 'Webpack',
     icon: <CodeOutlined />,
@@ -111,5 +151,5 @@ export const menuItems: IMenu[] = [
     label: '性能优化',
     icon: <CodeOutlined />,
     component: PerformancePage
-  }
+  },
 ];

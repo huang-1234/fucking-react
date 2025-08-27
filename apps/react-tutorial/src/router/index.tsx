@@ -4,6 +4,10 @@ import MainLayout from '../layouts/MainLayout';
 import React15Sandbox from '../sandbox/React15Sandbox';
 import APIVersionLayout from '../components/APIVersionLayout';
 import loadable from '@loadable/component';
+// 富文本
+const RichTextHomePage = loadable(() => import('@/pages/RichTextHomePage'));
+// Markdown渲染
+const MarkdownLearningPage = loadable(() => import('@/pages/RenderMD'));
 
 // 页面组件懒加载
 const HomePage = loadable(() => import('@/pages/HomePage'));
@@ -407,6 +411,28 @@ const routerBrowser = createBrowserRouter([
             <PerformancePage />
           </Suspense>
         )
+      },
+      // 富文本路由
+      {
+        path: 'rich-text',
+        children: [
+          {
+            path: 'markdown',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <MarkdownLearningPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'quill',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <RichTextHomePage />
+              </Suspense>
+            )
+          }
+        ]
       }
     ]
   }
