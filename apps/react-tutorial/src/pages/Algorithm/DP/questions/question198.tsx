@@ -95,7 +95,7 @@ const HouseRobberQuestion: React.FC = () => {
                     <div><Text strong>{house}</Text></div>
                   </Card>
                 ))}
-                <Card size="small" style={{ width: 120 }}>
+                <Card size="small" style={{ width: 180 }}>
                   <Space>
                     <InputNumber
                       min={0}

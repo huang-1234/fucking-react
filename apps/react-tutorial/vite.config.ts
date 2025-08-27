@@ -4,6 +4,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import viteImagemin from 'vite-plugin-imagemin';
 import path from 'path';
 import { cdnResources } from '../../global/cdn/base';
+import { codeInspectorPlugin } from 'code-inspector-plugin';
 // console.log('cdnResources', cdnResources)
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,6 +21,10 @@ export default defineConfig({
     viteImagemin({ // 图片压缩
       mozjpeg: { quality: 50 },
       pngquant: { quality: [0.8, 0.9] },
+    }),
+    codeInspectorPlugin({
+      bundler: 'vite',
+      editor: 'cursor',
     }),
   ],
   css: {
