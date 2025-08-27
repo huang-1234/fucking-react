@@ -5,12 +5,15 @@ import zhCN from 'antd/locale/zh_CN'
 import routerBrowser from './router'
 // 使用自定义代码高亮样式
 import './styles/code-highlight.less'
+import { MonitorProvider } from './context/Monitor'
 function App() {
   return (
     <ConfigProvider locale={zhCN}>
-      <Suspense fallback={<div>加载中...</div>}>
-        <RouterProvider router={routerBrowser} />
-      </Suspense>
+      <MonitorProvider>
+        <Suspense fallback={<div>加载中...</div>}>
+          <RouterProvider router={routerBrowser} />
+        </Suspense>
+      </MonitorProvider>
     </ConfigProvider>
   )
 }

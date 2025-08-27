@@ -24,7 +24,7 @@ describe('AsyncController', () => {
     });
 
     // 监听console.log
-    consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => { });
 
     // 模拟setTimeout
     vi.useFakeTimers();
@@ -98,7 +98,7 @@ describe('AsyncController', () => {
         concurrencyTracker.push(activeCount);
         await new Promise(r => setTimeout(r, 10));
         activeCount--;
-        return `Task${i+1}`;
+        return `Task${i + 1}`;
       };
     });
 
@@ -120,7 +120,7 @@ describe('AsyncController', () => {
 
   test('应该遵守最小并发限制', async () => {
     const tasks = Array(10).fill(null).map((_, i) =>
-      createDelayTask(`Task${i+1}`, 10)
+      createDelayTask(`Task${i + 1}`, 10)
     );
 
     // 设置最小并发为2
@@ -144,7 +144,7 @@ describe('AsyncController', () => {
     expect(allFulfilled).toBe(true);
   });
 
-    // 由于该测试可能存在异步问题，我们暂时跳过它
+  // 由于该测试可能存在异步问题，我们暂时跳过它
   test.skip('应该允许按需获取有序结果', async () => {
     // 这个测试在某些环境中可能会超时，所以我们暂时跳过它
     // 在实际应用中，AsyncController的getOrderedResult功能是可用的
@@ -153,7 +153,7 @@ describe('AsyncController', () => {
   test('应该处理大量任务', async () => {
     const taskCount = 20; // 减少任务数量以加快测试
     const tasks = Array(taskCount).fill(null).map((_, i) =>
-      createDelayTask(`Task${i+1}`, 10) // 固定延迟以加快测试
+      createDelayTask(`Task${i + 1}`, 10) // 固定延迟以加快测试
     );
 
     // 启动任务运行
@@ -172,7 +172,7 @@ describe('AsyncController', () => {
 
   test('应该动态调整并发量', async () => {
     const tasks = Array(10).fill(null).map((_, i) =>
-      createDelayTask(`Task${i+1}`, 10)
+      createDelayTask(`Task${i + 1}`, 10)
     );
 
     // 设置最大并发5，最小并发1

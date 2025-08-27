@@ -4,6 +4,10 @@ import { CodeOutlined, QuestionCircleOutlined, LineChartOutlined, ShoppingOutlin
 import { HouseRobberQuestion } from './questions';
 import ExactKnapsackQuestion from './Visualizer/question2548';
 import styles from './index.module.less';
+import LongestCommonSubstringVisualizer from './questions/question_findLongestCommonSubstring';
+import ClimbStairsVisualizer from './questions/question70';
+import MinPathSumVisualizer from './questions/question64';
+import LongestIncreasingSubsequenceVisualizer from './questions/question300';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -109,17 +113,42 @@ const DynamicProgrammingPage: React.FC = () => {
         </TabPane>
 
         <TabPane
-          tab={<span><CodeOutlined />打家劫舍问题</span>}
+          tab={<span><CodeOutlined />爬楼梯问题</span>}
           key="2"
+        >
+          <ClimbStairsVisualizer />
+        </TabPane>
+
+        <TabPane
+          tab={<span><CodeOutlined />最小路径和</span>}
+          key="3"
+        >
+          <MinPathSumVisualizer />
+        </TabPane>
+
+        <TabPane
+          tab={<span><CodeOutlined />最长递增子序列</span>}
+          key="4"
+        >
+          <LongestIncreasingSubsequenceVisualizer />
+        </TabPane>
+
+        <TabPane
+          tab={<span><CodeOutlined />打家劫舍问题</span>}
+          key="5"
         >
           <HouseRobberQuestion />
         </TabPane>
 
         <TabPane
           tab={<span><ShoppingOutlined />恰好装满背包问题</span>}
-          key="3"
+          key="6"
         >
           <ExactKnapsackQuestion />
+        </TabPane>
+
+        <TabPane tab="最长公共子串" key="7">
+          <LongestCommonSubstringVisualizer />
         </TabPane>
       </Tabs>
     </div>

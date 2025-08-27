@@ -1,0 +1,30 @@
+.code-display-card {
+  margin-bottom: 20px;
+
+  .code-display-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .expand-button {
+      margin-left: auto;
+    }
+  }
+
+  .code-container {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+
+    &.collapsed {
+      max-height: 300px;
+    }
+
+    &.expanded {
+      max-height: 1000px;
+    }
+
+    pre {
+      margin: 0;
+    }
+  }
+}

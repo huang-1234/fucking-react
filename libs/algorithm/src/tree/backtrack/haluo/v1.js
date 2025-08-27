@@ -17,33 +17,33 @@ function findTargetSum(array, target) {
     }
   }
   // const memo = new Map()
-  function dfs(sum, sumArr = []) {
+  function dfs(sum, path = []) {
     if (sum === target) {
-      ans.push(sumArr)
-      sumArr = [];
+      ans.push(path)
+      path = [];
       return;
     }
     for (let i = 0;i < targetIdx;i++) {
       const currentEle = arraySort[i];
-      if (!sumArr.includes(currentEle)) {
+      if (!path.includes(currentEle)) {
         if (currentEle + sum === target) {
-          sumArr.push(currentEle);
+          path.push(currentEle);
           sum += currentEle;
-          // console.log('sumArr 2', sumArr, currentEle, sum)
-          ans.push(sumArr);
-          sumArr = [];
+          // console.log('path 2', path, currentEle, sum)
+          ans.push(path);
+          path = [];
           return;
         } else if (currentEle + sum < target) {
-          sumArr.push(currentEle)
+          path.push(currentEle)
           sum += currentEle;
-          dfs(sum, sumArr)
+          dfs(sum, path)
         }
       }
       return;
     }
   }
-  let sum = 0, sumArr = []
-  dfs(sum, sumArr);
+  let sum = 0, path = []
+  dfs(sum, path);
 
   return ans;
 }
