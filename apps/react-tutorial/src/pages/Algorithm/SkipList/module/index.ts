@@ -4,7 +4,7 @@
  */
 
 // 核心算法实现
-export { SkipList, SkipListNode } from '../../../../../libs/algorithm/src/SkipList/al/SkipList';
+export { SkipList, SkipListNode } from '@fucking-algorithm/algorithm/SkipList/al/SkipList';
 
 // 可视化组件
 export { default as SkipListVisualizer } from '../visualizer/SkipListVisualizer';
