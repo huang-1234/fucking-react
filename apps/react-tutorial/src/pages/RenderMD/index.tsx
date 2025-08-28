@@ -17,6 +17,7 @@ import styles from './index.module.less';
 // 导入示例Markdown内容
 import exampleMarkdown from '@/pages/RenderMD/docs/design.md?raw';
 import mermaidExample from './examples/mermaid-example.md?raw';
+import simpleMermaidExample from './examples/simple-mermaid.md?raw';
 // import exampleMarkdown from './tech.md?raw';
 
 const { Content, Sider } = Layout;
@@ -66,11 +67,18 @@ const MarkdownLearningPage: React.FC = () => {
     setHeadings(newHeadings);
   };
 
-  // 加载Mermaid示例
+    // 加载Mermaid示例
   const loadMermaidExample = () => {
     setContent(mermaidExample);
     setActiveTab('preview');
     message.success('已加载Mermaid图表示例');
+  };
+
+  // 加载简单Mermaid示例
+  const loadSimpleMermaidExample = () => {
+    setContent(simpleMermaidExample);
+    setActiveTab('preview');
+    message.success('已加载简单Mermaid图表示例');
   };
 
   // 加载原始示例
@@ -127,8 +135,11 @@ const MarkdownLearningPage: React.FC = () => {
 
           <Card title="示例文档" style={{ marginTop: '16px' }}>
             <Space direction="vertical" style={{ width: '100%' }}>
-              <Button type="primary" onClick={loadMermaidExample} block>
-                加载Mermaid图表示例
+              <Button type="primary" onClick={loadSimpleMermaidExample} block>
+                加载简单Mermaid示例
+              </Button>
+              <Button onClick={loadMermaidExample} block>
+                加载完整Mermaid图表示例
               </Button>
               <Button onClick={loadOriginalExample} block>
                 加载原始示例

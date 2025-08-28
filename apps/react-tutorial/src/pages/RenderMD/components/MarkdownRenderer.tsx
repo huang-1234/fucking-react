@@ -151,6 +151,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       if (language === 'mermaid') {
         // 使用当前文档的主题
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        console.log('Mermaid代码块检测到:', { codeLength: codeString.length, theme: currentTheme });
         return <MermaidDiagram chart={codeString} theme={currentTheme === 'dark' ? 'dark' : 'default'} />;
       }
 
