@@ -6,7 +6,7 @@ import styles from './MermaidDiagram.module.less';
 
 interface MermaidDiagramProps {
   chart: string;
-  theme?: 'default' | 'dark' | 'forest' | 'neutral';
+  theme?: 'default' | 'dark' | 'forest' | 'neutral' | 'base' | 'null';
 }
 
 const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default' }) => {
@@ -31,24 +31,24 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
   }, [theme]); // 主题变化时重新初始化
 
       // 将渲染图表的逻辑提取为useCallback以提高可读性
-  const renderChart = useCallback(async (chartContent: string, chartTheme: string) => {
+  const renderChart = useCallback(async (chartContent: string, chartTheme: MermaidDiagramProps['theme']) => {
     if (!chartContent) return;
-    
+
     performanceMonitor.start('mermaid_render');
     setLoading(true);
     setError(null);
-    
+
     try {
       // 清理图表代码，去除前后的```mermaid和```
       const cleanChart = chartContent.replace(/```mermaid\n?|```$/g, '').trim();
-      
+
       // 添加调试日志
-      console.log('Mermaid图表渲染中:', { 
+      console.log('Mermaid图表渲染中:', {
         chartLength: cleanChart.length,
-        chartId: chartId.current, 
-        theme: chartTheme 
+        chartId: chartId.current,
+        theme: chartTheme
       });
-      
+
       // 重新初始化mermaid以确保配置生效
       mermaid.initialize({
         startOnLoad: false,
@@ -62,17 +62,17 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
         // 添加更多调试信息
         logLevel: 'debug',
       });
-      
+
       // 使用最简单的图表进行测试
       if (cleanChart.trim() === '') {
         throw new Error('图表代码为空');
       }
-      
+
       // 渲染Mermaid图表
       const { svg } = await mermaid.render(chartId.current, cleanChart);
-      
+
       console.log('Mermaid渲染成功:', { svgLength: svg.length });
-      
+
       setSvg(svg);
       setError(null);
     } catch (err) {
@@ -84,18 +84,18 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
       performanceMonitor.end('mermaid_render');
     }
   }, []);
-  
+
   // 在chart或theme变化时触发渲染
   useEffect(() => {
     let isMounted = true;
-    
+
     // 使用setTimeout确保在渲染周期之后调用
     const timerId = setTimeout(() => {
       if (isMounted) {
         renderChart(chart, theme);
       }
     }, 100); // 增加延时，确保DOM已经准备好
-    
+
     // 清理函数
     return () => {
       isMounted = false;
