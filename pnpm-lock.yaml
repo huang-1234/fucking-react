@@ -11,6 +11,9 @@ importers:
       immer:
         specifier: ^10.1.1
         version: 10.1.1
+      mermaid:
+        specifier: ^11.10.1
+        version: 11.10.1
     devDependencies:
       '@types/lodash-es':
         specifier: 4.17.12

@@ -5,7 +5,9 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeExternalLinks from 'rehype-external-links';
 import rehypeRaw from 'rehype-raw';
 import CodeBlock from './CodeBlock';
+import MermaidDiagram from './MermaidDiagram';
 import type { MarkdownRendererProps, CustomComponents } from '../types/markdown';
+// 不需要直接导入主题，因为我们使用DOM属性检测
 import type { Heading } from '../types/markdown';
 import { sanitizeSchema } from '../utils/sanitizeSchema';
 import { markdownConfig } from '../config/markdownConfig';
@@ -140,15 +142,28 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         {children}
       </a>
     ),
-    code: ({ inline, className, children, ...props }) => (
-      <CodeBlock
-        inline={inline}
-        className={className}
-        {...props}
-      >
-        {children}
-      </CodeBlock>
-    ),
+    code: ({ inline, className, children, ...props }) => {
+      const match = /language-(\w+)/.exec(className || '');
+      const language = match ? match[1] : '';
+      const codeString = String(children).replace(/\n$/, '');
+
+      // 检测是否为Mermaid图表
+      if (language === 'mermaid') {
+        // 使用当前文档的主题
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        return <MermaidDiagram chart={codeString} theme={currentTheme === 'dark' ? 'dark' : 'default'} />;
+      }
+
+      return (
+        <CodeBlock
+          inline={inline}
+          className={className}
+          {...props}
+        >
+          {children}
+        </CodeBlock>
+      );
+    },
     table: ({ children, ...props }) => (
       <div className="overflow-x-auto my-6">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" {...props}>

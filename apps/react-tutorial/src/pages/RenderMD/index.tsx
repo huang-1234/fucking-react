@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { produce } from 'immer';
 import { performanceMonitor } from './tools/performance';
-import { Layout, Card, Typography, Tabs, message } from 'antd';
+import { Layout, Card, Typography, Tabs, message, Button, Space } from 'antd';
 import { BookOutlined, SettingOutlined, EditOutlined, LineChartOutlined } from '@ant-design/icons';
 import PerformancePanel from './components/PerformancePanel';
 import MarkdownRenderer from './components/MarkdownRenderer';
@@ -15,7 +15,9 @@ import MonacoEditor from '@monaco-editor/react';
 import styles from './index.module.less';
 
 // 导入示例Markdown内容
-import exampleMarkdown from './tech.md?raw';
+import exampleMarkdown from '@/pages/RenderMD/docs/design.md?raw';
+import mermaidExample from './examples/mermaid-example.md?raw';
+// import exampleMarkdown from './tech.md?raw';
 
 const { Content, Sider } = Layout;
 const { Title } = Typography;
@@ -64,6 +66,20 @@ const MarkdownLearningPage: React.FC = () => {
     setHeadings(newHeadings);
   };
 
+  // 加载Mermaid示例
+  const loadMermaidExample = () => {
+    setContent(mermaidExample);
+    setActiveTab('preview');
+    message.success('已加载Mermaid图表示例');
+  };
+
+  // 加载原始示例
+  const loadOriginalExample = () => {
+    setContent(exampleMarkdown);
+    setActiveTab('preview');
+    message.success('已加载原始示例');
+  };
+
   // 渲染Markdown内容
   const renderMarkdownContent = () => {
     // 根据配置决定是否使用虚拟滚动
@@ -103,11 +119,22 @@ const MarkdownLearningPage: React.FC = () => {
         }}
         className={styles.rightSidebar}
       >
-        <Title level={4} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
-          控制面板
-        </Title>
+                  <Title level={4} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
+            控制面板
+          </Title>
 
-        <ControlPanel config={config} onChange={handleConfigChange} />
+          <ControlPanel config={config} onChange={handleConfigChange} />
+
+          <Card title="示例文档" style={{ marginTop: '16px' }}>
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Button type="primary" onClick={loadMermaidExample} block>
+                加载Mermaid图表示例
+              </Button>
+              <Button onClick={loadOriginalExample} block>
+                加载原始示例
+              </Button>
+            </Space>
+          </Card>
       </Sider>
       <Layout>
         <Content className={styles.content} style={{ background: themeConfig.backgroundColor }}>
@@ -191,7 +218,7 @@ const MarkdownLearningPage: React.FC = () => {
         className={styles.sidebar}
       >
         <Title level={3} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
-          Markdown渲染学习
+          MD渲染
         </Title>
 
         {config.enableToc && headings.length > 0 && (
