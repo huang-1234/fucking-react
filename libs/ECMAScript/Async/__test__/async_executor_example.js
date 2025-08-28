@@ -1,7 +1,7 @@
 /**
  * 异步执行器使用示例
  */
-import { AsyncExecutor } from './async_executor.js';
+import { AsyncExecutor } from '../async_executor.js';
 
 // 模拟一个异步API请求函数
 const mockFetch = async (url, options = {}, { signal } = {}) => {
