@@ -94,25 +94,6 @@ const MarkdownLearningPage: React.FC = () => {
 
   return (
     <Layout className={styles.markdownPage}>
-      <Sider
-        width={300}
-        theme={theme === 'dark' ? 'dark' : 'light'}
-        style={{
-          background: themeConfig.backgroundColor,
-        }}
-        className={styles.sidebar}
-      >
-        <Title level={3} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
-          Markdown渲染学习
-        </Title>
-
-        {config.enableToc && headings.length > 0 && (
-          <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
-            <TableOfContents headings={headings} affixed={false} />
-          </Card>
-        )}
-      </Sider>
-
       {/* 右侧控制面板 */}
       <Sider
         width={300}
@@ -128,7 +109,6 @@ const MarkdownLearningPage: React.FC = () => {
 
         <ControlPanel config={config} onChange={handleConfigChange} />
       </Sider>
-
       <Layout>
         <Content className={styles.content} style={{ background: themeConfig.backgroundColor }}>
           <Card
@@ -202,6 +182,24 @@ const MarkdownLearningPage: React.FC = () => {
           </Card>
         </Content>
       </Layout>
+      <Sider
+        width={240}
+        theme={theme === 'dark' ? 'dark' : 'light'}
+        style={{
+          background: themeConfig.backgroundColor,
+        }}
+        className={styles.sidebar}
+      >
+        <Title level={3} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
+          Markdown渲染学习
+        </Title>
+
+        {config.enableToc && headings.length > 0 && (
+          <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
+            <TableOfContents headings={headings} affixed={false} />
+          </Card>
+        )}
+      </Sider>
     </Layout>
   );
 };
