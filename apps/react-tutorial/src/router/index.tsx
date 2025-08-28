@@ -24,6 +24,8 @@ const GraphPage = loadable(() => import('@/pages/Algorithm/Graph'));
 const ProbabilityTheoryPage = loadable(() => import('@/pages/Algorithm/ProbabilityTheory'));
 const QueuePage = loadable(() => import('@/pages/Algorithm/Queue'));
 const DPPage = loadable(() => import('@/pages/Algorithm/DP'));
+/** SkipList */
+const SkipListPage = loadable(() => import('@/pages/Algorithm/SkipList'));
 
 // React 15 组件
 const React15Page = loadable(() => import('@/pages/React15'));
@@ -352,6 +354,15 @@ const routerBrowser = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <DPPage />
+              </Suspense>
+            )
+          },
+          // SkipList
+          {
+            path: 'skiplist',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <SkipListPage />
               </Suspense>
             )
           }

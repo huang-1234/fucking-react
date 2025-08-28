@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Card, Row, Col, Typography, Button, Input, Space, message, Divider } from 'antd';
 import { PlayCircleOutlined, PlusOutlined, DeleteOutlined, SearchOutlined, ClearOutlined } from '@ant-design/icons';
-import { SkipList, SkipListNode } from '../../../../../libs/algorithm/src/SkipList/al/SkipList';
+import { SkipList, SkipListNode } from '@fucking-algorithm/algorithm/SkipList/al/SkipList';
 import SkipListVisualizer from './visualizer/SkipListVisualizer';
 import SkipListConfigPanel from './components/SkipListConfigPanel';
 import SkipListDemo from './components/SkipListDemo';
@@ -329,4 +329,4 @@ const SkipListPage: React.FC = () => {
   );
 };
 
-export default SkipListPage;
+export default React.memo(SkipListPage);

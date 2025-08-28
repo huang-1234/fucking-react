@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { SkipList, SkipListNode } from '../../../../../libs/algorithm/src/SkipList/al/SkipList';
+import { SkipList, SkipListNode } from '@fucking-algorithm/algorithm/SkipList/al/SkipList';
 
 interface SkipListConfig {
   maxLevel: number;
@@ -206,7 +206,7 @@ const SkipListVisualizer: React.FC<SkipListVisualizerProps> = ({
 
       nodeElements
         .selectAll('circle')
-        .style('fill', d =>
+        .style('fill', (d) =>
           pathValues.has(d.value) ? config.highlightColor :
           highlightedNodes.has(d.value) ? config.highlightColor : config.nodeColor
         );
