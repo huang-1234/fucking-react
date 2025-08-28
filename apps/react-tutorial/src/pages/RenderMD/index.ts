@@ -1,6 +1,5 @@
+import React from 'react';
 import MarkdownLearningPage from './index.tsx';
-
-export default MarkdownLearningPage;
 
 // 导出组件
 export { default as MarkdownRenderer } from './components/MarkdownRenderer';
@@ -24,3 +23,5 @@ export type {
   MarkdownTheme,
   MarkdownConfig
 } from './types/markdown';
+
+export default React.memo(MarkdownLearningPage);
