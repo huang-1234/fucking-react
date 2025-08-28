@@ -72,14 +72,9 @@ const VirtualizedMarkdown: React.FC<VirtualizedMarkdownProps> = (props: Virtuali
     }
 
     performanceMonitor.end('content_chunking');
-  }, [content]);
+  }, [content, optimizeChunks]);
 
-  // 如果内容很少，直接渲染完整内容
-  if (lines.length === 1) {
-    return <MarkdownRenderer content={content} {...markdownProps} />;
-  }
-
-  // 行渲染器
+  // 创建行渲染器组件 - 移到条件判断之前
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
     <div style={style} className={styles.virtualRow}>
       <MarkdownRenderer
@@ -89,6 +84,11 @@ const VirtualizedMarkdown: React.FC<VirtualizedMarkdownProps> = (props: Virtuali
       />
     </div>
   );
+
+  // 如果内容很少，直接渲染完整内容
+  if (lines.length === 1) {
+    return <MarkdownRenderer content={content} {...markdownProps} />;
+  }
 
   return (
     <div className={styles.virtualContainer}>

@@ -211,6 +211,19 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     return plugins;
   }, [allowHtml, linkTarget]);
 
+  // 渲染计时 - 将hooks移到条件判断之前
+  useEffect(() => {
+    // 只有在非缓存模式下才需要计时
+    if (!cachedHtml) {
+      performanceMonitor.start('markdown_render');
+
+      // 在组件渲染完成后结束计时
+      if (markdownRef.current) {
+        performanceMonitor.end('markdown_render');
+      }
+    }
+  }, [cachedHtml]);
+
   // 如果有缓存，直接使用缓存的HTML
   if (cachedHtml) {
     return (
@@ -220,16 +233,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       />
     );
   }
-
-  // 开始渲染计时
-  performanceMonitor.start('markdown_render');
-
-  // 渲染完成后结束计时
-  useEffect(() => {
-    if (!cachedHtml && markdownRef.current) {
-      performanceMonitor.end('markdown_render');
-    }
-  }, [cachedHtml]);
 
   return (
     <div ref={markdownRef} className={`${styles.markdownContainer} ${className}`}>

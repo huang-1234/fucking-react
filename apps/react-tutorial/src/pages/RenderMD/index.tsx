@@ -90,7 +90,7 @@ const MarkdownLearningPage: React.FC = () => {
     );
   };
 
-  console.log(config, 'config');
+  // 移除调试日志
 
   return (
     <Layout className={styles.markdownPage}>
@@ -106,13 +106,27 @@ const MarkdownLearningPage: React.FC = () => {
           Markdown渲染学习
         </Title>
 
-        <ControlPanel config={config} onChange={handleConfigChange} />
-
         {config.enableToc && headings.length > 0 && (
           <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
             <TableOfContents headings={headings} affixed={false} />
           </Card>
         )}
+      </Sider>
+
+      {/* 右侧控制面板 */}
+      <Sider
+        width={300}
+        theme={theme === 'dark' ? 'dark' : 'light'}
+        style={{
+          background: themeConfig.backgroundColor,
+        }}
+        className={styles.rightSidebar}
+      >
+        <Title level={4} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
+          控制面板
+        </Title>
+
+        <ControlPanel config={config} onChange={handleConfigChange} />
       </Sider>
 
       <Layout>
@@ -174,7 +188,7 @@ const MarkdownLearningPage: React.FC = () => {
                 key="settings"
               >
                 <Card title="Markdown渲染设置" className={styles.settingsContainer}>
-                  <ControlPanel config={config} onChange={handleConfigChange} />
+                  <p>您可以在右侧控制面板中调整Markdown渲染设置。</p>
                 </Card>
               </TabPane>
 
@@ -192,4 +206,4 @@ const MarkdownLearningPage: React.FC = () => {
   );
 };
 
-export default MarkdownLearningPage;
+export default React.memo(MarkdownLearningPage);

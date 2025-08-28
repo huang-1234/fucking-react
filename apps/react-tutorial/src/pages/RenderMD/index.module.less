@@ -25,10 +25,28 @@
 
 .content {
   margin-left: 300px;
+  margin-right: 300px;
   padding: 24px;
   transition: all 0.3s;
   flex: 1;
   min-width: 0;
+
+  // 确保不遮挡系统菜单
+  padding-top: 60px;
+}
+
+.rightSidebar {
+  width: 300px;
+  height: 100vh;
+  overflow: auto;
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 16px;
+  transition: all 0.3s;
+  z-index: 10;
+  border-left: 1px solid #e8e8e8;
 
   // 确保不遮挡系统菜单
   padding-top: 60px;
@@ -57,7 +75,7 @@
 
 // 响应式布局
 @media (max-width: 768px) {
-  .sidebar {
+  .sidebar, .rightSidebar {
     width: 100%;
     position: static;
     height: auto;
@@ -66,6 +84,7 @@
 
   .content {
     margin-left: 0;
+    margin-right: 0;
     padding-top: 16px;
   }
 
