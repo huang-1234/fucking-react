@@ -54,11 +54,18 @@ console.log('删除后数据:', skipList.toArray());`,
   {
     title: '查看层级结构',
     description: '观察跳表的多层结构',
-    code: (v?: string, idx?: number) => `const levels = skipList.getLevels();
-levels.forEach((level, index) => {
-  const values = level.map(({node}) => node.value);
-  console.log(\`第\${idx || index}层:\`, \`\${v || values.join(' -> ')}\`);
-});`,
+    code: codeGeneLevel,
     explanation: '跳表的核心优势在于多层索引结构。上层作为下层的"快速通道"，大大减少了搜索时需要遍历的节点数量。',
   },
 ];
+
+function codeGeneLevel(v?: string, idx?: number) {
+  const idxString = `第${idx}层:`;
+  const vString = `${v}`
+
+  return `const levels = skipList.getLevels();
+levels.forEach((level, index) => {
+  const values = level.map(({node}) => node.value);
+  console.log(\`${idxString} \${${vString}}\`);
+});`
+}
