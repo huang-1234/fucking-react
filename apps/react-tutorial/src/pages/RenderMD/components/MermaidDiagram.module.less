@@ -1,10 +1,102 @@
-.mermaidContainer {
+.mermaidWrapper {
+  position: relative;
   margin: 20px 0;
-  overflow-x: auto;
-  text-align: center;
+  border-radius: 6px;
+  background-color: var(--md-code-bg-color, #f6f8fa);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.controlButtons {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+.contentContainer {
+  display: flex;
+  min-height: 150px;
+
+  &.view-code {
+    flex-direction: row;
+
+    .codeContainer {
+      flex: 1;
+    }
+
+    .mermaidContainer {
+      display: none;
+    }
+  }
+
+  &.view-diagram {
+    flex-direction: row;
+
+    .codeContainer {
+      display: none;
+    }
+
+    .mermaidContainer {
+      flex: 1;
+    }
+  }
+
+  &.view-both {
+    flex-direction: row;
+
+    .codeContainer {
+      flex: 1;
+      border-right: 1px solid #e8e8e8;
+    }
+
+    .mermaidContainer {
+      flex: 1;
+    }
+  }
+}
+
+.codeContainer {
+  position: relative;
+  overflow: auto;
   background-color: var(--md-code-bg-color, #f6f8fa);
   padding: 16px;
-  border-radius: 6px;
+}
+
+.codeBlock {
+  margin: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre;
+
+  code {
+    display: block;
+  }
+}
+
+.copyButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.mermaidContainer {
+  overflow-x: auto;
+  text-align: center;
+  padding: 16px;
 
   svg {
     max-width: 100%;
@@ -57,6 +149,23 @@
 
 // 深色主题
 :global([data-theme="dark"]) {
+  .mermaidWrapper {
+    background-color: var(--md-code-bg-color, #161b22);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .codeContainer {
+    background-color: var(--md-code-bg-color, #161b22);
+  }
+
+  .contentContainer {
+    &.view-both {
+      .codeContainer {
+        border-right-color: #30363d;
+      }
+    }
+  }
+
   .mermaidContainer {
     background-color: var(--md-code-bg-color, #161b22);
   }

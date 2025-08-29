@@ -54,6 +54,13 @@ if (execPromise) {
 
 // 问题：找出一对字符串的相同的最长子串，aaabbbccc,abbbcd => abbbc
 
+/**
+ * @description 找出两个字符串的最长公共子串
+ * @see https://leetcode.cn/problems/longest-common-substring/
+ * @param {string} str1
+ * @param {string} str2
+ * @returns {string}
+ */
 function findLongestCommonSubstring(str1, str2) {
   const m = str1.length;
   const n = str2.length;

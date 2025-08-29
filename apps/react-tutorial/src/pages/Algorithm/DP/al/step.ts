@@ -28,4 +28,5 @@ export interface StepCbLIS extends StepCbParamsBase {
 /**
  * 步骤回调函数类型定义
  */
-export type StepCallbackPathSum = (params: StepCbPathSum | StepCbLIS) => void;
+export type StepCallbackPathSum = (params: StepCbPathSum) => void;
+export type StepCallbackLIS = (params: StepCbLIS) => void;
