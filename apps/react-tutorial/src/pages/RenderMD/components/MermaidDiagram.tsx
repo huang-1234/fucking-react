@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mermaid from 'mermaid';
 import { Spin, Button, Tooltip, Dropdown, Menu, Typography, Space } from 'antd';
-import { EyeOutlined, AppstoreOutlined, BgColorsOutlined, CodeOutlined, PictureOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons';
+const { Text } = Typography;
+import { EyeOutlined, AppstoreOutlined, BgColorsOutlined, CodeOutlined, PictureOutlined, CopyOutlined, CheckOutlined, DownOutlined } from '@ant-design/icons';
 import { performanceMonitor } from '../tools/performance';
 import styles from './MermaidDiagram.module.less';
 
@@ -63,7 +64,7 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'code' | 'diagram' | 'both'>(initialView);
   const [hovering, setHovering] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [, setSelectedTemplate] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [cleanChart, setCleanChart] = useState<string>('');
   const mermaidRef = useRef<HTMLDivElement>(null);
@@ -191,47 +192,122 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
   // 模板菜单
   const templateMenu = (
     <Menu onClick={({ key }) => handleTemplateChange(key.toString())}>
-      <Menu.Item key="flowchart">流程图</Menu.Item>
-      <Menu.Item key="sequence">时序图</Menu.Item>
-      <Menu.Item key="classDiagram">类图</Menu.Item>
-      <Menu.Item key="stateDiagram">状态图</Menu.Item>
-      <Menu.Item key="gantt">甘特图</Menu.Item>
-      <Menu.Item key="pie">饼图</Menu.Item>
-      <Menu.Item key="er">ER图</Menu.Item>
+      <Menu.Item key="flowchart">
+        <Space>
+          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/flowchart.svg" width="16" height="16" alt="流程图" />
+          <span>流程图</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="sequence">
+        <Space>
+          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/sequence.svg" width="16" height="16" alt="时序图" />
+          <span>时序图</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="classDiagram">
+        <Space>
+          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/class.svg" width="16" height="16" alt="类图" />
+          <span>类图</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="stateDiagram">
+        <Space>
+          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/state.svg" width="16" height="16" alt="状态图" />
+          <span>状态图</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="gantt">
+        <Space>
+          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/gantt.svg" width="16" height="16" alt="甘特图" />
+          <span>甘特图</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="pie">
+        <Space>
+          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/pie.svg" width="16" height="16" alt="饼图" />
+          <span>饼图</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="er">
+        <Space>
+          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/er.svg" width="16" height="16" alt="ER图" />
+          <span>ER图</span>
+        </Space>
+      </Menu.Item>
     </Menu>
   );
 
   // 主题菜单
   const themeMenu = (
     <Menu onClick={({ key }) => handleThemeChange(key as MermaidDiagramProps['theme'])}>
-      <Menu.Item key="default">默认主题</Menu.Item>
-      <Menu.Item key="dark">暗色主题</Menu.Item>
-      <Menu.Item key="forest">森林主题</Menu.Item>
-      <Menu.Item key="neutral">中性主题</Menu.Item>
-      <Menu.Item key="base">基础主题</Menu.Item>
+      <Menu.Item key="default">
+        <Space>
+          <div className={styles.colorSwatch} style={{ backgroundColor: '#ffffff', border: '1px solid #e8e8e8' }}></div>
+          <span>默认主题</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="dark">
+        <Space>
+          <div className={styles.colorSwatch} style={{ backgroundColor: '#282a36' }}></div>
+          <span>暗色主题</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="forest">
+        <Space>
+          <div className={styles.colorSwatch} style={{ backgroundColor: '#cfe8cf' }}></div>
+          <span>森林主题</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="neutral">
+        <Space>
+          <div className={styles.colorSwatch} style={{ backgroundColor: '#f9f9f9' }}></div>
+          <span>中性主题</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="base">
+        <Space>
+          <div className={styles.colorSwatch} style={{ backgroundColor: '#eaf2fb' }}></div>
+          <span>基础主题</span>
+        </Space>
+      </Menu.Item>
     </Menu>
   );
 
-  // 视图模式按钮
-  const renderViewModeButton = () => {
-    if (viewMode === 'code') {
-      return (
-        <Tooltip title="切换到图表模式">
-          <Button icon={<PictureOutlined />} onClick={() => handleViewModeChange('diagram')} />
-        </Tooltip>
-      );
-    } else if (viewMode === 'diagram') {
-      return (
-        <Tooltip title="切换到代码模式">
-          <Button icon={<CodeOutlined />} onClick={() => handleViewModeChange('code')} />
-        </Tooltip>
-      );
-    } else {
-      return (
-        <Tooltip title="切换到单视图模式">
-          <Button icon={<EyeOutlined />} onClick={() => handleViewModeChange('diagram')} />
-        </Tooltip>
-      );
+  // 视图模式菜单
+  const viewModeMenu = (
+    <Menu onClick={({ key }) => handleViewModeChange(key as 'code' | 'diagram' | 'both')}>
+      <Menu.Item key="code">
+        <Space>
+          <CodeOutlined />
+          <span>仅显示代码</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="diagram">
+        <Space>
+          <PictureOutlined />
+          <span>仅显示图表</span>
+        </Space>
+      </Menu.Item>
+      <Menu.Item key="both">
+        <Space>
+          <EyeOutlined />
+          <span>代码和图表</span>
+        </Space>
+      </Menu.Item>
+    </Menu>
+  );
+
+  // 获取当前视图模式的图标
+  const getViewModeIcon = () => {
+    switch (viewMode) {
+      case 'code':
+        return <CodeOutlined />;
+      case 'diagram':
+        return <PictureOutlined />;
+      case 'both':
+        return <EyeOutlined />;
+      default:
+        return <EyeOutlined />;
     }
   };
 
@@ -262,16 +338,32 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
       {/* 控制按钮组 */}
       <div className={`${styles.controlButtons} ${hovering ? styles.visible : ''}`}>
         <Space>
-          {renderViewModeButton()}
-          <Dropdown overlay={templateMenu} placement="bottomRight">
-            <Tooltip title="选择模板">
-              <Button icon={<TemplateOutlined />} />
-            </Tooltip>
+          <Dropdown overlay={viewModeMenu} trigger={['click']} placement="bottomRight">
+            <Button className={styles.controlButton} type="text">
+              <Space>
+                {getViewModeIcon()}
+                <span className={styles.buttonText}>视图</span>
+                <DownOutlined className={styles.dropdownIcon} />
+              </Space>
+            </Button>
           </Dropdown>
-          <Dropdown overlay={themeMenu} placement="bottomRight">
-            <Tooltip title="选择主题">
-              <Button icon={<BgColorsOutlined />} />
-            </Tooltip>
+          <Dropdown overlay={templateMenu} trigger={['click']} placement="bottomRight">
+            <Button className={styles.controlButton} type="text">
+              <Space>
+                <AppstoreOutlined />
+                <span className={styles.buttonText}>模板</span>
+                <DownOutlined className={styles.dropdownIcon} />
+              </Space>
+            </Button>
+          </Dropdown>
+          <Dropdown overlay={themeMenu} trigger={['click']} placement="bottomRight">
+            <Button className={styles.controlButton} type="text">
+              <Space>
+                <BgColorsOutlined />
+                <span className={styles.buttonText}>颜色</span>
+                <DownOutlined className={styles.dropdownIcon} />
+              </Space>
+            </Button>
           </Dropdown>
         </Space>
       </div>
