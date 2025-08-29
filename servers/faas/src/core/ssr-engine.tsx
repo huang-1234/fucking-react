@@ -1,20 +1,20 @@
 /**
- * SSR渲染中间件
- * 处理React服务端渲染
+ * SSR 渲染引擎
+ * 抽离核心渲染逻辑，支持不同环境复用
  */
-import { Context, Next } from 'koa';
-import path from 'path';
-import fs from 'fs';
 import { Readable } from 'stream';
 import { renderToPipeableStream } from 'react-dom/server';
-import { createDOMEnvironment } from '../dom-simulator';
-import { Router, matchRoute } from '../../shared/router';
-import App from '../../shared/App';
-import { AppProvider, fetchInitialState } from '../../shared/store';
+import React from 'react';
+import path from 'path';
+import fs from 'fs';
+import { createDOMEnvironment } from './dom-simulator';
+import { Router, matchRoute } from '../shared/router';
+import App from '../shared/App';
+import { AppProvider, fetchInitialState } from '../shared/store';
 import pkg from 'react-helmet-async';
 const { HelmetProvider } = pkg;
 import type { HelmetServerState } from 'react-helmet-async';
-import { getCollectedStyles, clearCollectedStyles } from '../../shared/utils/withStyles';
+import { getCollectedStyles, clearCollectedStyles } from '../shared/utils/withStyles';
 
 // 默认HTML模板
 const DEFAULT_TEMPLATE = `<!DOCTYPE html>
@@ -33,13 +33,34 @@ const DEFAULT_TEMPLATE = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// 读取HTML模板
-const getTemplate = (): string => {
-  const templatePath = path.resolve(process.cwd(), 'dist/client/index.html');
+// SSR渲染选项
+export interface SSROptions {
+  url: string;              // 请求URL
+  template?: string;        // HTML模板
+  manifest?: Record<string, string[]>;  // 资源清单
+  preloadedState?: object;  // 预加载状态
+  context?: object;         // 上下文对象
+  clientEntryPath?: string; // 客户端入口路径
+  assetsPrefix?: string;    // 静态资源前缀（CDN）
+}
+
+// SSR渲染结果
+export interface SSRResult {
+  stream: Readable;         // HTML流
+  state: object;            // 状态对象
+  head: Record<string, string>;  // 头部信息
+  statusCode: number;       // HTTP状态码
+}
+
+/**
+ * 读取HTML模板
+ */
+export const getTemplate = (templatePath?: string): string => {
+  const defaultPath = templatePath || path.resolve(process.cwd(), 'dist/client/index.html');
 
   try {
-    if (fs.existsSync(templatePath)) {
-      return fs.readFileSync(templatePath, 'utf-8');
+    if (fs.existsSync(defaultPath)) {
+      return fs.readFileSync(defaultPath, 'utf-8');
     }
   } catch (err) {
     console.warn('无法读取HTML模板文件，使用默认模板', err);
@@ -48,29 +69,17 @@ const getTemplate = (): string => {
   return DEFAULT_TEMPLATE;
 };
 
-// SSR渲染选项
-export interface SSROptions {
-  url: string;              // 请求URL
-  template?: string;         // HTML模板
-  manifest?: Record<string, string[]>;  // 资源清单
-  preloadedState?: object;  // 预加载状态
-  context?: object;         // 上下文对象
-}
-
-// SSR渲染结果
-export interface SSRResult {
-  stream: Readable;         // HTML流
-  state: object;            // 状态对象
-  head: Record<string, string>;  // 头部信息
-}
-
-// 创建HTML流
+/**
+ * 创建HTML流
+ */
 function createHtmlStream(
   template: string,
   content: string,
   head: Record<string, string>,
   state: object,
-  styles: string
+  styles: string,
+  clientEntryPath: string = '/client.js',
+  assetsPrefix: string = ''
 ): Readable {
   const [beforeContent, afterContent] = template.split('<!--ssr-outlet-->');
 
@@ -82,8 +91,18 @@ function createHtmlStream(
   const beforeWithStyles = beforeWithHead.replace('<!--styles-outlet-->',
     `<style id="ssr-styles">${styles}</style>`);
 
+  // 处理客户端入口路径
+  let afterWithClientEntry = afterContent;
+  if (clientEntryPath) {
+    const fullClientPath = `${assetsPrefix || ''}${clientEntryPath}`;
+    afterWithClientEntry = afterContent.replace(
+      /<script[^>]*src=['"]\/client\.js['"][^>]*><\/script>/,
+      `<script type="module" src="${fullClientPath}"></script>`
+    );
+  }
+
   // 注入状态
-  const afterWithState = afterContent.replace('<!--state-outlet-->',
+  const afterWithState = afterWithClientEntry.replace('<!--state-outlet-->',
     `<script>window.__PRELOADED_STATE__ = ${JSON.stringify(state).replace(/</g, '\\u003c')}</script>`);
 
   // 创建流
@@ -96,9 +115,18 @@ function createHtmlStream(
   return stream;
 }
 
-// 渲染React应用到流
+/**
+ * 渲染React应用到流
+ */
 export async function renderToStream(options: SSROptions): Promise<SSRResult> {
-  const { url, template = getTemplate(), preloadedState = {}, context = {} } = options;
+  const {
+    url,
+    template = getTemplate(),
+    preloadedState = {},
+    context = {},
+    clientEntryPath = '/client.js',
+    assetsPrefix = ''
+  } = options;
 
   // 激活DOM环境
   const { cleanup } = createDOMEnvironment({
@@ -115,14 +143,30 @@ export async function renderToStream(options: SSROptions): Promise<SSRResult> {
 
     // 匹配路由
     const route = matchRoute(url);
+    let statusCode = 200;
 
     // 获取路由数据
-    if (route && route.fetchData) {
-      const routeData = await route.fetchData({ url, ctx: context });
-      initialState.pageData = {
-        ...initialState.pageData,
-        [url]: routeData
-      };
+    if (route) {
+      if (route.path === '*') {
+        // 404路由
+        statusCode = 404;
+      }
+
+      if (route.fetchData) {
+        try {
+          const routeData = await route.fetchData({ url, ctx: context });
+          initialState.pageData = {
+            ...initialState.pageData,
+            [url]: routeData
+          };
+        } catch (error) {
+          console.error('路由数据获取错误:', error);
+          // 如果是API错误，可能需要设置不同的状态码
+          if (error && typeof error === 'object' && 'statusCode' in error) {
+            statusCode = (error as { statusCode: number }).statusCode;
+          }
+        }
+      }
     }
 
     // 用于收集头部信息
@@ -143,7 +187,7 @@ export async function renderToStream(options: SSROptions): Promise<SSRResult> {
     const streamPromise = new Promise<Readable>((resolve, reject) => {
       let content = '';
       const stream = renderToPipeableStream(appJsx, {
-        bootstrapScripts: ['/assets/main.js'],
+        bootstrapScripts: [`${assetsPrefix}/assets/main.js`],
         onShellReady() {
           try {
             // 提取头部信息
@@ -159,7 +203,15 @@ export async function renderToStream(options: SSROptions): Promise<SSRResult> {
             const styles = getCollectedStyles();
 
             // 创建HTML流
-            const htmlStream = createHtmlStream('', content, head, initialState, styles);
+            const htmlStream = createHtmlStream(
+              template,
+              content,
+              head,
+              initialState,
+              styles,
+              clientEntryPath,
+              assetsPrefix
+            );
 
             resolve(htmlStream);
           } catch (error) {
@@ -185,7 +237,8 @@ export async function renderToStream(options: SSROptions): Promise<SSRResult> {
     return {
       stream: await streamPromise,
       state: initialState,
-      head
+      head,
+      statusCode
     };
   } finally {
     // 清理DOM环境
@@ -193,49 +246,26 @@ export async function renderToStream(options: SSROptions): Promise<SSRResult> {
   }
 }
 
-// SSR渲染中间件
-export default function renderMiddleware() {
-  return async (ctx: Context, next: Next) => {
-    // 如果不是HTML请求，跳过
-    if (!ctx.accepts('html')) {
-      return await next();
-    }
+/**
+ * 创建降级HTML（当SSR失败时使用）
+ */
+export function createFallbackHTML(template: string = getTemplate(), error?: Error): string {
+  const isDev = process.env.NODE_ENV !== 'production';
 
-    // 如果是静态资源，跳过
-    if (ctx.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)) {
-      return await next();
-    }
-
-    try {
-      // 渲染React应用
-      const { stream, state, head } = await renderToStream({
-        url: ctx.url,
-        context: { ctx }
-      });
-
-      // 设置响应头
-      ctx.status = 200;
-      ctx.type = 'html';
-      ctx.set('Content-Type', 'text/html; charset=utf-8');
-      ctx.set('Transfer-Encoding', 'chunked');
-
-      // 设置响应体为流
-      ctx.body = stream;
-
-    } catch (err) {
-      console.error('SSR渲染错误:', err);
-
-      // 如果SSR渲染失败，降级为客户端渲染
-      const template = getTemplate()
-        .replace('<!--ssr-outlet-->', '<!-- SSR Failed, Falling back to CSR -->')
-        .replace('<!--state-outlet-->', `<script>
-          window.__SSR_ERROR__ = true;
-          window.__PRELOADED_STATE__ = ${JSON.stringify({}).replace(/</g, '\\u003c')};
-        </script>`);
-
-      ctx.status = 200;
-      ctx.type = 'html';
-      ctx.body = template;
-    }
-  };
+  return template
+    .replace('<!--ssr-outlet-->', '<!-- SSR Failed, Falling back to CSR -->')
+    .replace('<!--state-outlet-->', `<script>
+      window.__SSR_ERROR__ = true;
+      window.__PRELOADED_STATE__ = ${JSON.stringify({}).replace(/</g, '\\u003c')};
+    </script>`)
+    .replace('<!--head-outlet-->', `
+      <title>加载中...</title>
+      <meta name="robots" content="noindex">
+      ${isDev && error ? `
+        <script>
+          console.error("SSR Error:", ${JSON.stringify(error.message)});
+          ${error.stack ? `console.error(${JSON.stringify(error.stack)});` : ''}
+        </script>
+      ` : ''}
+    `);
 }

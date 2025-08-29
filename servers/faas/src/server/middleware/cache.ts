@@ -3,45 +3,7 @@
  * 实现页面级缓存，减轻服务器渲染压力
  */
 import { Context, Next } from 'koa';
-
-// 简单的内存缓存实现
-class MemoryCache {
-  private cache: Map<string, { content: any; expiry: number }> = new Map();
-  private ttl: number;
-
-  constructor(ttl = 60 * 1000) { // 默认缓存60秒
-    this.ttl = ttl;
-  }
-
-  get<T>(key: string): T | null {
-    const item = this.cache.get(key);
-    if (!item) return null;
-
-    // 检查是否过期
-    if (item.expiry < Date.now()) {
-      this.cache.delete(key);
-      return null;
-    }
-
-    return item.content as T;
-  }
-
-  set(key: string, content: any, ttl?: number): void {
-    const expiry = Date.now() + (ttl || this.ttl);
-    this.cache.set(key, { content, expiry });
-  }
-
-  delete(key: string): void {
-    this.cache.delete(key);
-  }
-
-  clear(): void {
-    this.cache.clear();
-  }
-}
-
-// 创建缓存实例
-const pageCache = new MemoryCache();
+import createDefaultCache, { CacheManager } from '../../core/cache-manager';
 
 // 缓存键生成函数
 const generateCacheKey = (ctx: Context): string => {
@@ -61,12 +23,51 @@ const isCacheable = (ctx: Context): boolean => {
   // 不缓存带有认证信息的请求
   if (ctx.cookies.get('auth') || ctx.headers.authorization) return false;
 
+  // 不缓存静态资源
+  if (ctx.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)) return false;
+
+  // 不缓存API请求
+  if (ctx.path.startsWith('/api/')) return false;
+
   return true;
 };
 
+// 缓存中间件配置选项
+export interface CacheMiddlewareOptions {
+  enabled?: boolean;      // 是否启用缓存
+  ttl?: number;           // 缓存过期时间
+  maxSize?: number;       // 最大缓存项数
+  namespace?: string;     // 缓存命名空间
+  storage?: 'memory' | 'redis'; // 存储类型
+  redisConfig?: {         // Redis配置
+    host: string;
+    port: number;
+    password?: string;
+    db?: number;
+  };
+  cacheManager?: CacheManager; // 自定义缓存管理器
+}
+
+// 缓存响应类型
+interface CachedResponse {
+  status: number;
+  type: string;
+  body: string;
+  headers: Record<string, string>;
+  timestamp: number;
+}
+
 // 缓存中间件
-export default function cacheMiddleware(options: { enabled?: boolean; ttl?: number } = {}) {
-  const { enabled = true, ttl = 60 * 1000 } = options;
+export default function cacheMiddleware(options: CacheMiddlewareOptions = {}) {
+  const {
+    enabled = true,
+    ttl = 60 * 1000,
+    maxSize = 1000,
+    namespace = 'page-cache',
+    storage = 'memory',
+    redisConfig,
+    cacheManager
+  } = options;
 
   // 如果缓存未启用，则跳过
   if (!enabled) {
@@ -74,6 +75,15 @@ export default function cacheMiddleware(options: { enabled?: boolean; ttl?: numb
       await next();
     };
   }
+
+  // 创建缓存管理器
+  const cache = cacheManager || createDefaultCache({
+    ttl,
+    maxSize,
+    namespace,
+    storage,
+    redisConfig
+  });
 
   return async (ctx: Context, next: Next) => {
     // 如果请求不可缓存，则跳过
@@ -84,28 +94,28 @@ export default function cacheMiddleware(options: { enabled?: boolean; ttl?: numb
     const cacheKey = generateCacheKey(ctx);
 
     // 尝试从缓存获取
-    const cachedResponse = pageCache.get<{
-      status: number;
-      type: string;
-      body: string;
-      headers: Record<string, string>;
-    }>(cacheKey);
+    const cachedResponse = await cache.get<CachedResponse>(cacheKey);
 
     if (cachedResponse) {
-      // 命中缓存，直接返回缓存的响应
-      ctx.status = cachedResponse.status;
-      ctx.type = cachedResponse.type;
-      ctx.body = cachedResponse.body;
+      // 检查是否过期
+      if (cachedResponse.timestamp + ttl < Date.now()) {
+        await cache.delete(cacheKey);
+      } else {
+        // 命中缓存，直接返回缓存的响应
+        ctx.status = cachedResponse.status;
+        ctx.type = cachedResponse.type;
+        ctx.body = cachedResponse.body;
 
-      // 设置缓存相关的响应头
-      ctx.set('X-Cache', 'HIT');
+        // 设置缓存相关的响应头
+        ctx.set('X-Cache', 'HIT');
 
-      // 设置其他缓存的响应头
-      for (const [key, value] of Object.entries(cachedResponse.headers)) {
-        ctx.set(key, value);
+        // 设置其他缓存的响应头
+        for (const [key, value] of Object.entries(cachedResponse.headers)) {
+          ctx.set(key, value);
+        }
+
+        return;
       }
-
-      return;
     }
 
     // 未命中缓存，继续处理请求
@@ -136,11 +146,12 @@ export default function cacheMiddleware(options: { enabled?: boolean; ttl?: numb
     if (ctx.status === 200 && ctx.response.type.includes('html')) {
       // 只缓存字符串类型的响应体
       if (typeof ctx.body === 'string') {
-        pageCache.set(cacheKey, {
+        await cache.set(cacheKey, {
           status: ctx.status,
           type: ctx.type,
           body: ctx.body,
-          headers
+          headers,
+          timestamp: Date.now()
         }, ttl);
       }
     }

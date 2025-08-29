@@ -1,7 +1,12 @@
-const path = require('path');
-const nodeExternals = require('webpack-node-externals');
+import path from 'path';
+import nodeExternals from 'webpack-node-externals';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+// ES 模块中获取 __dirname 的替代方案
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   target: 'node',
   mode: process.env.NODE_ENV || 'development',
   entry: './src/entry-server.tsx',
