@@ -67,7 +67,7 @@ const MarkdownLearningPage: React.FC = () => {
     setHeadings(newHeadings);
   };
 
-    // 加载Mermaid示例
+  // 加载Mermaid示例
   const loadMermaidExample = () => {
     setContent(mermaidExample);
     setActiveTab('preview');
@@ -127,25 +127,25 @@ const MarkdownLearningPage: React.FC = () => {
         }}
         className={styles.rightSidebar}
       >
-                  <Title level={4} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
-            控制面板
-          </Title>
+        <Title level={4} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
+          控制面板
+        </Title>
 
-          <ControlPanel config={config} onChange={handleConfigChange} />
+        <ControlPanel config={config} onChange={handleConfigChange} />
 
-          <Card title="示例文档" style={{ marginTop: '16px' }}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Button type="primary" onClick={loadSimpleMermaidExample} block>
-                加载简单Mermaid示例
-              </Button>
-              <Button onClick={loadMermaidExample} block>
-                加载完整Mermaid图表示例
-              </Button>
-              <Button onClick={loadOriginalExample} block>
-                加载原始示例
-              </Button>
-            </Space>
-          </Card>
+        <Card title="示例文档" style={{ marginTop: '16px' }}>
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Button type="primary" onClick={loadSimpleMermaidExample} block>
+              加载简单Mermaid示例
+            </Button>
+            <Button onClick={loadMermaidExample} block>
+              加载完整Mermaid图表示例
+            </Button>
+            <Button onClick={loadOriginalExample} block>
+              加载原始示例
+            </Button>
+          </Space>
+        </Card>
       </Sider>
       <Layout>
         <Content className={styles.content} style={{ background: themeConfig.backgroundColor }}>
