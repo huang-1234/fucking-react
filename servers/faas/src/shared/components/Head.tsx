@@ -3,8 +3,7 @@
  * 用于设置页面标题、元数据等
  */
 import React from 'react';
-import pkg from 'react-helmet-async';
-const { Helmet } = pkg;
+import { Helmet } from 'react-helmet-async';
 
 interface HeadProps {
   title?: string;

@@ -21,7 +21,16 @@
     "build:vite": "npm run build:client:vite && npm run build:server:vite",
     "build:webpack": "npm run build:client:webpack && npm run build:server:webpack",
     "build": "npm run build:vite && tsc -p tsconfig.server.json",
+    "build:client": "npm run build:client:vite",
+    "build:server": "npm run build:server:vite && tsc -p tsconfig.server.json",
+    "build:serverless": "serverless package",
     "start": "cross-env NODE_ENV=production node dist/server/index.js",
+    "start:serverless": "serverless offline",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:aws": "bash scripts/deploy.sh --provider aws",
+    "deploy:aliyun": "bash scripts/deploy.sh --provider aliyun",
+    "deploy:tencent": "bash scripts/deploy.sh --provider tencent",
+    "deploy:assets": "bash scripts/deploy.sh --assets",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -34,7 +43,9 @@
     "node",
     "react",
     "koa",
-    "typescript"
+    "typescript",
+    "serverless",
+    "faas"
   ],
   "author": "",
   "license": "ISC",
@@ -46,12 +57,14 @@
     "koa-static": "5.0.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "react-helmet-async": "2.0.5",
-    "react-router-dom": "6.22.3"
+    "react-helmet-async": "^2.0.5",
+    "react-router-dom": "6.22.3",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.3.0",
+    "@types/aws-lambda": "^8.10.136",
     "@types/jsdom": "^21.1.6",
     "@types/koa": "3.0.0",
     "@types/koa-bodyparser": "4.3.12",
@@ -68,6 +81,11 @@
     "eslint": "8.57.0",
     "mini-css-extract-plugin": "^2.8.1",
     "rimraf": "5.0.5",
+    "serverless": "^3.38.0",
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-offline": "^13.3.3",
+    "serverless-prune-plugin": "^2.0.2",
+    "serverless-webpack": "^5.13.0",
     "supertest": "^6.3.4",
     "ts-loader": "^9.5.1",
     "ts-node": "10.9.2",
@@ -79,6 +97,9 @@
     "webpack-dev-server": "^5.0.4",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-node-externals": "^3.0.0"
+  },
+  "optionalDependencies": {
+    "redis": "^4.6.13"
   },
   "engines": {
     "node": ">=18.0.0"

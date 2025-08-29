@@ -1,12 +1,17 @@
 /**
  * Webpack 开发服务器
  */
-const path = require('path');
-const Koa = require('koa');
-const serve = require('koa-static');
-const webpack = require('webpack');
-const { createServer: createViteServer } = require('vite');
-const fs = require('fs');
+import path from 'path';
+import Koa from 'koa';
+import serve from 'koa-static';
+import webpack from 'webpack';
+import { createServer as createViteServer } from 'vite';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// ES 模块中获取 __dirname 的替代方案
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 创建Koa应用
 const app = new Koa();
@@ -25,7 +30,9 @@ app.listen(PORT, () => {
 // 构建客户端和服务端代码
 async function buildCode() {
   console.log('构建客户端代码...');
-  const clientConfig = require('./webpack.client.js');
+
+  // 动态导入 webpack 配置
+  const { default: clientConfig } = await import('./webpack.client.js');
   const clientCompiler = webpack(clientConfig);
 
   return new Promise((resolve, reject) => {
@@ -38,17 +45,22 @@ async function buildCode() {
       console.log('客户端构建完成');
       console.log('构建服务端代码...');
 
-      const serverConfig = require('./webpack.server.js');
-      const serverCompiler = webpack(serverConfig);
+      // 动态导入服务端配置
+      import('./webpack.server.js').then(({ default: serverConfig }) => {
+        const serverCompiler = webpack(serverConfig);
 
-      serverCompiler.run((err, stats) => {
-        if (err) {
-          console.error('服务端构建失败:', err);
-          return reject(err);
-        }
+        serverCompiler.run((err, stats) => {
+          if (err) {
+            console.error('服务端构建失败:', err);
+            return reject(err);
+          }
 
-        console.log('服务端构建完成');
-        resolve();
+          console.log('服务端构建完成');
+          resolve();
+        });
+      }).catch(err => {
+        console.error('加载服务端配置失败:', err);
+        reject(err);
       });
     });
   });

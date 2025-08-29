@@ -12,7 +12,27 @@ import cacheMiddleware from './middleware/cache';
 import renderMiddleware from './middleware/render';
 
 // 配置
-const config = {
+export interface ServerConfig {
+  port: number;
+  host: string;
+  env: string;
+  static: {
+    path: string;
+    maxAge: number;
+  };
+  cache: {
+    enabled: boolean;
+    ttl: number;
+  };
+  assets: {
+    prefix: string;
+  };
+  clientEntry: string;
+  templatePath?: string;
+}
+
+// 默认配置
+export const defaultConfig: ServerConfig = {
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
   host: process.env.HOST || '0.0.0.0',
   env: process.env.NODE_ENV || 'development',
@@ -23,11 +43,34 @@ const config = {
   cache: {
     enabled: process.env.CACHE_ENABLED !== 'false',
     ttl: process.env.CACHE_TTL ? parseInt(process.env.CACHE_TTL, 10) : 60 * 1000 // 默认1分钟
-  }
+  },
+  assets: {
+    prefix: process.env.ASSETS_PREFIX || ''
+  },
+  clientEntry: process.env.CLIENT_ENTRY || '/client.js',
+  templatePath: process.env.TEMPLATE_PATH
 };
 
 // 创建服务器
-export function createServer() {
+export function createServer(config: Partial<ServerConfig> = {}) {
+  // 合并配置
+  const mergedConfig = {
+    ...defaultConfig,
+    ...config,
+    static: {
+      ...defaultConfig.static,
+      ...config.static
+    },
+    cache: {
+      ...defaultConfig.cache,
+      ...config.cache
+    },
+    assets: {
+      ...defaultConfig.assets,
+      ...config.assets
+    }
+  };
+
   const app = new Koa();
 
   // 错误处理中间件
@@ -37,8 +80,8 @@ export function createServer() {
   app.use(bodyParser());
 
   // 静态资源服务
-  app.use(serve(path.resolve(process.cwd(), config.static.path), {
-    maxage: config.static.maxAge,
+  app.use(serve(path.resolve(process.cwd(), mergedConfig.static.path), {
+    maxage: mergedConfig.static.maxAge,
     gzip: true
   }));
 
@@ -76,16 +119,20 @@ export function createServer() {
 
   // 缓存中间件
   app.use(cacheMiddleware({
-    enabled: config.cache.enabled,
-    ttl: config.cache.ttl
+    enabled: mergedConfig.cache.enabled,
+    ttl: mergedConfig.cache.ttl
   }));
 
   // SSR渲染中间件
-  app.use(renderMiddleware());
+  app.use(renderMiddleware({
+    clientEntryPath: mergedConfig.clientEntry,
+    assetsPrefix: mergedConfig.assets.prefix,
+    templatePath: mergedConfig.templatePath
+  }));
 
   // 全局错误处理
   app.on('error', (err, ctx) => {
-    if (config.env === 'development') {
+    if (mergedConfig.env === 'development') {
       console.error('服务器错误', err);
     }
     // 在生产环境中，可以将错误发送到监控系统
@@ -97,10 +144,10 @@ export function createServer() {
 // 直接运行文件时启动服务器
 if (require.main === module) {
   const app = createServer();
-  const PORT = config.port;
+  const PORT = defaultConfig.port;
 
   app.listen(PORT, () => {
-    console.log(`服务器运行在 http://${config.host}:${PORT}`);
-    console.log(`环境: ${config.env}`);
+    console.log(`服务器运行在 http://${defaultConfig.host}:${PORT}`);
+    console.log(`环境: ${defaultConfig.env}`);
   });
 }
