@@ -4,13 +4,7 @@
  */
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
-// 使用动态导入
-// @ts-ignore
-import('react-helmet-async').then(module => {
-  // 动态导入完成后的代码
-});
-// 暂时定义一个空的 HelmetProvider 组件
-const HelmetProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+import { HelmetProvider } from 'react-helmet-async';
 import App from '../shared/App';
 import { AppProvider } from '../shared/store';
 import { Router } from '../shared/router';

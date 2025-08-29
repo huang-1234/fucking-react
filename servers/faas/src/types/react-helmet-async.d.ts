@@ -1,19 +1,32 @@
 declare module 'react-helmet-async' {
   import * as React from 'react';
 
+  export interface HelmetTags {
+    baseTag: any[];
+    linkTags: any[];
+    metaTags: any[];
+    noscriptTags: any[];
+    scriptTags: any[];
+    styleTags: any[];
+  }
+
   export interface HelmetProps {
-    htmlAttributes?: object;
-    bodyAttributes?: object;
-    title?: string;
+    base?: any;
+    bodyAttributes?: any;
     defaultTitle?: string;
+    defer?: boolean;
+    encodeSpecialCharacters?: boolean;
+    htmlAttributes?: any;
+    link?: any[];
+    meta?: any[];
+    noscript?: any[];
+    onChangeClientState?: (newState: any, addedTags: HelmetTags, removedTags: HelmetTags) => void;
+    script?: any[];
+    style?: any[];
+    title?: string;
+    titleAttributes?: any;
     titleTemplate?: string;
-    base?: object;
-    meta?: Array<object>;
-    link?: Array<object>;
-    script?: Array<object>;
-    noscript?: Array<object>;
-    style?: Array<object>;
-    onChangeClientState?: (newState: any, addedTags: any, removedTags: any) => void;
+    children?: React.ReactNode;
   }
 
   export class Helmet extends React.Component<HelmetProps> {
@@ -30,12 +43,10 @@ declare module 'react-helmet-async' {
     };
   }
 
-  export interface HelmetProviderProps {
+  export interface ProviderProps {
     context?: object;
     children: React.ReactNode;
   }
 
-  export class HelmetProvider extends React.Component<HelmetProviderProps> {}
-
-  export default Helmet;
+  export class HelmetProvider extends React.Component<ProviderProps> {}
 }
