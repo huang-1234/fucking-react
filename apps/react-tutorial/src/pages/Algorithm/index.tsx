@@ -40,6 +40,11 @@ const algorithmList = [
     title: '动态规划 (DP)',
     description: '动态规划算法可视化实现，支持打家劫舍、最长递增子序列等常见问题',
     path: '/algorithm/dp'
+  },
+  {
+    title: '跳表 (Skip List)',
+    description: '跳表数据结构的可视化实现，支持插入、删除、搜索操作的动画演示',
+    path: '/algorithm/skiplist'
   }
 ];
 

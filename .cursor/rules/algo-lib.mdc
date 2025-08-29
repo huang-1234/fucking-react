@@ -1,0 +1,30 @@
+---
+description: 算法库实现规范
+globs:
+  - "libs/algorithm/**/*.ts"
+alwaysApply: true
+priority: medium
+---
+
+# 算法实现要求
+## 代码规范
+1. **可视化优先**
+   - 每个算法提供 `visualize()` 方法（返回 SVG 字符串）
+   - 时间复杂度标注在函数注释
+2. **不可变性**
+   - 纯函数禁止修改输入参数
+   - 使用 `Immutable.js` 处理树结构
+
+## 示例
+```ts
+
+// ✅ 正确：DFS 递归使用尾调用优化
+
+function dfs(node: TreeNode, callback: (n: TreeNode) => void) {
+
+callback(node);
+
+node.children.forEach(child => dfs(child, callback));
+
+}
+```

@@ -1,0 +1,37 @@
+---
+description: 项目基础规范（Monorepo + TS + React）
+globs:
+  - "**/*"
+alwaysApply: true
+priority: high
+---
+
+# 核心规范
+## 技术栈
+- **框架**: React 18.3.1 + Vue 3
+- **语言**: TypeScript 5.8.3（禁用 `any`）
+- **构建**: Vite 6.0.0
+- **包管理**: pnpm workspace（子包用 `workspace:*` 协议引用）
+- **测试**: Vitest 2.1.5
+
+## 目录结构
+```md
+packages/ # 核心实现包
+├── hooks/ # Hooks 链表实现
+├── jsx-compile/ # JSX 编译器
+└── Reconciler/ # Fiber 协调器
+apps/ # 教学应用（React/Vue）
+servers/ # SSR 服务（Koa + 流式渲染）
+libs/ # 算法/ECMAScript 工具库
+```
+
+## 强制规则
+1. **类型安全**
+   - 所有 TS 文件必须定义接口（如 `FiberNode` 结构）
+   - 泛型组件需显式声明 `Props` 类型
+2. **模块化**
+   - 一个文件仅导出一个主要功能（如 `useState.ts`）
+   - 共享工具放在 `packages/shared/`
+3. **命名规范**
+   - Hooks 文件：`useXxx.ts`
+   - 算法库：`dijkstra-algorithm.ts`

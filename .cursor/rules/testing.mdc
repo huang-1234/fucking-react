@@ -1,0 +1,29 @@
+---
+description: 单元测试与覆盖率规范
+globs:
+  - "**/*.test.ts"
+alwaysApply: true
+priority: high
+---
+
+# 测试策略
+## 覆盖率要求
+| 指标          | 阈值 |
+|---------------|------|
+| `statements`  | ≥85% |
+| `branches`    | ≥80% |
+| `functions`   | ≥90% |
+
+## 测试重点
+1. **Hooks**
+   - 模拟 `Fiber` 环境测试状态更新
+   - 覆盖率工具追踪链表指针变更
+2. **协调器**
+   - 验证 `beginWork`/`completeWork` 调用顺序
+   - 快照测试 Fiber 树结构
+
+## 禁用操作
+- ❌ 修改 `__tests__/` 外部文件
+- ❌ 提交未更新快照的测试
+
+---

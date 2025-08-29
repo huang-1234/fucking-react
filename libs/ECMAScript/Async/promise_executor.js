@@ -19,7 +19,7 @@ function getPromise(id, time = 500, error = 0) {
     }, time);
   });
 }
-(function executor () {
+(function executor() {
   // ======== promise executor ========
   const mode = process.argv[2] || 'async';
   console.log(`\n===== Running ${mode.toUpperCase()} Mode =====`);
@@ -203,7 +203,7 @@ function getPromise(id, time = 500, error = 0) {
   function loopAsync() {
     console.log('start');
     console.time('loopAsync');
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0;i < 3;i++) {
       getPromise(i, 500, 0).then(console.log);
     }
     console.timeEnd('loopAsync');

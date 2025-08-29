@@ -4,6 +4,10 @@ import MainLayout from '../layouts/MainLayout';
 import React15Sandbox from '../sandbox/React15Sandbox';
 import APIVersionLayout from '../components/APIVersionLayout';
 import loadable from '@loadable/component';
+// 富文本
+const RichTextHomePage = loadable(() => import('@/pages/RichTextHomePage'));
+// Markdown渲染
+const MarkdownLearningPage = loadable(() => import('@/pages/RenderMD'));
 
 // 页面组件懒加载
 const HomePage = loadable(() => import('@/pages/HomePage'));
@@ -20,6 +24,8 @@ const GraphPage = loadable(() => import('@/pages/Algorithm/Graph'));
 const ProbabilityTheoryPage = loadable(() => import('@/pages/Algorithm/ProbabilityTheory'));
 const QueuePage = loadable(() => import('@/pages/Algorithm/Queue'));
 const DPPage = loadable(() => import('@/pages/Algorithm/DP'));
+/** SkipList */
+const SkipListPage = loadable(() => import('@/pages/Algorithm/SkipList'));
 
 // React 15 组件
 const React15Page = loadable(() => import('@/pages/React15'));
@@ -350,6 +356,15 @@ const routerBrowser = createBrowserRouter([
                 <DPPage />
               </Suspense>
             )
+          },
+          // SkipList
+          {
+            path: 'skiplist',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <SkipListPage />
+              </Suspense>
+            )
           }
         ]
       },
@@ -407,6 +422,28 @@ const routerBrowser = createBrowserRouter([
             <PerformancePage />
           </Suspense>
         )
+      },
+      // 富文本路由
+      {
+        path: 'rich-text',
+        children: [
+          {
+            path: 'markdown',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <MarkdownLearningPage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'quill',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <RichTextHomePage />
+              </Suspense>
+            )
+          }
+        ]
       }
     ]
   }

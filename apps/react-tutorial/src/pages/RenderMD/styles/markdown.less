@@ -1,0 +1,354 @@
+// Markdown样式
+
+// 主题变量
+:root {
+  --md-bg-color: #ffffff;
+  --md-text-color: #24292e;
+  --md-link-color: #0366d6;
+  --md-heading-color: #24292e;
+  --md-border-color: #e1e4e8;
+  --md-blockquote-color: #6a737d;
+  --md-code-bg-color: #f6f8fa;
+  --md-code-text-color: #24292e;
+  --md-table-header-bg: #f6f8fa;
+  --md-table-border-color: #e1e4e8;
+}
+
+// 深色主题
+[data-theme="dark"] {
+  --md-bg-color: #0d1117;
+  --md-text-color: #c9d1d9;
+  --md-link-color: #58a6ff;
+  --md-heading-color: #e6edf3;
+  --md-border-color: #30363d;
+  --md-blockquote-color: #8b949e;
+  --md-code-bg-color: #161b22;
+  --md-code-text-color: #c9d1d9;
+  --md-table-header-bg: #161b22;
+  --md-table-border-color: #30363d;
+}
+
+// 护眼主题
+[data-theme="sepia"] {
+  --md-bg-color: #f8f2e3;
+  --md-text-color: #5b4636;
+  --md-link-color: #1e6bb8;
+  --md-heading-color: #704214;
+  --md-border-color: #e0d6c2;
+  --md-blockquote-color: #8a7055;
+  --md-code-bg-color: #f0e8d6;
+  --md-code-text-color: #5b4636;
+  --md-table-header-bg: #f0e8d6;
+  --md-table-border-color: #e0d6c2;
+}
+
+// Markdown容器
+.markdown-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  color: var(--md-text-color);
+  background-color: var(--md-bg-color);
+  padding: 16px;
+  max-width: 100%;
+  overflow-x: hidden;
+  transition: all 0.3s ease;
+
+  // 标题样式
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--md-heading-color);
+  }
+
+  h1 {
+    font-size: 2em;
+    border-bottom: 1px solid var(--md-border-color);
+    padding-bottom: 0.3em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid var(--md-border-color);
+    padding-bottom: 0.3em;
+  }
+
+  h3 {
+    font-size: 1.25em;
+  }
+
+  h4 {
+    font-size: 1em;
+  }
+
+  // 段落和文本
+  p {
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  a {
+    color: var(--md-link-color);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  del {
+    text-decoration: line-through;
+  }
+
+  // 列表
+  ul, ol {
+    padding-left: 2em;
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  li {
+    margin-bottom: 4px;
+
+    > ul, > ol {
+      margin-top: 4px;
+    }
+  }
+
+  // 任务列表
+  ul.contains-task-list {
+    list-style-type: none;
+    padding-left: 0;
+
+    .task-list-item {
+      padding-left: 1.5em;
+      position: relative;
+
+      input[type="checkbox"] {
+        position: absolute;
+        left: 0;
+        top: 0.25em;
+        margin: 0;
+      }
+    }
+  }
+
+  // 代码
+  code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 85%;
+    padding: 0.2em 0.4em;
+    margin: 0;
+    background-color: var(--md-code-bg-color);
+    border-radius: 3px;
+    color: var(--md-code-text-color);
+  }
+
+  pre {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: var(--md-code-bg-color);
+    border-radius: 3px;
+
+    code {
+      padding: 0;
+      margin: 0;
+      background-color: transparent;
+      border: 0;
+      word-break: normal;
+      white-space: pre;
+      overflow-wrap: normal;
+    }
+  }
+
+  // 引用块
+  blockquote {
+    margin: 0 0 16px;
+    padding: 0 1em;
+    color: var(--md-blockquote-color);
+    border-left: 0.25em solid var(--md-border-color);
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // 表格
+  table {
+    display: block;
+    width: 100%;
+    overflow: auto;
+    margin-top: 0;
+    margin-bottom: 16px;
+    border-spacing: 0;
+    border-collapse: collapse;
+
+    th {
+      font-weight: 600;
+      background-color: var(--md-table-header-bg);
+    }
+
+    th, td {
+      padding: 6px 13px;
+      border: 1px solid var(--md-table-border-color);
+    }
+
+    tr {
+      background-color: var(--md-bg-color);
+      border-top: 1px solid var(--md-table-border-color);
+
+      &:nth-child(2n) {
+        background-color: var(--md-code-bg-color);
+      }
+    }
+  }
+
+  // 水平线
+  hr {
+    height: 0.25em;
+    padding: 0;
+    margin: 24px 0;
+    background-color: var(--md-border-color);
+    border: 0;
+  }
+
+  // 图片
+  img {
+    max-width: 100%;
+    box-sizing: border-box;
+    background-color: var(--md-bg-color);
+  }
+
+  // 代码块
+  .code-block {
+    margin-bottom: 16px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+    .copy-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    &:hover .copy-button {
+      opacity: 1;
+    }
+  }
+}
+
+// 控制面板样式
+.control-panel {
+  margin-bottom: 20px;
+
+  .ant-divider {
+    margin: 12px 0;
+  }
+
+  .ant-typography {
+    margin-bottom: 0;
+  }
+}
+
+// 目录导航样式
+.toc-container {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding-right: 10px;
+
+  .toc-heading {
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding-left: 0;
+
+    .toc-item {
+      margin-bottom: 8px;
+
+      a {
+        display: block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        &.active {
+          background-color: rgba(0, 0, 0, 0.1);
+          font-weight: 500;
+        }
+      }
+
+      &.level-1 { padding-left: 0; }
+      &.level-2 { padding-left: 12px; }
+      &.level-3 { padding-left: 24px; }
+      &.level-4 { padding-left: 36px; }
+      &.level-5 { padding-left: 48px; }
+      &.level-6 { padding-left: 60px; }
+    }
+  }
+}
+
+// 布局样式
+.markdown-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+
+  .sidebar {
+    width: 250px;
+    flex-shrink: 0;
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// 响应式布局
+@media (max-width: 768px) {
+  .markdown-layout {
+    flex-direction: column;
+
+    .sidebar {
+      width: 100%;
+      position: static;
+    }
+  }
+}

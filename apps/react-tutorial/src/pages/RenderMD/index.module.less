@@ -1,0 +1,84 @@
+.markdownPage {
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+}
+
+.sidebar {
+  flex: 0 0 300px;
+  height: calc(100vh - 60px); // 减去顶部padding
+  overflow: auto;
+  padding: 16px;
+  transition: all 0.3s;
+  z-index: 10;
+  position: sticky;
+  top: 0; // 与padding-top对应
+  align-self: flex-start;
+}
+
+.pageTitle {
+  margin-bottom: 16px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0; // 防止flex子项溢出
+  padding: 24px;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightSidebar {
+  flex: 0 0 300px;
+  height: calc(100vh); // 减去顶部padding
+  overflow: auto;
+  padding: 16px;
+  transition: all 0.3s;
+  z-index: 10;
+  border-left: 1px solid #e8e8e8;
+  position: sticky;
+  top: 0; // 与padding-top对应
+  align-self: flex-start;
+}
+
+.tabContent {
+  margin-bottom: 24px;
+}
+
+.previewContainer {
+  padding: 20px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.editorContainer {
+  height: calc(100vh);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.settingsContainer {
+  margin-top: 16px;
+}
+
+// 响应式布局
+@media (max-width: 768px) {
+  .markdownPage {
+    flex-direction: column;
+    padding-top: 0;
+  }
+
+  .sidebar, .rightSidebar {
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    position: static;
+    padding-top: 16px;
+  }
+
+  .content {
+    padding-top: 16px;
+  }
+}
