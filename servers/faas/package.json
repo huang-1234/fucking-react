@@ -57,7 +57,7 @@
     "koa-static": "5.0.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "react-helmet-async": "2.0.5",
+    "react-helmet-async": "^2.0.5",
     "react-router-dom": "6.22.3",
     "serverless-http": "^3.2.0"
   },

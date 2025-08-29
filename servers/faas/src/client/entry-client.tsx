@@ -4,9 +4,13 @@
  */
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
-// 修复 CommonJS 模块导入问题
-import pkg from 'react-helmet-async';
-const { HelmetProvider } = pkg;
+// 使用动态导入
+// @ts-ignore
+import('react-helmet-async').then(module => {
+  // 动态导入完成后的代码
+});
+// 暂时定义一个空的 HelmetProvider 组件
+const HelmetProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 import App from '../shared/App';
 import { AppProvider } from '../shared/store';
 import { Router } from '../shared/router';

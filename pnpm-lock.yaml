@@ -661,7 +661,7 @@ importers:
         specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       react-helmet-async:
-        specifier: 2.0.5
+        specifier: ^2.0.5
         version: 2.0.5(react@19.1.1)
       react-router-dom:
         specifier: 6.22.3
