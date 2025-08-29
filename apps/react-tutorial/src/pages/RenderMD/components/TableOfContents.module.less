@@ -117,6 +117,7 @@
   }
 }
 
+
 :global([data-theme="dark"]) {
   .tocWrapper {
     .iconButton {
@@ -157,9 +158,28 @@
 }
 
 :global([data-theme="sepia"]) {
+  .tocWrapper {
+    .iconButton {
+      background-color: #f8f2e3;
+
+      &:hover {
+        background-color: #f0e8d6;
+      }
+    }
+  }
+
   .tocContainer {
+    background-color: #f8f2e3;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+    .tocHeading {
+      color: #5b4636;
+    }
+
     .tocItem {
       a {
+        color: #5b4636;
+
         &:hover {
           background-color: rgba(91, 70, 54, 0.05);
         }
@@ -169,5 +189,9 @@
         }
       }
     }
+  }
+
+  .collapseButton {
+    color: #5b4636;
   }
 }
