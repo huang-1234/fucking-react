@@ -5,6 +5,7 @@ import MarkdownRenderer from './MarkdownRenderer';
 import MarkdownEditor from './MarkdownEditor';
 import CodeBlock from './CodeBlock';
 import MermaidDiagram from './MermaidDiagram';
+import MermaidTest from './MermaidTest';
 import TableOfContents from './TableOfContents';
 import ControlPanel from './ControlPanel';
 import PerformancePanel from './PerformancePanel';
@@ -404,7 +405,7 @@ const MarkdownDemoPage: React.FC = () => {
           这个页面展示了Markdown渲染系统的各种扩展功能，包括Mermaid图表、数学公式、表格和代码高亮等。
         </Paragraph>
 
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space direction="vertical" size="large" style={{ width: '100%', }}>
           <Card title="功能设置">
             <Space>
               <span>主题:</span>
@@ -438,13 +439,30 @@ const MarkdownDemoPage: React.FC = () => {
             </Space>
           </Card>
 
-          <Tabs activeKey={activeTab} onChange={setActiveTab}>
-            <TabPane tab="综合示例" key="combined" />
-            <TabPane tab="Mermaid图表" key="mermaid" />
-            <TabPane tab="数学公式" key="math" />
-            <TabPane tab="表格" key="table" />
-            <TabPane tab="代码块" key="code" />
-          </Tabs>
+          <div
+            style={{
+              position: 'sticky',
+              top: 64,
+              zIndex: 1000,
+              width: '100%'
+            }}
+          >
+            <Tabs
+              activeKey={activeTab} onChange={setActiveTab}
+            >
+              <TabPane tab="综合示例" key="combined" />
+              <TabPane tab="Mermaid图表" key="mermaid" />
+              <TabPane tab="数学公式" key="math" />
+              <TabPane tab="表格" key="table" />
+              <TabPane tab="代码块" key="code" />
+            </Tabs>
+          </div>
+
+          {activeTab === 'mermaid' && (
+            <Card title="Mermaid直接渲染测试">
+              <MermaidTest />
+            </Card>
+          )}
 
           <Card title="Markdown编辑器" style={{ marginBottom: '20px' }}>
             <MarkdownEditor
