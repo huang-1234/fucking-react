@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CoreParser } from '../modules/core-parser';
 import { RenderProcessor } from '../modules/renderer';
-import { builtinPlugins, PluginManager } from '../modules/plugin';
+import {  PluginManager } from '../modules/plugin';
 import { TablePlugin, TaskListPlugin, TableOfContentsPlugin, FootnotePlugin } from '../modules/plugin/BuiltinPlugins';
 import SyntaxHighlighter from '../modules/extensions/SyntaxHighlighter';
 import MathRenderer from '../modules/extensions/MathRenderer';

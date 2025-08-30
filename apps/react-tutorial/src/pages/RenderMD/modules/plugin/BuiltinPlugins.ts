@@ -3,6 +3,7 @@ import { InnerPluginId } from './common';
 import { type MarkdownPlugin, type PluginContext } from './PluginTypes';
 import { PluginHook, PluginType } from './PluginTypes';
 
+
 /**
  * 表格插件 - 处理Markdown表格语法
  */

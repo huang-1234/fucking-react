@@ -1,9 +1,10 @@
 import PluginManager from './PluginManager';
 import { type MarkdownPlugin, type PluginContext, type PluginOptions } from './PluginTypes';
 import { PluginHook, PluginType } from './PluginTypes';
-import { builtinPlugins } from './common';
 import { TablePlugin, TaskListPlugin, TableOfContentsPlugin, FootnotePlugin } from './BuiltinPlugins';
-
+import { SyntaxHighlighter } from "../extensions/SyntaxHighlighter";
+import { MathRenderer } from "../extensions/MathRenderer";
+import { DiagramRenderer } from "../extensions/DiagramRenderer";
 /**
  * 插件系统模块
  * 负责管理插件的注册、初始化和执行
@@ -100,8 +101,15 @@ export class PluginSystem {
    * 注册所有内置插件
    * @param options 插件选项
    */
-  registerBuiltinPlugins(options: PluginOptions = {}): void {
-    this.registerPlugins(builtinPlugins, options);
+  registerBuiltinPlugins(options: PluginOptions = {}, supportClass = true): void {
+    [TablePlugin, TaskListPlugin].forEach(plugin => {
+      this.manager.register(plugin, options);
+    });
+    if (supportClass) {
+      [SyntaxHighlighter, MathRenderer, DiagramRenderer].forEach(Plugin => {
+        this.manager.register(new Plugin().createPlugin(), options);
+      });
+    }
   }
 
   /**
@@ -115,5 +123,5 @@ export class PluginSystem {
 
 export { PluginManager, PluginHook, PluginType };
 export type { MarkdownPlugin, PluginContext, PluginOptions };
-export { TablePlugin, TaskListPlugin, TableOfContentsPlugin, FootnotePlugin, builtinPlugins };
+export { TablePlugin, TaskListPlugin, TableOfContentsPlugin, FootnotePlugin };
 export default PluginSystem;
