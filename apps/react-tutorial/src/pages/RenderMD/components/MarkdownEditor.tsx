@@ -131,6 +131,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         <div className="editor-title">Markdown 编辑器</div>
         <div className="editor-controls">
           <select
+            title='select'
             value={activeTheme}
             onChange={(e) => handleThemeChange(e.target.value as ThemeName)}
             className="theme-selector"
