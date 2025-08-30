@@ -7,7 +7,9 @@ const sharedConfig = {
   plugins: [react()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
+      '@': resolve(__dirname, 'src'),
+      '~': resolve(__dirname, 'src'),
+      'react-helmet-async': resolve(__dirname, 'node_modules/react-helmet-async'),
     }
   }
 };
