@@ -1,67 +1,88 @@
-import { sanitizeSchema } from '../utils/sanitizeSchema';
-import type { MarkdownConfig } from '../types/markdown';
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+/**
+ * Markdown配置
+ * 定义Markdown渲染器的默认配置
+ */
+
+export const markdownConfig = {
+  // 默认主题
+  defaultTheme: 'light',
+
+  // 默认启用的功能
+  features: {
+    cache: true,
+    virtualScroll: false,
+    toc: true,
+    math: true,
+    gfm: true,
+    sanitize: true,
+    codeHighlight: true,
+    mermaid: true,
+    emoji: true
+  },
+
+  // 链接设置
+  linkTarget: '_blank',
+
+  // 代码高亮设置
+  codeHighlight: {
+    theme: {
+      light: 'github',
+      dark: 'dracula'
+    },
+    showLineNumbers: true,
+    languages: [
+      'javascript', 'typescript', 'jsx', 'tsx',
+      'python', 'java', 'c', 'cpp', 'csharp',
+      'go', 'rust', 'php', 'ruby', 'swift',
+      'kotlin', 'scala', 'html', 'css', 'scss',
+      'json', 'yaml', 'markdown', 'bash', 'shell',
+      'sql', 'graphql', 'dockerfile', 'diff'
+    ]
+  },
+
+  // Mermaid设置
+  mermaid: {
+    theme: {
+      light: 'default',
+      dark: 'dark'
+    }
+  },
+
+  // 数学公式设置
+  math: {
+    inlineMathDelimiters: ['$', '$'],
+    blockMathDelimiters: ['$$', '$$']
+  },
+
+  // URL转换函数
+  transformLinkUri: (uri: string) => {
+    // 默认不转换，直接返回原始URL
+    // 可以在这里添加URL转换逻辑，如添加跟踪参数、转换相对路径等
+    return uri;
+  }
+};
+
+export default markdownConfig;
+
 
 export const markdownThemes = {
   light: {
     name: 'light',
-    codeTheme: oneLight,
-    backgroundColor: '#ffffff',
-    textColor: '#24292e',
-    linkColor: '#0366d6',
-    headingColor: '#24292e',
-    borderColor: '#e1e4e8',
-    blockquoteColor: '#6a737d',
-    codeBackgroundColor: '#f6f8fa'
-  },
-  dark: {
-    name: 'dark',
-    codeTheme: oneDark,
-    backgroundColor: '#0d1117',
-    textColor: '#c9d1d9',
-    linkColor: '#58a6ff',
-    headingColor: '#e6edf3',
-    borderColor: '#30363d',
-    blockquoteColor: '#8b949e',
-    codeBackgroundColor: '#161b22'
-  },
-  sepia: {
-    name: 'sepia',
-    codeTheme: oneLight,
-    backgroundColor: '#f8f2e3',
-    textColor: '#5b4636',
-    linkColor: '#1e6bb8',
-    headingColor: '#704214',
-    borderColor: '#e0d6c2',
-    blockquoteColor: '#8a7055',
-    codeBackgroundColor: '#f0e8d6'
+    label: '亮色',
+    style: {
+      backgroundColor: '#ffffff',
+      color: '#000000'
+    }
   }
 };
 
-export const defaultMarkdownConfig: MarkdownConfig = {
+export const defaultMarkdownConfig = {
   theme: 'light',
   enableCache: true,
   enableVirtualScroll: false,
   enableToc: true,
-  enableMath: false,
+  enableMath: true,
   enableGfm: true,
   enableSanitize: true,
   linkTarget: '_blank'
-};
-
-export const markdownConfig = {
-  skipHtml: false,
-  allowedElements: sanitizeSchema.tagNames,
-  linkTarget: '_blank' as const,
-  transformLinkUri: (uri: string) => {
-    // 验证 URL 安全性
-    const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:', '#'];
-    try {
-      if (uri.startsWith('#')) return uri;
-      const url = new URL(uri, window.location.origin);
-      return allowedProtocols.includes(url.protocol) ? uri : '';
-    } catch {
-      return uri; // 如果无法解析为URL，可能是相对路径，保留原样
-    }
-  }
 };

@@ -1,8 +1,29 @@
+.render-md-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color, #f5f5f5);
+}
+
+:global([data-theme="dark"]) {
+  .render-md-container {
+    --bg-color: #141414;
+  }
+}
+
+:global([data-theme="sepia"]) {
+  .render-md-container {
+    --bg-color: #f8f2e3;
+  }
+}
+
 .render-md-page {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 
   .page-header {
     text-align: center;
@@ -85,8 +106,6 @@
   }
 
   @media (max-width: 768px) {
-    padding: 15px;
-
     .editor-wrapper {
       height: 500px;
     }

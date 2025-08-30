@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mermaid from 'mermaid';
-import { Spin, Button, Tooltip, Dropdown, Menu, Typography, Space } from 'antd';
-const { Text } = Typography;
+import { Spin, Button, Tooltip, Dropdown, Menu, Space } from 'antd';
 import { EyeOutlined, AppstoreOutlined, BgColorsOutlined, CodeOutlined, PictureOutlined, CopyOutlined, CheckOutlined, DownOutlined } from '@ant-design/icons';
 import { performanceMonitor } from '../tools/performance';
 import styles from './MermaidDiagram.module.less';
