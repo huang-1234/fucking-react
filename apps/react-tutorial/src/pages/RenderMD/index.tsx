@@ -1,245 +1,192 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { produce } from 'immer';
-import { performanceMonitor } from './tools/performance';
-import { Layout, Card, Typography, Tabs, message, Button, Space } from 'antd';
-import { BookOutlined, SettingOutlined, EditOutlined, LineChartOutlined } from '@ant-design/icons';
-import PerformancePanel from './components/PerformancePanel';
-import MarkdownRenderer from './components/MarkdownRenderer';
-import VirtualizedMarkdown from './components/VirtualizedMarkdown';
-import ControlPanel from './components/ControlPanel';
-import TableOfContents from './components/TableOfContents';
-import { defaultMarkdownConfig } from './config/markdownConfig';
-import type { Heading, MarkdownConfig } from './types/markdown';
-import useTheme from './hooks/useTheme';
-import MonacoEditor from '@monaco-editor/react';
-import styles from './index.module.less';
+import React, { useState } from 'react';
+import MarkdownEditor from './components/MarkdownEditor';
+import { ThemeName } from './modules/theme/ThemeDefinitions';
+import './index.less';
 
-// 导入示例Markdown内容
-import exampleMarkdown from '@/pages/RenderMD/docs/design.md?raw';
-import mermaidExample from './examples/mermaid-example.md?raw';
-import simpleMermaidExample from './examples/simple-mermaid.md?raw';
-// import exampleMarkdown from './tech.md?raw';
+const SAMPLE_MARKDOWN = `# Markdown 渲染器演示
 
-const { Content, Sider } = Layout;
-const { Title } = Typography;
-const { TabPane } = Tabs;
+这是一个完整的 Markdown 渲染系统演示。
 
-const MarkdownLearningPage: React.FC = () => {
-  const [content, setContent] = useState<string>(exampleMarkdown);
-  const [headings, setHeadings] = useState<Heading[]>([]);
-  const [config, setConfig] = useState<MarkdownConfig>(defaultMarkdownConfig);
-  const [activeTab, setActiveTab] = useState<string>('preview');
-  const { theme, setTheme, themeConfig } = useTheme(config.theme);
+## 基本语法
 
-  // 同步主题设置
-  useEffect(() => {
-    setConfig(prev => ({ ...prev, theme }));
-  }, [theme]);
+### 文本格式化
 
-  // 使用Immer优化配置更新逻辑
-  const handleConfigChange = useCallback((newConfig: MarkdownConfig) => {
-    performanceMonitor.start('config_update');
+*斜体文本* 和 **粗体文本**
 
-    // 只在配置真正变化时才更新状态
-    if (JSON.stringify(newConfig) !== JSON.stringify(config)) {
-      setConfig(produce(draft => {
-        // 只更新变化的属性，避免不必要的重新渲染
-        Object.keys(newConfig).forEach(key => {
-          if (draft[key as keyof MarkdownConfig] !== newConfig[key as keyof MarkdownConfig]) {
-            (draft[key as keyof MarkdownConfig] as any) = newConfig[key as keyof MarkdownConfig];
-          }
-        });
-      }));
+~~删除线~~ 和 \`行内代码\`
 
-      // 同步主题（如果变化）
-      if (newConfig.theme !== theme) {
-        setTheme(newConfig.theme);
-      }
+### 列表
 
-      message.success('配置已更新');
-    }
+无序列表:
+- 项目 1
+- 项目 2
+  - 子项目 2.1
+  - 子项目 2.2
 
-    performanceMonitor.end('config_update');
-  }, [config, theme]);
+有序列表:
+1. 第一项
+2. 第二项
+3. 第三项
 
-  // 处理标题变化
-  const handleHeadingsChange = (newHeadings: Heading[]) => {
-    setHeadings(newHeadings);
-  };
+### 任务列表
 
-  // 加载Mermaid示例
-  const loadMermaidExample = () => {
-    setContent(mermaidExample);
-    setActiveTab('preview');
-    message.success('已加载Mermaid图表示例');
-  };
+- [x] 已完成任务
+- [ ] 未完成任务
+- [ ] 另一个未完成任务
 
-  // 加载简单Mermaid示例
-  const loadSimpleMermaidExample = () => {
-    setContent(simpleMermaidExample);
-    setActiveTab('preview');
-    message.success('已加载简单Mermaid图表示例');
-  };
+## 扩展功能
 
-  // 加载原始示例
-  const loadOriginalExample = () => {
-    setContent(exampleMarkdown);
-    setActiveTab('preview');
-    message.success('已加载原始示例');
-  };
+### 代码块与语法高亮
 
-  // 渲染Markdown内容
-  const renderMarkdownContent = () => {
-    // 根据配置决定是否使用虚拟滚动
-    if (config.enableVirtualScroll && content.length > 5000) {
-      return (
-        <VirtualizedMarkdown
-          content={content}
-          allowHtml={true}
-          linkTarget={config.linkTarget}
-          skipHtml={!config.enableSanitize}
-          onHeadingsChange={handleHeadingsChange}
-        />
-      );
-    }
+\`\`\`javascript
+// 这是一段 JavaScript 代码
+function greeting(name) {
+  return \`Hello, \${name}!\`;
+}
 
-    return (
-      <MarkdownRenderer
-        content={content}
-        allowHtml={true}
-        linkTarget={config.linkTarget}
-        skipHtml={!config.enableSanitize}
-        onHeadingsChange={handleHeadingsChange}
-      />
-    );
-  };
+console.log(greeting('World'));
+\`\`\`
 
-  // 移除调试日志
+### 表格
+
+| 姓名 | 年龄 | 职业 |
+|------|------|------|
+| 张三 | 25 | 工程师 |
+| 李四 | 30 | 设计师 |
+| 王五 | 28 | 产品经理 |
+
+### 数学公式
+
+行内公式: $E = mc^2$
+
+块级公式:
+
+$$
+\\frac{d}{dx}\\left( \\int_{0}^{x} f(u)\\,du\\right)=f(x)
+$$
+
+### 图表 (Mermaid)
+
+\`\`\`mermaid
+graph TD
+  A[开始] --> B{是否已登录?}
+  B -->|是| C[显示主页]
+  B -->|否| D[显示登录页]
+  C --> E[结束]
+  D --> E
+\`\`\`
+
+### 脚注
+
+这里有一个脚注[^1]和另一个脚注[^2]。
+
+[^1]: 这是第一个脚注的内容。
+[^2]: 这是第二个脚注的内容。
+
+## 目录
+
+[TOC]
+
+## 引用块
+
+> 这是一个引用块
+>
+> 可以包含多个段落
+
+## 水平分割线
+
+---
+
+## 链接和图片
+
+[React 官网](https://reactjs.org)
+
+![React Logo](https://reactjs.org/logo-og.png)
+`;
+
+const RenderMDPage: React.FC = () => {
+  const [theme, setTheme] = useState<ThemeName>(ThemeName.LIGHT);
 
   return (
-    <Layout className={styles.markdownPage}>
-      {/* 右侧控制面板 */}
-      <Sider
-        width={300}
-        theme={theme === 'dark' ? 'dark' : 'light'}
-        style={{
-          background: themeConfig.backgroundColor,
-        }}
-        className={styles.rightSidebar}
-      >
-        <Title level={4} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
-          控制面板
-        </Title>
+    <div className="render-md-page">
+      <div className="page-header">
+        <h1>Markdown 渲染系统</h1>
+        <p>基于模块化架构的完整 Markdown 渲染系统</p>
+      </div>
 
-        <ControlPanel config={config} onChange={handleConfigChange} />
+      <div className="editor-wrapper">
+        <MarkdownEditor
+          initialMarkdown={SAMPLE_MARKDOWN}
+          theme={theme}
+        />
+      </div>
 
-        <Card title="示例文档" style={{ marginTop: '16px' }}>
-          <Space direction="vertical" style={{ width: '100%' }}>
-            <Button type="primary" onClick={loadSimpleMermaidExample} block>
-              加载简单Mermaid示例
-            </Button>
-            <Button onClick={loadMermaidExample} block>
-              加载完整Mermaid图表示例
-            </Button>
-            <Button onClick={loadOriginalExample} block>
-              加载原始示例
-            </Button>
-          </Space>
-        </Card>
-      </Sider>
-      <Layout>
-        <Content className={styles.content} style={{ background: themeConfig.backgroundColor }}>
-          <Card
-            bordered={false}
-            style={{
-              background: themeConfig.backgroundColor,
-              color: themeConfig.textColor
-            }}
-          >
-            <Tabs
-              activeKey={activeTab}
-              onChange={setActiveTab}
-              className={styles.tabContent}
-            >
-              <TabPane
-                tab={<span><BookOutlined />预览</span>}
-                key="preview"
-              >
-                <div
-                  className={styles.previewContainer}
-                  style={{
-                    background: themeConfig.backgroundColor,
-                    color: themeConfig.textColor,
-                    borderColor: themeConfig.borderColor
-                  }}
-                >
-                  {renderMarkdownContent()}
-                </div>
-              </TabPane>
+      <div className="module-info">
+        <h2>系统核心模块</h2>
+        <div className="module-grid">
+          <div className="module-card">
+            <h3>核心解析模块</h3>
+            <p>将 Markdown 文本解析为结构化的 AST</p>
+            <ul>
+              <li>Tokenizer: 词法分析</li>
+              <li>Parser: 语法分析</li>
+              <li>ASTBuilder: 构建抽象语法树</li>
+            </ul>
+          </div>
 
-              <TabPane
-                tab={<span><EditOutlined />编辑</span>}
-                key="editor"
-              >
-                <div
-                  className={styles.editorContainer}
-                  style={{ borderColor: themeConfig.borderColor }}
-                >
-                  <MonacoEditor
-                    language="markdown"
-                    theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                    value={content}
-                    onChange={(value) => setContent(value || '')}
-                    options={{
-                      wordWrap: 'on',
-                      minimap: { enabled: true },
-                      fontSize: 14,
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                    }}
-                  />
-                </div>
-              </TabPane>
+          <div className="module-card">
+            <h3>渲染处理模块</h3>
+            <p>将 AST 渲染为 HTML 或 React 组件</p>
+            <ul>
+              <li>HtmlRenderer: HTML 渲染器</li>
+              <li>CustomRenderer: 自定义组件渲染器</li>
+              <li>StyleMapper: 样式映射器</li>
+            </ul>
+          </div>
 
-              <TabPane
-                tab={<span><SettingOutlined />设置</span>}
-                key="settings"
-              >
-                <Card title="Markdown渲染设置" className={styles.settingsContainer}>
-                  <p>您可以在右侧控制面板中调整Markdown渲染设置。</p>
-                </Card>
-              </TabPane>
+          <div className="module-card">
+            <h3>插件系统模块</h3>
+            <p>提供可扩展的插件机制</p>
+            <ul>
+              <li>PluginManager: 插件管理器</li>
+              <li>PluginTypes: 插件类型定义</li>
+              <li>内置插件: 表格、任务列表等</li>
+            </ul>
+          </div>
 
-              <TabPane
-                tab={<span><LineChartOutlined />性能</span>}
-                key="performance"
-              >
-                <PerformancePanel />
-              </TabPane>
-            </Tabs>
-          </Card>
-        </Content>
-      </Layout>
-      <Sider
-        width={240}
-        theme={theme === 'dark' ? 'dark' : 'light'}
-        style={{
-          background: themeConfig.backgroundColor,
-        }}
-        className={styles.sidebar}
-      >
-        <Title level={3} className={styles.pageTitle} style={{ color: themeConfig.headingColor }}>
-          MD渲染
-        </Title>
+          <div className="module-card">
+            <h3>扩展功能模块</h3>
+            <p>提供高级功能支持</p>
+            <ul>
+              <li>SyntaxHighlighter: 代码高亮</li>
+              <li>MathRenderer: 数学公式</li>
+              <li>DiagramRenderer: 图表渲染</li>
+            </ul>
+          </div>
 
-        {config.enableToc && headings.length > 0 && (
-          <Card title="目录导航" size="small" style={{ marginTop: '16px' }}>
-            <TableOfContents headings={headings} affixed={false} />
-          </Card>
-        )}
-      </Sider>
-    </Layout>
+          <div className="module-card">
+            <h3>主题与样式模块</h3>
+            <p>管理主题和样式</p>
+            <ul>
+              <li>ThemeManager: 主题管理器</li>
+              <li>StyleGenerator: 样式生成器</li>
+              <li>内置主题: 浅色、深色、护眼</li>
+            </ul>
+          </div>
+
+          <div className="module-card">
+            <h3>工具与工具模块</h3>
+            <p>提供辅助工具和性能监控</p>
+            <ul>
+              <li>MarkdownUtils: Markdown 工具类</li>
+              <li>PerformanceMonitor: 性能监控</li>
+              <li>StateManager: 状态管理</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default React.memo(MarkdownLearningPage);
+export default RenderMDPage;

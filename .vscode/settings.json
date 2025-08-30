@@ -3,8 +3,17 @@
     "Deque",
     "formily",
     "katex",
+    "lengthoflis",
+    "linktable",
+    "mathjax",
+    "mozjpeg",
     "nums",
-    "perfor"
+    "perfor",
+    "pngquant",
+    "proptypes",
+    "Sider",
+    "skiplist",
+    "treemap"
   ],
   "apiCenterServerPort": 10000
 }
