@@ -49,8 +49,26 @@
   height: 100%;
   background-color: #ffffff;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-  padding: 16px;
   overflow-y: auto;
+}
+
+.tocPanel {
+  margin-bottom: 0;
+  z-index: 10;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  padding: 16px;
+
+  :global(.ant-divider) {
+    margin: 12px 0;
+  }
+
+  :global(.ant-typography) {
+    margin-bottom: 0;
+  }
 }
 
 .tocHeader {
@@ -63,6 +81,14 @@
 .tocHeading {
   margin-bottom: 0 !important;
   font-weight: 600;
+}
+
+.collapseButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tocList {
@@ -117,7 +143,7 @@
   }
 }
 
-
+// 暗色主题
 :global([data-theme="dark"]) {
   .tocWrapper {
     .iconButton {
@@ -132,22 +158,26 @@
   .tocContainer {
     background-color: #141414;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  }
 
-    .tocHeading {
+  .tocPanel {
+    background-color: #141414;
+  }
+
+  .tocHeading {
+    color: #e8e8e8;
+  }
+
+  .tocItem {
+    a {
       color: #e8e8e8;
-    }
 
-    .tocItem {
-      a {
-        color: #e8e8e8;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
 
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        &.active {
-          background-color: rgba(255, 255, 255, 0.1);
-        }
+      &.active {
+        background-color: rgba(255, 255, 255, 0.1);
       }
     }
   }
@@ -157,6 +187,7 @@
   }
 }
 
+// 护眼主题
 :global([data-theme="sepia"]) {
   .tocWrapper {
     .iconButton {
@@ -171,22 +202,26 @@
   .tocContainer {
     background-color: #f8f2e3;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
 
-    .tocHeading {
+  .tocPanel {
+    background-color: #f8f2e3;
+  }
+
+  .tocHeading {
+    color: #5b4636;
+  }
+
+  .tocItem {
+    a {
       color: #5b4636;
-    }
 
-    .tocItem {
-      a {
-        color: #5b4636;
+      &:hover {
+        background-color: rgba(91, 70, 54, 0.05);
+      }
 
-        &:hover {
-          background-color: rgba(91, 70, 54, 0.05);
-        }
-
-        &.active {
-          background-color: rgba(91, 70, 54, 0.1);
-        }
+      &.active {
+        background-color: rgba(91, 70, 54, 0.1);
       }
     }
   }
