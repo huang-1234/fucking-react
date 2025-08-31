@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { CoreParser } from '../modules/core-parser';
 import { RenderProcessor } from '../modules/renderer';
-import {  PluginManager } from '../modules/plugin';
+import { PluginManager } from '../modules/plugin';
 import { TablePlugin, TaskListPlugin, TableOfContentsPlugin, FootnotePlugin } from '../modules/plugin/BuiltinPlugins';
 import SyntaxHighlighter from '../modules/extensions/SyntaxHighlighter';
 import MathRenderer from '../modules/extensions/MathRenderer';
@@ -10,6 +10,8 @@ import { ThemeManager } from '../modules/theme/ThemeManager';
 import { ThemeName } from '../modules/theme/ThemeDefinitions';
 import { PerformanceMonitor } from '../modules/utils';
 import './MarkdownEditor.less';
+import WrapSplitter from './WrapSplitter';
+import CodeBlock from './CodeBlock';
 
 interface MarkdownEditorProps {
   /** @description 初始Markdown内容 */
@@ -20,11 +22,8 @@ interface MarkdownEditorProps {
   readOnly?: boolean;
 }
 
-const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
-  initialMarkdown = '# 欢迎使用 Markdown 编辑器\n\n这是一个示例文档。',
-  theme = ThemeName.LIGHT,
-  readOnly = false
-}) => {
+const MarkdownEditor: React.FC<MarkdownEditorProps> = (props: MarkdownEditorProps) => {
+  const { initialMarkdown = '# 欢迎使用 Markdown 编辑器\n\n这是一个示例文档。', theme = ThemeName.LIGHT, readOnly = false } = props || {};
   /** @description Markdown内容 */
   const [markdown, setMarkdown] = useState(initialMarkdown);
   /** @description 渲染内容 */
@@ -125,46 +124,68 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     setActiveTheme(newTheme);
   };
 
+  const leftPanel = useMemo(() => {
+    if (!readOnly) {
+      return <div className="editor-input">
+        <CodeBlock
+          language="markdown"
+          code={markdown}
+          onChange={(value: string) => setMarkdown(value)}
+          placeholder="输入 Markdown 内容..."
+          className="markdown-textarea"
+          resizable={true}
+          minHeight={800}
+          maxHeight={1000}
+          height="100%"
+          width="100%"
+        />
+      </div>
+    }
+  }, []);
+  const rightPanel = useMemo(() => {
+    return <div className="editor-preview">
+      <div className="markdown-preview" dangerouslySetInnerHTML={{ __html: renderedContent }} />
+    </div>
+  }, []);
+
   return (
     <div className={`markdown-editor theme-${activeTheme}`}>
-      <div className="editor-header">
-        <div className="editor-title">Markdown 编辑器</div>
-        <div className="editor-controls">
-          <select
-            title='select'
-            value={activeTheme}
-            onChange={(e) => handleThemeChange(e.target.value as ThemeName)}
-            className="theme-selector"
-          >
-            <option value={ThemeName.LIGHT}>浅色主题</option>
-            <option value={ThemeName.DARK}>深色主题</option>
-            <option value={ThemeName.SEPIA}>护眼主题</option>
-          </select>
-          <div className="render-stats">
-            渲染时间: {renderTime.toFixed(2)}ms
+      <WrapSplitter
+        className="editor-container"
+        style={{ minHeight: 600 }}
+        // leftPanelClassName="editor-input"
+        // rightPanelClassName="editor-preview"
+        leftPanel={leftPanel}
+        rightPanel={rightPanel}
+        defaultSizes={['50%', '50%']}
+        defaultEnabled={true}
+        onResize={() => { }}
+        onReset={() => { }}
+        header={<div className="editor-header">
+          <div className="editor-title">Markdown 编辑器111</div>
+          <div className="editor-controls">
+            <select
+              title='select'
+              value={activeTheme}
+              onChange={(e) => handleThemeChange(e.target.value as ThemeName)}
+              className="theme-selector"
+            >
+              <option value={ThemeName.LIGHT}>浅色主题</option>
+              <option value={ThemeName.DARK}>深色主题</option>
+              <option value={ThemeName.SEPIA}>护眼主题</option>
+            </select>
+            <div className="render-stats">
+              渲染时间: {renderTime.toFixed(2)}ms
+            </div>
           </div>
-        </div>
-      </div>
+        </div>}
+      >
 
-      <div className="editor-container">
-        {!readOnly && (
-          <div className="editor-input">
-            <textarea
-              value={markdown}
-              onChange={(e) => setMarkdown(e.target.value)}
-              placeholder="输入 Markdown 内容..."
-              className="markdown-textarea"
-            />
-          </div>
-        )}
+      </WrapSplitter>
 
-        <div className="editor-preview">
-          <div
-            className="markdown-preview"
-            dangerouslySetInnerHTML={{ __html: renderedContent }}
-          />
-        </div>
-      </div>
+
+      {/* <div className="editor-container">
+      </div> */}
     </div>
   );
 };
