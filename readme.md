@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.3.1-61dafb.svg)](https://reactjs.org/)
+[![React](https://img.shields.io/badge/React-19.1.1-61dafb.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0.0-646cff.svg)](https://vitejs.dev/)
 
 ## 🎯 项目概述
@@ -32,7 +32,7 @@ fucking-react/
 
 ## 🔧 核心技术栈
 
-- **前端框架**: React 18.3.1, Vue 3
+- **前端框架**: React 19.1.1, Vue 3
 - **开发语言**: TypeScript 5.8.3
 - **构建工具**: Vite 6.0.0
 - **包管理**: pnpm 10.13.1 (Workspace)
