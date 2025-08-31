@@ -22,7 +22,7 @@ enum DFSAlgorithm {
   NUM_ISLANDS = 'num_islands'
 }
 
-const DFSVisualizer: React.FC = () => {
+export const DFSVisualizer: React.FC = () => {
   // 算法模式和类型
   const [mode, setMode] = useState<DFSMode>(DFSMode.GRAPH);
   const [algorithm, setAlgorithm] = useState<DFSAlgorithm>(DFSAlgorithm.RECURSIVE);
@@ -758,4 +758,4 @@ function numIslands(grid) {
   );
 };
 
-export default DFSVisualizer;
+export default React.memo(DFSVisualizer);

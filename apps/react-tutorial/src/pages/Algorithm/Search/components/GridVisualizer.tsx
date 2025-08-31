@@ -54,7 +54,7 @@ function DefaultCellRenderer<T>(value: T, row: number, col: number, props: CellP
   }
 
   // For distance display
-  let displayValue: React.ReactNode = value;
+  let displayValue: React.ReactNode = value as React.ReactNode;
   if (distance !== undefined && distance >= 0) {
     displayValue = (
       <>

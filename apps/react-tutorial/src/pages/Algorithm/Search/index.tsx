@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Card, Typography, Row, Col, Tabs, Space } from 'antd';
 import {
   NodeIndexOutlined,
@@ -6,7 +6,8 @@ import {
   ApartmentOutlined,
   ClusterOutlined
 } from '@ant-design/icons';
-import DFSVisualizer from './DFS/DFSVisualizer';
+import loadable from '@loadable/component';
+const DFSVisualizer = loadable(() => import('./DFS/DFSVisualizer'));
 import { renderReactNode } from '@/utils/react';
 
 const { Title, Paragraph } = Typography;
@@ -43,7 +44,9 @@ const SearchAlgorithms: React.FC = () => {
         '迷宫生成与求解',
         '岛屿计数问题'
       ],
-      component: <DFSVisualizer />
+      component: <Suspense fallback={<div>Loading...</div>}>
+        <DFSVisualizer />
+      </Suspense>
     },
     {
       key: 'bfs',
