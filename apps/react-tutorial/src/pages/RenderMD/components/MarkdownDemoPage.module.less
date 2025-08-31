@@ -1,0 +1,58 @@
+.demoPage {
+  padding: 20px;
+  min-width: 1200px;
+  margin: 0 auto;
+}
+
+.settingsCard {
+  margin-bottom: 20px;
+}
+
+.mainContent {
+  display: flex;
+  gap: 20px;
+}
+
+.tocContainer {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.contentContainer {
+  flex: 1;
+}
+
+.controlContainer {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.editorCard {
+  margin-bottom: 20px;
+}
+
+.componentShowcase {
+  margin-top: 20px;
+}
+
+.componentTitle {
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+.componentExample {
+  margin-bottom: 24px;
+}
+
+// 主题相关样式
+:global([data-theme="dark"]) {
+  .demoPage {
+    background-color: #141414;
+  }
+}
+
+:global([data-theme="sepia"]) {
+  .demoPage {
+    background-color: #f8f2e3;
+  }
+}

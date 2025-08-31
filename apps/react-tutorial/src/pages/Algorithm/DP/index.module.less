@@ -1,0 +1,49 @@
+.dpContainer {
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 6px;
+
+  .header {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .description {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
+
+  .cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .algorithmCard {
+    height: 100%;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .cardMeta {
+      margin-top: 12px;
+    }
+  }
+
+  .questionSection {
+    margin-top: 32px;
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+  }
+}

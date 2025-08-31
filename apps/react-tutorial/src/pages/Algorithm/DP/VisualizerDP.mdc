@@ -1,0 +1,336 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 动态规划可视化：最长公共子串算法实现方案
+
+## 1. 算法可视化设计思路
+我将设计一个交互式可视化组件，展示最长公共子串的动态规划求解过程，核心功能包括：
+- **实时DP表渲染**：通过二维表格直观展示状态转移过程
+- **状态跟踪**：高亮当前计算单元格及依赖关系
+- **路径回溯**：可视化最长公共子串的发现路径
+- **性能监控**：实时显示时间/空间复杂度变化
+
+基于技术栈，我选择以下方案：
+```mermaid
+graph TD
+    A[可视化组件] --> B[DP表格渲染]
+    A --> C[状态转移动画]
+    A --> D[路径回溯展示]
+    B --> E[使用Ant Design Table]
+    C --> F[使用D3.js动画]
+    D --> G[使用ECharts关系图]
+```
+
+## 2. 核心组件实现
+
+### 2.1 DP表格可视化组件
+```jsx
+import React, { useState, useEffect } from 'react';
+import { Table } from 'antd';
+
+const DPTableVisualizer = ({ str1, str2 }) => {
+  const [dp, setDp] = useState([]);
+  const [maxLength, setMaxLength] = useState(0);
+  const [endIndex, setEndIndex] = useState(0);
+  const [steps, setSteps] = useState([]);
+
+  // 初始化DP表
+  useEffect(() => {
+    const m = str1.length;
+    const n = str2.length;
+    const newDp = Array(m + 1).fill().map(() => Array(n + 1).fill(0));
+    const newSteps = [];
+    let maxLen = 0;
+    let endIdx = 0;
+
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        // 记录当前计算步骤
+        newSteps.push({
+          i, j,
+          prev: { i: i-1, j: j-1 },
+          matched: str1[i-1] === str2[j-1]
+        });
+
+        if (str1[i-1] === str2[j-1]) {
+          newDp[i][j] = newDp[i-1][j-1] + 1;
+          if (newDp[i][j] > maxLen) {
+            maxLen = newDp[i][j];
+            endIdx = i-1;
+          }
+        }
+      }
+    }
+
+    setDp(newDp);
+    setMaxLength(maxLen);
+    setEndIndex(endIdx);
+    setSteps(newSteps);
+  }, [str1, str2]);
+
+  // 生成表格列
+  const columns = [
+    { title: '', dataIndex: 'index', key: 'index', width: 50 },
+    ...str2.split('').map((char, j) => ({
+      title: char,
+      dataIndex: j.toString(),
+      key: j,
+      render: (text, record, rowIndex) => {
+        const step = steps.find(s => s.i === rowIndex && s.j === j);
+        return (
+          <div className={`cell ${step?.matched ? 'matched' : ''}`}>
+            {text}
+          </div>
+        );
+      }
+    }))
+  ];
+
+  // 生成表格数据
+  const data = dp.map((row, i) => ({
+    key: i,
+    index: i > 0 ? str1[i-1] : '',
+    ...Object.fromEntries(row.map((val, j) => [j, val]))
+  }));
+
+  return (
+    <div className="dp-visualizer">
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        bordered
+        size="small"
+      />
+      <div className="result">
+        最长公共子串: {str1.slice(endIndex - maxLength + 1, endIndex + 1)}
+      </div>
+    </div>
+  );
+};
+```
+
+### 2.2 动态路径回溯组件
+```jsx
+import React, { useRef, useEffect } from 'react';
+import * as echarts from 'echarts';
+
+const PathVisualizer = ({ str1, str2, dp }) => {
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    if (!dp.length) return;
+
+    const chart = echarts.init(chartRef.current);
+    const nodes = [];
+    const links = [];
+
+    // 添加节点
+    for (let i = 0; i <= str1.length; i++) {
+      for (let j = 0; j <= str2.length; j++) {
+        nodes.push({
+          name: `(${i},${j})`,
+          value: dp[i]?.[j] || 0,
+          x: j * 100,
+          y: i * 100,
+          itemStyle: {
+            color: dp[i]?.[j] > 0 ? '#91cc75' : '#eee'
+          }
+        });
+      }
+    }
+
+    // 添加边（状态转移关系）
+    for (let i = 1; i <= str1.length; i++) {
+      for (let j = 1; j <= str2.length; j++) {
+        if (str1[i-1] === str2[j-1]) {
+          links.push({
+            source: `(${i-1},${j-1})`,
+            target: `(${i},${j})`,
+            lineStyle: {
+              color: '#91cc75',
+              width: 3
+            }
+          });
+        }
+      }
+    }
+
+    const option = {
+      tooltip: {},
+      animation: true,
+      series: [{
+        type: 'graph',
+        layout: 'none',
+        symbolSize: 30,
+        roam: true,
+        label: {
+          show: true,
+          formatter: '{b}\n{c}'
+        },
+        edgeSymbol: ['none', 'arrow'],
+        edgeSymbolSize: [0, 10],
+        links,
+        data: nodes
+      }]
+    };
+
+    chart.setOption(option);
+    return () => chart.dispose();
+  }, [dp, str1, str2]);
+
+  return <div ref={chartRef} style={{ height: '500px', width: '100%' }} />;
+};
+```
+
+## 3. 可视化实现原理
+
+### 3.1 动态规划状态转移
+状态转移方程可视化展示：
+```markdown
+if str1[i-1] == str2[j-1]:
+    dp[i][j] = dp[i-1][j-1] + 1   // 匹配成功，长度增加
+else:
+    dp[i][j] = 0                  // 匹配失败，重置长度
+```
+
+### 3.2 可视化交互设计
+1. **分步执行控制**：提供播放/暂停/重置按钮
+2. **单元格高亮规则**：
+   - 当前计算单元格：黄色边框
+   - 匹配成功单元格：绿色背景
+   - 最长子串路径：红色边框
+3. **性能监控面板**：
+   ```javascript
+   const PerformanceMonitor = ({ m, n }) => {
+     const timeComplexity = `O(${m}×${n}) = O(${m*n})`;
+     const spaceComplexity = `O(${m}×${n})`;
+
+     return (
+       <div className="performance-panel">
+         <h3>性能分析</h3>
+         <p>时间复杂度: {timeComplexity}</p>
+         <p>空间复杂度: {spaceComplexity}</p>
+         <p>实际计算步数: {m*n}</p>
+       </div>
+     );
+   };
+   ```
+
+## 4. MDX文档实现方案
+
+### 4.1 文件结构
+```markdown
+src/
+  components/
+    AlgorithmVisualizer/
+      DPVisualizer.jsx
+      PathVisualizer.jsx
+      PerformanceMonitor.jsx
+  pages/
+    Algorithm/
+      DP/
+        modules/
+          LCSVisualizer.mdx
+```
+
+### 4.2 MDX文档内容示例
+```mdx
+import { DPTableVisualizer, PathVisualizer } from '@components/AlgorithmVisualizer';
+```
+## 最长公共子串可视化说明
+
+### 算法原理
+动态规划求解最长公共子串的核心思想是通过二维DP表记录匹配状态：
+
+```js
+// 状态转移方程
+dp[i][j] = (str1[i-1] === str2[j-1])
+           ? dp[i-1][j-1] + 1
+           : 0;
+```
+
+### 交互式演示
+```jsx
+<DPTableVisualizer
+  str1="aaabbbccc"
+  str2="abbbcd"
+/>
+
+<PathVisualizer
+  str1="aaabbbccc"
+  str2="abbbcd"
+/>
+```
+
+
+```jsx
+<PerformanceMonitor
+  m={str1.length}
+  n={str2.length}
+/>
+```
+
+### 性能分析
+| 指标       | 值             |
+| ---------- | -------------- |
+| 时间复杂度 | O(m*n)         |
+| 空间复杂度 | O(m*n)         |
+| 实际计算量 | 9*6 = 54次比较 |
+
+## 5. 技术栈整合要点
+
+1. **Ant Design集成**：使用`Table`组件渲染DP表，利用其内置的分页、排序功能处理大规模数据
+2. **ECharts应用**：通过关系图展示状态转移路径
+3. **D3.js优化**：对于超长字符串(>1000字符)，使用D3.js实现虚拟滚动：
+```js
+   d3.select('.dp-table')
+     .selectAll('tr')
+     .data(rows)
+     .join('tr')
+     .selectAll('td')
+     .data(d => d)
+     .join('td')
+     .text(d => d.value);
+```
+4. **Monaco Editor集成**：在MDX文档中嵌入代码编辑器：
+   ```jsx
+   import MonacoEditor from '@monaco-editor/react';
+
+   <MonacoEditor
+     height="300px"
+     language="javascript"
+     value={dpCode}
+     options={{ readOnly: true }}
+   />
+   ```
+
+## 6. 可视化效果优化策略
+
+1. **大数据优化**：
+   - 分块计算：当字符串长度>500时，自动切换为滚动数组实现
+   - 增量渲染：只渲染可见区域的DP单元格
+2. **交互增强**：
+   ```jsx
+   const handleCellHover = (i, j) => {
+     // 高亮相关依赖单元格
+     highlightCells([
+       {i, j},           // 当前单元格
+       {i: i-1, j: j-1}, // 依赖的前置状态
+       {i: i-1, j},      // 上一行同列
+       {i, j: j-1}       // 同行前列
+     ]);
+   };
+   ```
+3. **动画控制**：
+   ```js
+   const animateStep = (step) => {
+     // 使用d3过渡动画
+     d3.select(`#cell-${step.i}-${step.j}`)
+       .transition()
+       .duration(500)
+       .style('background-color', step.matched ? '#91cc75' : '#ff7875');
+   };
+   ```

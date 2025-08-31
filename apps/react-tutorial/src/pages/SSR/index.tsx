@@ -3,6 +3,7 @@ import { Card, Tabs, Spin } from 'antd';
 import SSRBasic from './SSRBasic';
 import Hydration from './Hydration';
 import StreamingSSR from './StreamingSSR';
+import stylesLayout from '@/layouts/container.module.less';
 
 const { TabPane } = Tabs;
 
@@ -12,7 +13,7 @@ const { TabPane } = Tabs;
  */
 const SSRPage: React.FC = () => {
   return (
-    <div className="ssr-container" style={{ padding: '20px' }}>
+    <div className={stylesLayout.contentLayout}>
       <Card title="React 19 服务端渲染 (SSR)" bordered={false}>
         <p>
           React 19引入了多项SSR改进，包括流式SSR、选择性水合、服务器组件等，

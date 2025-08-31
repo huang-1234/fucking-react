@@ -3,8 +3,8 @@
  */
 
 // 使用 vitest 框架的单元测试
-const { describe, it, expect, beforeEach } = require("vitest");
-const { Graph, topologicalSort } = require("./graph");
+import { describe, it, expect, beforeEach } from "vitest";
+import { Graph, topologicalSort } from "./graph";
 
 describe("Graph 类测试", () => {
   /** @type {Graph} */

@@ -3,9 +3,26 @@ import CanvasPanel from '@/modules/CanvasPanel';
 import RightCanvasProperties from './modules/RightCanvasProperties';
 import LeftCanvasMaterials from './modules/LeftCanvasMaterials';
 import HeaderCanvasToolBar from './modules/HeaderCanvasToolBar';
+import ShanghaicompositeIndex from './modules/KLineGraph/ShanghaicompositeIndex';
+import { Tabs } from 'antd';
+import stylesLayout from '@/layouts/container.module.less';
 
-function CanvasPanelPage() {
+function KLineGraph() {
+  return (
+    <div style={{
+      width: '100%',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <ShanghaicompositeIndex />
+    </div>
+  )
+}
 
+function ModuleCanvasPanel() {
   return (
     <div>
       {/* Header Tools 工具栏 */}
@@ -19,6 +36,21 @@ function CanvasPanelPage() {
         {/* 画布右侧属性 */}
         <RightCanvasProperties />
       </div>
+    </div>
+  )
+}
+
+function CanvasPanelPage() {
+  return (
+    <div className={stylesLayout.contentLayout}>
+      <Tabs>
+        <Tabs.TabPane tab="KLineGraph" key="KLineGraph">
+          <KLineGraph />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="CanvasPanel" key="CanvasPanel">
+          <ModuleCanvasPanel />
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   )
 }

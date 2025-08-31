@@ -1,0 +1,232 @@
+.tocWrapper {
+  position: fixed;
+  left: 0;
+  top: 60px;
+  height: calc(100vh - 60px);
+  z-index: 100;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: row;
+
+  &.expanded {
+    left: 0;
+  }
+
+  &.collapsed {
+    left: -240px;
+  }
+}
+
+.toggleButton {
+  position: absolute;
+  right: -40px;
+  top: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  &.showToggle {
+    opacity: 1;
+  }
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 0 4px 4px 0;
+  background-color: #ffffff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+.tocContainer {
+  width: 240px;
+  height: 100%;
+  background-color: #ffffff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.tocPanel {
+  margin-bottom: 0;
+  z-index: 10;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  padding: 16px;
+
+  :global(.ant-divider) {
+    margin: 12px 0;
+  }
+
+  :global(.ant-typography) {
+    margin-bottom: 0;
+  }
+}
+
+.tocHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tocHeading {
+  margin-bottom: 0 !important;
+  font-weight: 600;
+}
+
+.collapseButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tocList {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+
+  .tocItem {
+    margin-bottom: 8px;
+
+    a {
+      display: block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      &.active {
+        background-color: rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+      }
+    }
+
+    &.level1 {
+      padding-left: 0;
+    }
+
+    &.level2 {
+      padding-left: 12px;
+    }
+
+    &.level3 {
+      padding-left: 24px;
+    }
+
+    &.level4 {
+      padding-left: 36px;
+    }
+
+    &.level5 {
+      padding-left: 48px;
+    }
+
+    &.level6 {
+      padding-left: 60px;
+    }
+  }
+}
+
+// 暗色主题
+:global([data-theme="dark"]) {
+  .tocWrapper {
+    .iconButton {
+      background-color: #141414;
+
+      &:hover {
+        background-color: #1f1f1f;
+      }
+    }
+  }
+
+  .tocContainer {
+    background-color: #141414;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .tocPanel {
+    background-color: #141414;
+  }
+
+  .tocHeading {
+    color: #e8e8e8;
+  }
+
+  .tocItem {
+    a {
+      color: #e8e8e8;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      &.active {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  .collapseButton {
+    color: #e8e8e8;
+  }
+}
+
+// 护眼主题
+:global([data-theme="sepia"]) {
+  .tocWrapper {
+    .iconButton {
+      background-color: #f8f2e3;
+
+      &:hover {
+        background-color: #f0e8d6;
+      }
+    }
+  }
+
+  .tocContainer {
+    background-color: #f8f2e3;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .tocPanel {
+    background-color: #f8f2e3;
+  }
+
+  .tocHeading {
+    color: #5b4636;
+  }
+
+  .tocItem {
+    a {
+      color: #5b4636;
+
+      &:hover {
+        background-color: rgba(91, 70, 54, 0.05);
+      }
+
+      &.active {
+        background-color: rgba(91, 70, 54, 0.1);
+      }
+    }
+  }
+
+  .collapseButton {
+    color: #5b4636;
+  }
+}

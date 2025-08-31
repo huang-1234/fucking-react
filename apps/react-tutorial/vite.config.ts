@@ -4,6 +4,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import viteImagemin from 'vite-plugin-imagemin';
 import path from 'path';
 import { cdnResources } from '../../global/cdn/base';
+import { codeInspectorPlugin } from 'code-inspector-plugin';
 // console.log('cdnResources', cdnResources)
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,6 +22,10 @@ export default defineConfig({
       mozjpeg: { quality: 50 },
       pngquant: { quality: [0.8, 0.9] },
     }),
+    codeInspectorPlugin({
+      bundler: 'vite',
+      editor: 'cursor',
+    }),
   ],
   css: {
     preprocessorOptions: {
@@ -36,8 +41,10 @@ export default defineConfig({
     alias: {
       '@@/global': path.resolve(__dirname, '../../global'),
       '@': path.resolve(__dirname, 'src'),
+      '@@/docs': path.resolve(__dirname, '../../docs'),
       '~antd': path.resolve(__dirname, 'node_modules/antd'),
       '~antd/es/style/themes/index.less': path.resolve(__dirname, 'node_modules/antd/es/style/themes/index.less'),
+      '@fucking-algorithm/algorithm': path.resolve(__dirname, '../../libs/algorithm/src'),
     },
   },
   build: {

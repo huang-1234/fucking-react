@@ -249,7 +249,7 @@ function topologicalSort(graph) {
   return result.length === graph.getVertices().length ? result : [];
 }
 
-module.exports = {
+export {
   Graph,
   topologicalSort
-};
+}

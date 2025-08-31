@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, Card, Typography, Divider, Space } from 'antd';
 import ResizeWindowDemo from './components/ResizeWindowDemo';
 import './index.less';
+import stylesLayout from '@/layouts/container.module.less';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -14,7 +15,7 @@ const ComponentsApply: React.FC = () => {
   const [activeKey, setActiveKey] = useState('resize-window');
 
   return (
-    <div className="components-apply-page">
+    <div className={stylesLayout.contentLayout}>
       <Card className="page-header">
         <Title level={2}>组件应用展示</Title>
         <Paragraph>

@@ -1,0 +1,50 @@
+.performancePanel {
+  margin-top: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.metricsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--md-border-color, #e1e4e8);
+  }
+
+  th {
+    font-weight: bold;
+    background-color: var(--md-table-header-bg, #f6f8fa);
+  }
+
+  tr:nth-child(even) {
+    background-color: var(--md-code-bg-color, #f6f8fa);
+  }
+
+  tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+:global([data-theme="dark"]) {
+  .metricsTable {
+    th {
+      background-color: var(--md-table-header-bg, #161b22);
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--md-code-bg-color, #161b22);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+}

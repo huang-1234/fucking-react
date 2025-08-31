@@ -8,6 +8,8 @@ const FeatureExplorer = loadable(() => import('./components/FeatureExplorer'));
 const ProtoErrorBoundary = loadable(() => import('./components/ProtoErrorBoundary'));
 import { loadProto } from './lib/protobuf-service';
 import styles from './index.module.less';
+import stylesLayout from '@/layouts/container.module.less';
+import classNames from 'classnames';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -93,7 +95,7 @@ const ProtobufPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={classNames(styles.container, stylesLayout.contentLayout)}>
       <div className={styles.header}>
         <Title level={2}>Protobuf.js 可视化工具</Title>
         {renderProtoSelector()}

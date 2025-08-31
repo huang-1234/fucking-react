@@ -1,0 +1,30 @@
+.virtualContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.virtualRow {
+  padding: 8px 0;
+  box-sizing: border-box;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+}
+
+:global([data-theme="dark"]) {
+  .virtualRow {
+    &:not(:last-child) {
+      border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+}
+
+:global([data-theme="sepia"]) {
+  .virtualRow {
+    &:not(:last-child) {
+      border-bottom-color: rgba(91, 70, 54, 0.05);
+    }
+  }
+}
