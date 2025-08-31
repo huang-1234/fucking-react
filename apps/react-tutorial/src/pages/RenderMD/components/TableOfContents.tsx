@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Affix, Button, Tooltip } from 'antd';
-import { MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { Typography, Affix, Button, Tooltip, Card, Divider } from 'antd';
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UnorderedListOutlined,
+  OrderedListOutlined
+} from '@ant-design/icons';
 import type { Heading } from '../types/markdown';
 import styles from './TableOfContents.module.less';
 
@@ -88,7 +93,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
         <Tooltip title={expanded ? "收起目录" : "展开目录"} placement="right">
           <Button
             type="text"
-            icon={expanded ? <MenuFoldOutlined /> : <MenuOutlined />}
+            icon={expanded ? <MenuFoldOutlined /> : <UnorderedListOutlined />}
             onClick={toggleExpanded}
             className={styles.iconButton}
           />
@@ -97,40 +102,46 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
 
       {/* 目录内容 */}
       <div className={styles.tocContainer}>
-        <div className={styles.tocHeader}>
-          <Title level={5} className={styles.tocHeading}>目录</Title>
-          <Button
-            type="text"
-            icon={<MenuUnfoldOutlined />}
-            onClick={toggleExpanded}
-            className={styles.collapseButton}
-          />
-        </div>
-        <ul className={styles.tocList}>
-          {headings.map(heading => (
-            <li
-              key={heading.id}
-              className={`${styles.tocItem} ${styles[`level${heading.level}`]}`}
-            >
-              <a
-                href={`#${heading.id}`}
-                className={activeId === heading.id ? styles.active : ''}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const element = document.getElementById(heading.id);
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                    // 更新URL，但不刷新页面
-                    window.history.pushState(null, '', `#${heading.id}`);
-                    setActiveId(heading.id);
-                  }
-                }}
+        <Card className={styles.tocPanel} bordered={false}>
+          <div className={styles.tocHeader}>
+            <Title level={4} className={styles.tocHeading}>文档目录</Title>
+            <Button
+              type="text"
+              icon={<MenuUnfoldOutlined />}
+              onClick={toggleExpanded}
+              className={styles.collapseButton}
+            />
+          </div>
+
+          <Divider orientation="left">目录导航</Divider>
+
+          <ul className={styles.tocList}>
+            {headings.map(heading => (
+              <li
+                key={heading.id}
+                className={`${styles.tocItem} ${styles[`level${heading.level}`]}`}
               >
-                {heading.text}
-              </a>
-            </li>
-          ))}
-        </ul>
+                <a
+                  href={`#${heading.id}`}
+                  className={activeId === heading.id ? styles.active : ''}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById(heading.id);
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                      // 更新URL，但不刷新页面
+                      window.history.pushState(null, '', `#${heading.id}`);
+                      setActiveId(heading.id);
+                    }
+                  }}
+                >
+                  {heading.level === 1 ? <OrderedListOutlined style={{ marginRight: '8px' }} /> : null}
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Card>
       </div>
     </div>
   );

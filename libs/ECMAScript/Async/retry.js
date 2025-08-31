@@ -1,9 +1,10 @@
 /**
  * 带有超时和重试功能的异步函数执行器
- * @param {Function} fn 要执行的异步函数
+ * @template T 异步函数的返回类型
+ * @param {() => Promise<T>} fn 要执行的异步函数
  * @param {number} retryTimes 重试次数
  * @param {number} timeout 超时时间(毫秒)
- * @returns {Promise<any>} 异步函数的执行结果
+ * @returns {Promise<T>} 异步函数的执行结果
  */
 function runWithRetry(fn, retryTimes, timeout) {
   return new Promise((resolve, reject) => {

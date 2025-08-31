@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Typography, Tabs, Alert } from 'antd';
+import { Card, Typography, Tabs, Alert, Button } from 'antd';
 import { CodeOutlined, QuestionCircleOutlined, LineChartOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { HouseRobberQuestion } from './questions';
 import ExactKnapsackQuestion from './Visualizer/question2548';
@@ -8,17 +8,37 @@ import LongestCommonSubstringVisualizer from './questions/question_findLongestCo
 import ClimbStairsVisualizer from './questions/question70';
 import MinPathSumVisualizer from './questions/question64';
 import LongestIncreasingSubsequenceVisualizer from './questions/question300';
+import { useRouteListener, type RouteInfo } from '@/ahooks/sdt/router';
+import useUrlState from '@ahooksjs/use-url-state';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 const DynamicProgrammingPage: React.FC = () => {
+  const { currentPath, searchParams, blockNavigation } = useRouteListener({
+    onRouteChange: (routeInfo: RouteInfo) => {
+      console.log('路由变化:', routeInfo);
+    },
+    watchParams: true,
+    enablePreventLeave: true
+  });
+
+  const [urlState, setUrlState] = useUrlState({
+    activeKey: '1'
+  });
+
   return (
     <div className={styles.dpContainer}>
       <div className={styles.header}>
         <Title level={2}>动态规划算法可视化</Title>
         <Paragraph className={styles.description}>
           动态规划是一种通过将复杂问题分解为更简单的子问题来解决问题的方法。本页面提供了常见动态规划问题的可视化解决方案，帮助您理解动态规划的核心概念和状态转移过程。
+        </Paragraph>
+        <Paragraph>
+          当前路径: {currentPath}
+          查询参数: {searchParams.toString()}
+          <Button onClick={() => blockNavigation(true)}>启用离开阻止</Button>
+          <Button onClick={() => blockNavigation(false)}>禁用离开阻止</Button>
         </Paragraph>
       </div>
 
@@ -38,7 +58,14 @@ const DynamicProgrammingPage: React.FC = () => {
         style={{ marginBottom: 24 }}
       />
 
-      <Tabs defaultActiveKey="1">
+      <Tabs
+        defaultActiveKey="1"
+        onChange={(key) => {
+          blockNavigation(false);
+          setUrlState({ activeKey: key });
+        }}
+        activeKey={urlState.activeKey}
+      >
         <TabPane
           tab={<span><QuestionCircleOutlined />经典问题</span>}
           key="1"

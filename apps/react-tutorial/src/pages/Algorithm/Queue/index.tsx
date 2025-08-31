@@ -143,7 +143,7 @@ const queueTypes: QueueType[] = [
  */
 const QueueAlgorithms: React.FC = () => {
   return (
-    <div style={{ padding: '20px' }}>
+    <>
       <Space direction="vertical" style={{ width: '100%' }}>
         <Card>
           <Title level={2}>队列变种算法</Title>
@@ -163,37 +163,6 @@ const QueueAlgorithms: React.FC = () => {
               </TabPane>
             ))}
           </Tabs>
-          {/* <List
-            grid={{ gutter: 16, column: 2 }}
-            dataSource={queueTypes}
-            renderItem={item => (
-              <List.Item>
-                <Card
-                  title={
-                    <Space>
-                      {item.icon}
-                      <Text strong>{item.title}</Text>
-                    </Space>
-                  }
-                  extra={<Link to={item.path}>查看详情</Link>}
-                >
-                  <Paragraph>{item.description}</Paragraph>
-                  <Divider orientation="left">核心特性</Divider>
-                  <ul>
-                    {item.features.map((feature, index) => (
-                      <li key={index}>{feature}</li>
-                    ))}
-                  </ul>
-                  <Divider orientation="left">应用场景</Divider>
-                  <ul>
-                    {item.applications.map((app, index) => (
-                      <li key={index}>{app}</li>
-                    ))}
-                  </ul>
-                </Card>
-              </List.Item>
-            )}
-          /> */}
         </Card>
 
         <Tabs defaultActiveKey="overview" type="card">
@@ -313,7 +282,7 @@ const QueueAlgorithms: React.FC = () => {
           </TabPane>
         </Tabs>
       </Space>
-    </div>
+    </>
   );
 };
 

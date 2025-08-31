@@ -41,6 +41,7 @@ export default defineConfig({
     alias: {
       '@@/global': path.resolve(__dirname, '../../global'),
       '@': path.resolve(__dirname, 'src'),
+      '@@/docs': path.resolve(__dirname, '../../docs'),
       '~antd': path.resolve(__dirname, 'node_modules/antd'),
       '~antd/es/style/themes/index.less': path.resolve(__dirname, 'node_modules/antd/es/style/themes/index.less'),
       '@fucking-algorithm/algorithm': path.resolve(__dirname, '../../libs/algorithm/src'),
