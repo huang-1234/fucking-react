@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, Typography, List } from 'antd';
+import { Card, Typography, List, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import stylesLayout from '@/layouts/container.module.less';
+import { useRouteListener, type RouteInfo } from '@/ahooks/sdt/router';
 
 const { Title, Paragraph } = Typography;
 
@@ -54,10 +55,22 @@ const AlgorithmPage: React.FC = () => {
     label: item.title,
   }));
 
+  const { currentPath, searchParams, blockNavigation } = useRouteListener({
+    onRouteChange: (routeInfo: RouteInfo) => {
+      console.log('路由变化:', routeInfo);
+    },
+    watchParams: true,
+    enablePreventLeave: true
+  });
+
   return (
     <div className={stylesLayout.contentLayout}>
       <Title level={2}>算法可视化</Title>
       <Paragraph>
+        当前路径: {currentPath}
+        查询参数: {searchParams.toString()}
+        <Button onClick={() => blockNavigation(true)}>启用离开阻止</Button>
+        <Button onClick={() => blockNavigation(false)}>禁用离开阻止</Button>
       </Paragraph>
 
       {/* <Layout style={{ padding: '24px' }}>

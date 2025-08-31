@@ -21,6 +21,7 @@
     "antd": "5.26.7"
   },
   "dependencies": {
+    "@ahooksjs/use-url-state": "^3.5.1",
     "@ant-design/icons": "6.0.0",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@formily/antd-v5": "1.2.4",
@@ -32,6 +33,7 @@
     "@mdx-js/react": "^3.1.0",
     "@mdx-js/rollup": "^3.1.0",
     "@monaco-editor/react": "^4.7.0",
+    "ahooks": "^3.9.4",
     "antd": "^5",
     "axios": "1.11.0",
     "classnames": "^2.5.1",
