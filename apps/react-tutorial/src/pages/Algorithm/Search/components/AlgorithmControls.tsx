@@ -37,7 +37,7 @@ interface AlgorithmControlsProps {
   /** 速度改变回调 */
   onSpeedChange: (speed: number) => void;
   /** 步骤改变回调 */
-  onStepChange?: (step: number) => void;
+  onStepChange?: (step?: number | null) => void;
   /** 算法改变回调 */
   onAlgorithmChange?: (algorithm: string) => void;
 }
