@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, Typography } from 'antd';
 import WeChatPackets from './modules/WeChatPackets';
 import ProbabilityTheoryVisual from './modules/ProbabilityTheoryVisual';
+import PageContainer from '@/layouts/PageContainer';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -14,7 +15,7 @@ function ProbabilityTheoryPage() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <>
       <Title level={2}>概率论与统计</Title>
       <Paragraph>
         概率论是研究随机现象数量规律的数学分支，本模块展示了概率论中的重要概念和应用。
@@ -28,7 +29,7 @@ function ProbabilityTheoryPage() {
           <WeChatPackets />
         </TabPane>
       </Tabs>
-    </div>
+    </>
   );
 }
 

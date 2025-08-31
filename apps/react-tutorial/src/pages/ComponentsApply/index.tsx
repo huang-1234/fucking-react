@@ -15,7 +15,7 @@ const ComponentsApply: React.FC = () => {
   const [activeKey, setActiveKey] = useState('resize-window');
 
   return (
-    <div className={stylesLayout.contentLayout}>
+    <>
       <Card className="page-header">
         <Title level={2}>组件应用展示</Title>
         <Paragraph>
@@ -84,7 +84,7 @@ const ComponentsApply: React.FC = () => {
           </TabPane>
         </Tabs>
       </div>
-    </div>
+    </>
   );
 };
 

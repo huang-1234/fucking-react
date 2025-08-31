@@ -69,7 +69,7 @@ const AlgorithmPage: React.FC = () => {
   });
 
   return (
-    <div className={stylesLayout.contentLayout}>
+    <>
       <Title level={2}>算法可视化</Title>
       <Paragraph>
         当前路径: {currentPath}
@@ -77,25 +77,6 @@ const AlgorithmPage: React.FC = () => {
         <Button onClick={() => blockNavigation(true)}>启用离开阻止</Button>
         <Button onClick={() => blockNavigation(false)}>禁用离开阻止</Button>
       </Paragraph>
-
-      {/* <Layout style={{ padding: '24px' }}>
-        <Content>
-          <Typography>
-            <Title level={2}>算法可视化</Title>
-            <Paragraph>
-              本页面展示了各种算法可视化实现，包括最长递增子序列、堆、链表、图、概率论等。
-            </Paragraph>
-          </Typography>
-
-          <Tabs
-            defaultActiveKey="lengthoflis"
-            items={items}
-            tabPosition="left"
-            style={{ marginTop: 20 }}
-          />
-        </Content>
-      </Layout> */}
-
       <List
         grid={{ gutter: 16, column: 2 }}
         dataSource={algorithmList}
@@ -110,7 +91,7 @@ const AlgorithmPage: React.FC = () => {
           </List.Item>
         )}
       />
-    </div>
+    </>
   );
 };
 

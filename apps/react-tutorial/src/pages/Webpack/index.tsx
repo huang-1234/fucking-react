@@ -6,7 +6,6 @@ import ConfigFormily from './modules/ConfigFormily';
 import DependencyGraph from './modules/DependencyGraph/DependencyGraph';
 import { getWebpackStats } from '../../services/webpackService';
 import './index.less';
-import stylesLayout from '@/layouts/container.module.less';
 const { TabPane } = Tabs;
 
 const WebpackPage: React.FC = () => {
@@ -36,7 +35,7 @@ const WebpackPage: React.FC = () => {
   };
 
   return (
-    <div className={stylesLayout.contentLayout}>
+    <>
       <Card>
         <h1>Webpack 学习中心</h1>
         <p>
@@ -59,7 +58,7 @@ const WebpackPage: React.FC = () => {
           <DependencyGraph statsData={statsData} loading={loading} />
         </TabPane>
       </Tabs>
-    </div>
+    </>
   );
 };
 

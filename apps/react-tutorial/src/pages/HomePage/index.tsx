@@ -57,7 +57,7 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className={stylesLayout.contentLayout}>
+    <>
       <Card bordered={false}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
@@ -187,7 +187,7 @@ const HomePage: React.FC = () => {
           </div>
         </Space>
       </Card>
-    </div>
+    </>
   );
 };
 
