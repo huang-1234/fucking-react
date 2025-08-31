@@ -377,7 +377,7 @@ const MarkdownDemoPage: React.FC = () => {
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}>
+    <>
       {/* 左侧目录 - 现在作为固定侧边栏 */}
       {config.enableToc && (
         <TableOfContents
@@ -504,7 +504,7 @@ const MarkdownDemoPage: React.FC = () => {
           </Card>
         </Space>
       </div>
-    </div>
+    </>
   );
 };
 

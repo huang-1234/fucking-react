@@ -7,6 +7,7 @@ import HotRecommendations from '../components/HotRecommendations';
 import SearchBar from '../components/SearchBar';
 import logo from '@/assets/react.svg';
 import React from 'react';
+import styles from './MainLayout.module.less';
 const { Header, Sider, Content } = Layout;
 
 const MainLayout = () => {
@@ -14,7 +15,7 @@ const MainLayout = () => {
   const [collapsedRight, setCollapsedRight] = useState(true);
 
   return (
-    <Layout style={{ background: '#f5f5f5', width: '100vw', height: '100%' }}>
+    <Layout style={{  }}>
       <Header style={{
         display: 'flex',
         alignItems: 'center',
@@ -44,8 +45,10 @@ const MainLayout = () => {
         >
           <FeatureMenu />
         </Sider>
-        <Content style={{  padding: '12px', minHeight: 'calc(100vh - 64px)', minWidth: '880px', maxWidth: '100%' }}>
-          <Outlet />
+        <Content className={styles.content}>
+          <div className={styles.contentInner}>
+            <Outlet />
+          </div>
         </Content>
         <Sider
           width={280} style={{ background: '#fff' }}

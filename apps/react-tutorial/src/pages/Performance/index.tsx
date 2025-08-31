@@ -1,7 +1,4 @@
 import { Tabs, Typography } from 'antd'
-import { Content } from 'antd/es/layout/layout'
-import { Layout } from 'antd'
-import stylesLayout from '@/layouts/container.module.less'
 import DemoImagePerformance from './examples/DemoImagePerformance';
 import React from 'react';
 
@@ -21,9 +18,9 @@ export function PerformancePage() {
   ]
 
   return (
-    <Layout className={stylesLayout.contentLayout}>
-      <Content>
-        <Typography>
+    <>
+
+      <Typography>
           <Title level={2}>性能优化</Title>
           <Paragraph>
             本页面展示了性能优化的实现，包括图片性能优化。
@@ -41,8 +38,7 @@ export function PerformancePage() {
             </Tabs.TabPane>
           ))}
         </Tabs>
-      </Content>
-    </Layout>
+    </>
   )
 }
 

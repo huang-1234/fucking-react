@@ -88,23 +88,21 @@ const ECMAScriptPage: React.FC = () => {
   }, []);
 
   return (
-    <Layout className={stylesLayout.contentLayout}>
-      <Content>
-        <Typography>
-          <Title level={2}>ECMAScript 核心概念</Title>
-          <Paragraph>
-            本页面展示了ECMAScript的核心概念及其实现，包括深浅拷贝、数组高阶函数、词法作用域、this绑定机制、原型继承、事件循环机制、Promise实现等内容。
-          </Paragraph>
-        </Typography>
+    <>
+      <Typography>
+        <Title level={2}>ECMAScript 核心概念</Title>
+        <Paragraph>
+          本页面展示了ECMAScript的核心概念及其实现，包括深浅拷贝、数组高阶函数、词法作用域、this绑定机制、原型继承、事件循环机制、Promise实现等内容。
+        </Paragraph>
+      </Typography>
 
-        <Tabs
-          defaultActiveKey="deepClone"
-          items={items}
-          tabPosition="left"
-          style={{ marginTop: 20 }}
-        />
-      </Content>
-    </Layout>
+      <Tabs
+        defaultActiveKey="deepClone"
+        items={items}
+        tabPosition="left"
+        style={{ marginTop: 20 }}
+      />
+    </>
   );
 };
 
