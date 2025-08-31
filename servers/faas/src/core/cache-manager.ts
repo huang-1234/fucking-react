@@ -47,10 +47,15 @@ export interface CacheManager {
  */
 class MemoryCache implements CacheManager {
   private cache: Map<string, CacheItem<any>> = new Map();
+  /** 过期时间 */
   private ttl: number;
+  /** 最大缓存项数 */
   private maxSize: number;
+  /** 缓存命名空间 */
   private namespace: string;
+  /** 命中次数 */
   private hits = 0;
+  /** 未命中次数 */
   private misses = 0;
 
   constructor(options: CacheOptions) {
@@ -161,10 +166,14 @@ class MemoryCache implements CacheManager {
  * 注意：这需要安装redis包
  */
 class RedisCache implements CacheManager {
+  /** Redis客户端 */
   private client: any;
+  /** 过期时间 */
   private ttl: number;
   private namespace: string;
+  /** 命中次数 */
   private hits = 0;
+  /** 未命中次数 */
   private misses = 0;
 
   constructor(options: CacheOptions) {
@@ -346,7 +355,9 @@ export function createCache(options: CacheOptions): CacheManager {
  * 支持内存+Redis的多级缓存
  */
 export class MultiLevelCache implements CacheManager {
-  private l1Cache: CacheManager; // 内存缓存（一级缓存）
+  /** 内存缓存（一级缓存） */
+  private l1Cache: CacheManager;
+  /** Redis缓存（二级缓存） */
   private l2Cache?: CacheManager; // Redis缓存（二级缓存）
 
   constructor(options: CacheOptions & { l2Options?: CacheOptions }) {

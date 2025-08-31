@@ -1,0 +1,118 @@
+.render-md-container {
+  // width: 100vw;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color, #f5f5f5);
+}
+
+:global([data-theme="dark"]) {
+  .render-md-container {
+    --bg-color: #141414;
+  }
+}
+
+:global([data-theme="sepia"]) {
+  .render-md-container {
+    --bg-color: #f8f2e3;
+  }
+}
+
+.render-md-page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 30px;
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    p {
+      font-size: 1.2em;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  }
+
+  .editor-wrapper {
+    height: 600px;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .module-info {
+    margin-top: 40px;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.8em;
+      color: #333;
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+
+      .module-card {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        &:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+          font-size: 1.3em;
+          margin-top: 0;
+          margin-bottom: 10px;
+          color: #2c3e50;
+          border-bottom: 2px solid #eee;
+          padding-bottom: 8px;
+        }
+
+        p {
+          color: #666;
+          margin-bottom: 15px;
+        }
+
+        ul {
+          padding-left: 20px;
+          margin-bottom: 0;
+
+          li {
+            margin-bottom: 5px;
+            color: #555;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .editor-wrapper {
+      height: 500px;
+    }
+
+    .module-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

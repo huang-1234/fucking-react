@@ -24,6 +24,19 @@ export class Deque<T> {
   addFront(item: T): void {
     this.items.unshift(item);
   }
+  /**
+   * 从队列前端移除元素
+   * @returns 移除的元素
+   * @use Array.prototype.shift
+   * @description 从队列前端移除元素
+   * @example
+   */
+  removeFront(): T | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    return this.items.shift();
+  }
 
   /**
    * 从队列后端添加元素
@@ -39,20 +52,6 @@ export class Deque<T> {
    */
   addBack(item: T): void {
     this.items.push(item);
-  }
-
-  /**
-   * 从队列前端移除元素
-   * @returns 移除的元素
-   * @use Array.prototype.shift
-   * @description 从队列前端移除元素
-   * @example
-   */
-  removeFront(): T | undefined {
-    if (this.isEmpty()) {
-      return undefined;
-    }
-    return this.items.shift();
   }
 
   /**

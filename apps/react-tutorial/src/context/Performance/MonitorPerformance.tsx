@@ -11,7 +11,7 @@ export function useMonitorPerformance() {
       debug: true,
       isDev: process.env.NODE_ENV !== 'production',
       warnings: {
-        LCP: 2500,
+        LCP: 1500,
         FID: 100,
         INP: 0.1,
         CLS: 0.1,

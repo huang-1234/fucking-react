@@ -161,7 +161,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           className={className}
           {...props}
         >
-          {children}
+          { }
         </CodeBlock>
       );
     },

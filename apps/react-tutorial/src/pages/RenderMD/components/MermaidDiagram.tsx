@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mermaid from 'mermaid';
-import { Spin, Button, Tooltip, Dropdown, Menu, Typography, Space } from 'antd';
-const { Text } = Typography;
-import { EyeOutlined, AppstoreOutlined, BgColorsOutlined, CodeOutlined, PictureOutlined, CopyOutlined, CheckOutlined, DownOutlined } from '@ant-design/icons';
+import { Spin, Button, Dropdown, Menu, Space } from 'antd';
+import { EyeOutlined, AppstoreOutlined, BgColorsOutlined, CodeOutlined, PictureOutlined, DownOutlined } from '@ant-design/icons';
+import CodeBlock from './CodeBlock';
 import { performanceMonitor } from '../tools/performance';
 import styles from './MermaidDiagram.module.less';
 
@@ -65,10 +65,9 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
   const [viewMode, setViewMode] = useState<'code' | 'diagram' | 'both'>(initialView);
   const [hovering, setHovering] = useState(false);
   const [, setSelectedTemplate] = useState<string>('');
-  const [copied, setCopied] = useState(false);
+  // 不再需要复制状态，由CodeBlock组件处理
   const [cleanChart, setCleanChart] = useState<string>('');
   const mermaidRef = useRef<HTMLDivElement>(null);
-  const codeRef = useRef<HTMLPreElement>(null);
   const chartId = useRef(`mermaid-${Math.random().toString(36).substring(2, 11)}`);
 
   useEffect(() => {
@@ -85,7 +84,7 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
     });
   }, [theme]); // 主题变化时重新初始化
 
-      // 将渲染图表的逻辑提取为useCallback以提高可读性
+  // 将渲染图表的逻辑提取为useCallback以提高可读性
   const renderChart = useCallback(async (chartContent: string, chartTheme: MermaidDiagramProps['theme']) => {
     if (!chartContent) return;
 
@@ -159,16 +158,7 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
     };
   }, [chart, theme, renderChart]);
 
-  // 复制代码到剪贴板
-  const handleCopyCode = () => {
-    if (codeRef.current) {
-      const code = cleanChart;
-      navigator.clipboard.writeText(code).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      });
-    }
-  };
+  // 复制功能由CodeBlock组件处理
 
   // 切换模板
   const handleTemplateChange = (templateKey: string) => {
@@ -189,89 +179,89 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
     setViewMode(mode);
   };
 
+  const menuItemsGrapgType = [
+    {
+      value: 'flowchart',
+      label: '流程图',
+      icon: <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/flowchart.svg" width="16" height="16" alt="流程图" />
+    },
+    {
+      value: 'sequence',
+      label: '时序图',
+      icon: <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/sequence.svg" width="16" height="16" alt="时序图" />
+    },
+    {
+      value: 'classDiagram',
+      label: '类图',
+      icon: <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/class.svg" width="16" height="16" alt="类图" />
+    },
+    {
+      value: 'stateDiagram',
+      label: '状态图',
+      icon: <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/state.svg" width="16" height="16" alt="状态图" />
+    },
+    {
+      value: 'gantt',
+      label: '甘特图',
+      icon: <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/gantt.svg" width="16" height="16" alt="甘特图" />
+    },
+    {
+      value: 'pie',
+      label: '饼图',
+      icon: <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/pie.svg" width="16" height="16" alt="饼图" />
+    },
+    {
+      value: 'er',
+      label: 'ER图',
+      icon: <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/er.svg" width="16" height="16" alt="ER图" />
+    }
+  ]
+
   // 模板菜单
   const templateMenu = (
     <Menu onClick={({ key }) => handleTemplateChange(key.toString())}>
-      <Menu.Item key="flowchart">
-        <Space>
-          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/flowchart.svg" width="16" height="16" alt="流程图" />
-          <span>流程图</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="sequence">
-        <Space>
-          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/sequence.svg" width="16" height="16" alt="时序图" />
-          <span>时序图</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="classDiagram">
-        <Space>
-          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/class.svg" width="16" height="16" alt="类图" />
-          <span>类图</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="stateDiagram">
-        <Space>
-          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/state.svg" width="16" height="16" alt="状态图" />
-          <span>状态图</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="gantt">
-        <Space>
-          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/gantt.svg" width="16" height="16" alt="甘特图" />
-          <span>甘特图</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="pie">
-        <Space>
-          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/pie.svg" width="16" height="16" alt="饼图" />
-          <span>饼图</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="er">
-        <Space>
-          <img src="https://sf1-cdn-tos.feishucdn.com/obj/lark-doc-file/docs/images/er.svg" width="16" height="16" alt="ER图" />
-          <span>ER图</span>
-        </Space>
-      </Menu.Item>
+      {menuItemsGrapgType.map((item) => (
+        <Menu.Item key={item.value}>
+          <Space>
+            {item.icon}
+            {item.label}
+          </Space>
+        </Menu.Item>
+      ))}
     </Menu>
   );
+  const themeMenuItems = [
+    {
+      value: 'default',
+      label: '默认主题',
+      icon: <div className={styles.colorSwatch} style={{ backgroundColor: '#ffffff', border: '1px solid #e8e8e8' }}></div>
+    },
+    {
+      value: 'dark',
+      label: '暗色主题',
+      icon: <div className={styles.colorSwatch} style={{ backgroundColor: '#282a36' }}></div>
+    },
+    {
+      value: 'forest',
+      label: '森林主题',
+      icon: <div className={styles.colorSwatch} style={{ backgroundColor: '#cfe8cf' }}></div>
+    },
+  ]
 
   // 主题菜单
   const themeMenu = (
     <Menu onClick={({ key }) => handleThemeChange(key as MermaidDiagramProps['theme'])}>
-      <Menu.Item key="default">
-        <Space>
-          <div className={styles.colorSwatch} style={{ backgroundColor: '#ffffff', border: '1px solid #e8e8e8' }}></div>
-          <span>默认主题</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="dark">
-        <Space>
-          <div className={styles.colorSwatch} style={{ backgroundColor: '#282a36' }}></div>
-          <span>暗色主题</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="forest">
-        <Space>
-          <div className={styles.colorSwatch} style={{ backgroundColor: '#cfe8cf' }}></div>
-          <span>森林主题</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="neutral">
-        <Space>
-          <div className={styles.colorSwatch} style={{ backgroundColor: '#f9f9f9' }}></div>
-          <span>中性主题</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item key="base">
-        <Space>
-          <div className={styles.colorSwatch} style={{ backgroundColor: '#eaf2fb' }}></div>
-          <span>基础主题</span>
-        </Space>
-      </Menu.Item>
+      {themeMenuItems.map((item) => (
+        <Menu.Item key={item.value}>
+          <Space>
+            {item.icon}
+            {item.label}
+          </Space>
+        </Menu.Item>
+      ))}
     </Menu>
   );
+
 
   // 视图模式菜单
   const viewModeMenu = (
@@ -373,16 +363,13 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart, theme = 'default
         {/* 代码区域 */}
         {(viewMode === 'code' || viewMode === 'both') && (
           <div className={styles.codeContainer}>
-            <pre ref={codeRef} className={styles.codeBlock}>
-              <code>{cleanChart}</code>
-            </pre>
-            <Tooltip title={copied ? "已复制" : "复制代码"}>
-              <Button
-                className={styles.copyButton}
-                icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-                onClick={handleCopyCode}
-              />
-            </Tooltip>
+            <CodeBlock
+              inline={false}
+              className={`language-mermaid`}
+              theme={theme === 'dark' ? 'dark' : 'light'}
+            >
+              {cleanChart}
+            </CodeBlock>
           </div>
         )}
 

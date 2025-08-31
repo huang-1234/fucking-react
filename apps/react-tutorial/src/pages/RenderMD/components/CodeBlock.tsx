@@ -4,6 +4,7 @@ import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/pris
 import { Copy, Check } from 'lucide-react';
 import type { CodeBlockProps } from '../types/markdown';
 import styles from './CodeBlock.module.less';
+import { useClipboard } from '@/ahooks/sdt';
 
 interface CodeBlockComponentProps extends CodeBlockProps {
   theme?: string;
@@ -14,16 +15,18 @@ const CodeBlock: React.FC<CodeBlockComponentProps> = ({
   className,
   children,
   theme = 'light',
+  language: languageProps,
+  code,
   ...props
 }) => {
   const [copied, setCopied] = useState(false);
   const match = /language-(\w+)/.exec(className || '');
-  const language = match ? match[1] : '';
-  const codeString = String(children).replace(/\n$/, '');
-
+  const language = match ? match[1] : languageProps || '';
+  const codeString = code || String(children).replace(/\n$/, '') || 'markdown';
+  const { copy } = useClipboard();
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(codeString);
+      await copy(codeString);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {

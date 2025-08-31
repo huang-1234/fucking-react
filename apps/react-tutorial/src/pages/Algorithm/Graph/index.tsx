@@ -5,4 +5,4 @@ const GraphPage: React.FC = () => {
   return <GraphVisualization />;
 };
 
-export default GraphPage;
+export default React.memo(GraphPage);

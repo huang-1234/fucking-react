@@ -96,7 +96,13 @@ const SkipListPage: React.FC = () => {
         message.warning(`值 ${value} 已存在`);
       }
 
-      setInputValue('');
+      setInputValue((prev: string) => {
+        const prevValue = parseInt(prev);
+        const addOrSubtract = Math.random() > 0.5 ? true : false
+        const finalValue = prevValue + (Math.floor(Math.random() * 10) + 1) * addOrSubtract
+        return finalValue.toString()
+
+      });
       forceUpdate();
 
     } catch (error) {
@@ -136,7 +142,18 @@ const SkipListPage: React.FC = () => {
         message.warning(`值 ${value} 不存在`);
       }
 
-      setInputValue('');
+      setInputValue((prev: string) => {
+        const prevValue = parseInt(prev);
+        const addOrSubtract = Math.random() > 0.5 ? true : false;
+        const random = Math.floor(Math.random()) + 1;
+        let finalValue = prevValue;
+        if (addOrSubtract) {
+          finalValue += random;
+        } else {
+          finalValue -= random;
+        }
+        return finalValue.toString()
+      });
       forceUpdate();
 
     } catch (error) {
