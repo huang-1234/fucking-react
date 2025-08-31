@@ -148,7 +148,7 @@ const SearchAlgorithmsPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Card>
           <Title level={2}>搜索算法可视化</Title>
