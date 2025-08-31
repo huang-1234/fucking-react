@@ -46,6 +46,11 @@ const algorithmList = [
     title: '跳表 (Skip List)',
     description: '跳表数据结构的可视化实现，支持插入、删除、搜索操作的动画演示',
     path: '/algorithm/skiplist'
+  },
+  {
+    title: '搜索 (Search)',
+    description: '搜索算法可视化实现，支持深度优先搜索、广度优先搜索等常见问题',
+    path: '/algorithm/search'
   }
 ];
 

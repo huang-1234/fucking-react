@@ -23,7 +23,7 @@ interface SearchType {
   component?: React.ReactNode;
 }
 
-const SearchAlgorithms: React.FC = () => {
+const SearchAlgorithmsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('dfs');
 
   const searchTypes: SearchType[] = [
@@ -165,4 +165,4 @@ const SearchAlgorithms: React.FC = () => {
   );
 };
 
-export default SearchAlgorithms;
+export default React.memo(SearchAlgorithmsPage);
