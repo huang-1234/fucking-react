@@ -14,12 +14,14 @@ const CodeBlock: React.FC<CodeBlockComponentProps> = ({
   className,
   children,
   theme = 'light',
+  language: languageProps,
+  code,
   ...props
 }) => {
   const [copied, setCopied] = useState(false);
   const match = /language-(\w+)/.exec(className || '');
-  const language = match ? match[1] : '';
-  const codeString = String(children).replace(/\n$/, '');
+  const language = match ? match[1] : languageProps || '';
+  const codeString = code || String(children).replace(/\n$/, '') || 'markdown';
 
   const handleCopy = async () => {
     try {

@@ -24,6 +24,15 @@ export interface CodeBlockProps {
   inline?: boolean;
   className?: string;
   children: React.ReactNode;
+  language?: string;
+  code?: string;
+  onChange?: (value: string) => void;
+  placeholder?: string;
+  resizable?: boolean;
+  minHeight?: number;
+  maxHeight?: number;
+  height?: string | number;
+  width?: string | number;
 }
 
 // Markdown渲染器属性

@@ -153,8 +153,6 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = (props: MarkdownEditorProp
       <WrapSplitter
         className="editor-container"
         style={{ minHeight: 600 }}
-        // leftPanelClassName="editor-input"
-        // rightPanelClassName="editor-preview"
         leftPanel={leftPanel}
         rightPanel={rightPanel}
         defaultSizes={['50%', '50%']}
@@ -182,10 +180,6 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = (props: MarkdownEditorProp
       >
 
       </WrapSplitter>
-
-
-      {/* <div className="editor-container">
-      </div> */}
     </div>
   );
 };
