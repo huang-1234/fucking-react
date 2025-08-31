@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, lazy } from 'react';
 import { Card, Typography, Row, Col, Tabs, Space } from 'antd';
 import {
   NodeIndexOutlined,
@@ -6,8 +6,13 @@ import {
   ApartmentOutlined,
   ClusterOutlined
 } from '@ant-design/icons';
-import DFSVisualizer from './DFS/DFSVisualizer';
 import { renderReactNode } from '@/utils/react';
+
+// Lazy load components for better performance
+const DFSVisualizer = lazy(() => import('./DFS/DFSVisualizer'));
+const BFSVisualizer = lazy(() => import('./BFS/BFSVisualizer'));
+const BacktrackingVisualizer = lazy(() => import('./Backtracking/BacktrackingVisualizer'));
+const AlgorithmComparison = lazy(() => import('./Comparison/AlgorithmComparison'));
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -64,7 +69,9 @@ const SearchAlgorithmsPage: React.FC = () => {
         '网络爬虫',
         '单词接龙问题'
       ],
-      component: <div>BFS Visualizer Coming Soon</div>
+      component: <Suspense fallback={<div>Loading...</div>}>
+        <BFSVisualizer />
+      </Suspense>
     },
     {
       key: 'backtracking',
@@ -83,7 +90,9 @@ const SearchAlgorithmsPage: React.FC = () => {
         '组合问题',
         '子集问题'
       ],
-      component: <div>Backtracking Visualizer Coming Soon</div>
+      component: <Suspense fallback={<div>Loading...</div>}>
+        <BacktrackingVisualizer />
+      </Suspense>
     },
     {
       key: 'comparison',
@@ -100,7 +109,9 @@ const SearchAlgorithmsPage: React.FC = () => {
         '性能优化',
         '问题建模'
       ],
-      component: <div>Algorithm Comparison Coming Soon</div>
+      component: <Suspense fallback={<div>Loading...</div>}>
+        <AlgorithmComparison />
+      </Suspense>
     }
   ];
 

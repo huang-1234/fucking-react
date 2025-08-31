@@ -23,6 +23,19 @@ enum DFSAlgorithm {
 }
 
 export const DFSVisualizer: React.FC = () => {
+    // 使用React.useRef来跟踪组件是否已挂载
+  const isMountedRef = React.useRef(true);
+
+  // 组件卸载时清理资源
+  React.useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      // 清理所有可能的定时器
+      if (animationTimer) {
+        clearTimeout(animationTimer);
+      }
+    };
+  }, []);
   // 算法模式和类型
   const [mode, setMode] = useState<DFSMode>(DFSMode.GRAPH);
   const [algorithm, setAlgorithm] = useState<DFSAlgorithm>(DFSAlgorithm.RECURSIVE);
@@ -50,20 +63,32 @@ export const DFSVisualizer: React.FC = () => {
   const [gridCols, setGridCols] = useState<number>(5);
 
   // 算法执行状态
+  /** visitedNodes：已访问节点 */
   const [visitedNodes, setVisitedNodes] = useState<Set<string>>(new Set());
+  /** currentNode：当前节点 */
   const [currentNode, setCurrentNode] = useState<string | null>(null);
+  /** stack：栈 */
   const [stack, setStack] = useState<string[]>([]);
+  /** path：路径 */
   const [path, setPath] = useState<string[]>([]);
+  /** operations：操作 */
   const [operations, setOperations] = useState<Operation[]>([]);
+  /** islandGrid：岛屿网格 */
   const [islandGrid, setIslandGrid] = useState<number[][]>([]);
+  /** visitedCells：已访问单元格 */
   const [visitedCells, setVisitedCells] = useState<boolean[][]>([]);
+  /** currentCell：当前单元格 */
   const [currentCell, setCurrentCell] = useState<[number, number] | null>(null);
 
   // 动画控制
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  /** currentStep：当前步骤 */
   const [currentStep, setCurrentStep] = useState<number>(0);
+  /** totalSteps：总步骤 */
   const [totalSteps, setTotalSteps] = useState<number>(0);
+  /** speed：速度 */
   const [speed, setSpeed] = useState<number>(500);
+  /** animationTimer：动画定时器 */
   const [animationTimer, setAnimationTimer] = useState<NodeJS.Timeout | null>(null);
 
   // 执行历史
@@ -114,37 +139,51 @@ export const DFSVisualizer: React.FC = () => {
     const visited = new Set<string>();
     const result: string[] = [];
 
+    // 限制执行步骤数量，避免性能问题
+    const MAX_STEPS = 1000;
+
     if (algorithm === DFSAlgorithm.RECURSIVE) {
       // 记录递归DFS的每一步
       dfsRecursive(graph, startNode, visited, result, (node, visitedSet, stack) => {
-        executionSteps.push({
-          currentNode: node,
-          visited: new Set(visitedSet),
-          stack: [...stack],
-          path: [...result]
-        });
+        if (executionSteps.length < MAX_STEPS) {
+          executionSteps.push({
+            currentNode: node,
+            visited: new Set(visitedSet),
+            stack: [...stack],
+            path: [...result]
+          });
+        }
       });
     } else if (algorithm === DFSAlgorithm.ITERATIVE) {
       // 记录迭代DFS的每一步
       dfsIterative(graph, startNode, (node, visitedSet, stack) => {
-        executionSteps.push({
-          currentNode: node,
-          visited: new Set(visitedSet),
-          stack: [...stack],
-          path: [...result]
-        });
-        result.push(node);
+        if (executionSteps.length < MAX_STEPS) {
+          executionSteps.push({
+            currentNode: node,
+            visited: new Set(visitedSet),
+            stack: [...stack],
+            path: [...result]
+          });
+          result.push(node);
+        }
       });
     } else if (algorithm === DFSAlgorithm.FIND_PATHS) {
       // 记录查找路径的每一步
       findAllPaths(graph, startNode, endNode, (currentPath, visitedSet) => {
-        executionSteps.push({
-          currentNode: currentPath[currentPath.length - 1],
-          visited: new Set(visitedSet),
-          stack: [],
-          path: [...currentPath]
-        });
+        if (executionSteps.length < MAX_STEPS) {
+          executionSteps.push({
+            currentNode: currentPath[currentPath.length - 1],
+            visited: new Set(visitedSet),
+            stack: [],
+            path: [...currentPath]
+          });
+        }
       });
+    }
+
+    // 如果步骤太多，提示用户
+    if (executionSteps.length >= MAX_STEPS) {
+      message.warning(`算法执行步骤过多，仅显示前 ${MAX_STEPS} 步`);
     }
 
     setExecutionHistory(executionSteps);
@@ -165,22 +204,32 @@ export const DFSVisualizer: React.FC = () => {
 
     const executionSteps: any[] = [];
 
+    // 限制执行步骤数量，避免性能问题
+    const MAX_STEPS = 1000;
+
     if (algorithm === DFSAlgorithm.NUM_ISLANDS) {
       // 记录岛屿数量问题的每一步
       const visited = Array(gridRows).fill(false).map(() => Array(gridCols).fill(false));
       const islandIds = Array(gridRows).fill(0).map(() => Array(gridCols).fill(0));
 
       numIslands(grid, (r, c, islandId, visitedGrid) => {
-        const newVisited = visitedGrid.map(row => [...row]);
-        const newIslandIds = [...islandIds];
-        newIslandIds[r][c] = islandId;
+        if (executionSteps.length < MAX_STEPS) {
+          const newVisited = visitedGrid.map(row => [...row]);
+          const newIslandIds = [...islandIds];
+          newIslandIds[r][c] = islandId;
 
-        executionSteps.push({
-          currentCell: [r, c],
-          visited: newVisited,
-          islandIds: newIslandIds.map(row => [...row])
-        });
+          executionSteps.push({
+            currentCell: [r, c],
+            visited: newVisited,
+            islandIds: newIslandIds.map(row => [...row])
+          });
+        }
       });
+    }
+
+    // 如果步骤太多，提示用户
+    if (executionSteps.length >= MAX_STEPS) {
+      message.warning(`算法执行步骤过多，仅显示前 ${MAX_STEPS} 步`);
     }
 
     setExecutionHistory(executionSteps);
@@ -211,72 +260,120 @@ export const DFSVisualizer: React.FC = () => {
 
     const currentState = executionHistory[step];
 
-    if (mode === DFSMode.GRAPH) {
-      setVisitedNodes(currentState.visited);
-      setCurrentNode(currentState.currentNode);
-      setStack(currentState.stack || []);
-      setPath(currentState.path || []);
+    // 批量更新状态，减少重渲染次数
+    React.startTransition(() => {
+      if (mode === DFSMode.GRAPH) {
+        setVisitedNodes(currentState.visited);
+        setCurrentNode(currentState.currentNode);
+        setStack(currentState.stack || []);
+        setPath(currentState.path || []);
 
-      // 记录操作
-      setOperations(prev => [...prev, {
-        type: OperationType.VISIT,
-        node: currentState.currentNode,
-        timestamp: Date.now(),
-        description: `访问节点 ${currentState.currentNode}`
-      }]);
-    } else if (mode === DFSMode.GRID) {
-      setVisitedCells(currentState.visited);
-      setCurrentCell(currentState.currentCell);
-      setIslandGrid(currentState.islandIds);
+        // 仅在步骤变化时添加一次操作记录
+        if (step !== currentStep) {
+          setOperations(prev => {
+            // 限制操作记录数量，避免内存泄漏
+            const newOps = [...prev];
+            if (newOps.length > 50) newOps.shift();
 
-      // 记录操作
-      setOperations(prev => [...prev, {
-        type: OperationType.VISIT,
-        node: `(${currentState.currentCell[0]}, ${currentState.currentCell[1]})`,
-        timestamp: Date.now(),
-        description: `访问单元格 (${currentState.currentCell[0]}, ${currentState.currentCell[1]})`
-      }]);
-    }
+            return [...newOps, {
+              type: OperationType.VISIT,
+              node: currentState.currentNode,
+              timestamp: Date.now(),
+              description: `访问节点 ${currentState.currentNode}`
+            }];
+          });
+        }
+      } else if (mode === DFSMode.GRID) {
+        setVisitedCells(currentState.visited);
+        setCurrentCell(currentState.currentCell);
+        setIslandGrid(currentState.islandIds);
 
-    setCurrentStep(step);
-  }, [executionHistory, mode]);
+        // 仅在步骤变化时添加一次操作记录
+        if (step !== currentStep) {
+          setOperations(prev => {
+            // 限制操作记录数量，避免内存泄漏
+            const newOps = [...prev];
+            if (newOps.length > 50) newOps.shift();
 
-  // 播放动画
+            return [...newOps, {
+              type: OperationType.VISIT,
+              node: `(${currentState.currentCell[0]}, ${currentState.currentCell[1]})`,
+              timestamp: Date.now(),
+              description: `访问单元格 (${currentState.currentCell[0]}, ${currentState.currentCell[1]})`
+            }];
+          });
+        }
+      }
+
+      setCurrentStep(step);
+    });
+  }, [executionHistory, mode, currentStep]);
+
+    // 播放动画 - 只负责创建单步定时器，不负责控制播放状态
   const playAnimation = useCallback(() => {
-    if (currentStep >= totalSteps) {
-      setIsPlaying(false);
-      return;
+    // 清除之前的定时器，避免多个定时器同时运行
+    if (animationTimer) {
+      clearTimeout(animationTimer);
     }
 
-    setIsPlaying(true);
-
+    // 创建新的定时器
     const timer = setTimeout(() => {
-      updateStepState(currentStep + 1);
+      if (isMountedRef.current) {
+        // 如果已经到达最后一步，停止播放
+        if (currentStep >= totalSteps) {
+          setIsPlaying(false);
+        } else {
+          // 否则更新到下一步
+          updateStepState(currentStep + 1);
+        }
+      }
     }, speed);
 
+    // 记录当前定时器
     setAnimationTimer(timer);
-  }, [currentStep, totalSteps, speed, updateStepState]);
+  }, [currentStep, totalSteps, speed, updateStepState, animationTimer]);
 
-  // 当播放状态改变时，控制动画
+  // 当播放状态或当前步骤改变时，控制动画
   useEffect(() => {
-    if (isPlaying) {
+    // 只在播放状态为true时创建定时器
+    if (isPlaying && isMountedRef.current) {
       playAnimation();
-    } else if (animationTimer) {
+    }
+    // 如果停止播放，清除定时器
+    else if (!isPlaying && animationTimer) {
       clearTimeout(animationTimer);
       setAnimationTimer(null);
     }
-  }, [isPlaying, playAnimation, animationTimer]);
 
-  // 当前步骤达到最后一步时，停止播放
-  useEffect(() => {
-    if (currentStep >= totalSteps && isPlaying) {
-      setIsPlaying(false);
-    }
-  }, [currentStep, totalSteps, isPlaying]);
+    // 清理函数
+    return () => {
+      if (animationTimer) {
+        clearTimeout(animationTimer);
+      }
+    };
+  }, [isPlaying, currentStep, playAnimation]);
+
+  // 不再需要这个单独的useEffect，因为我们已经在playAnimation中处理了这个逻辑
 
   // 处理播放按钮点击
   const handlePlay = () => {
-    setIsPlaying(true);
+    // 如果没有执行步骤，先运行算法
+    if (executionHistory.length === 0 || totalSteps === 0) {
+      executeAlgorithm();
+      // 短暂延迟后开始播放，确保算法执行完毕
+      setTimeout(() => {
+        if (isMountedRef.current) {
+          setIsPlaying(true);
+        }
+      }, 100);
+    } else if (currentStep >= totalSteps) {
+      // 如果已经到达最后一步，重置到第一步并开始播放
+      updateStepState(0);
+      setIsPlaying(true);
+    } else {
+      // 正常播放
+      setIsPlaying(true);
+    }
   };
 
   // 处理暂停按钮点击
@@ -292,7 +389,14 @@ export const DFSVisualizer: React.FC = () => {
 
   // 处理下一步按钮点击
   const handleStepForward = () => {
-    if (currentStep < totalSteps) {
+    // 如果没有执行步骤，先运行算法
+    if (executionHistory.length === 0 || totalSteps === 0) {
+      executeAlgorithm();
+      // 短暂延迟后前进一步，确保算法执行完毕
+      setTimeout(() => {
+        updateStepState(0);
+      }, 100);
+    } else if (currentStep < totalSteps) {
       updateStepState(currentStep + 1);
     }
   };
@@ -511,7 +615,7 @@ export const DFSVisualizer: React.FC = () => {
 
       <Divider />
 
-      <ExecutionHistory operations={operations} limit={10} />
+      <ExecutionHistory operations={operations.slice(-10)} limit={10} />
     </Space>
   );
 
