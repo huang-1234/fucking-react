@@ -95,7 +95,7 @@ const ProtobufPage: React.FC = () => {
   }
 
   return (
-    <div className={classNames(styles.container, stylesLayout.contentLayout)}>
+    <>
       <div className={styles.header}>
         <Title level={2}>Protobuf.js 可视化工具</Title>
         {renderProtoSelector()}
@@ -126,7 +126,7 @@ const ProtobufPage: React.FC = () => {
           </ProtoErrorBoundary>
         </TabPane>
       </Tabs>
-    </div>
+    </>
   );
 };
 

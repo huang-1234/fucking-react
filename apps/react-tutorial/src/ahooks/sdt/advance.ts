@@ -122,7 +122,7 @@ export function useRequest<T, P extends any[] = any[]>(
   }, [ready, loadingDelay, serviceRef, optionsRef]);
 
   const run = useCallback((...params: P) => {
-    runAsync(...params).catch(() => {});
+    runAsync(...params).catch(() => { });
   }, [runAsync]);
 
   const cancel = useCallback(() => {
@@ -207,7 +207,7 @@ export function useRequest<T, P extends any[] = any[]>(
     }
     if (debounceWait) {
       debounce(run, debounceWait)
-    } else if(throttleWait) {
+    } else if (throttleWait) {
       throttle(run, throttleWait)
     } else {
       return run
@@ -234,7 +234,7 @@ export function useRequest<T, P extends any[] = any[]>(
  * useAntdTable - 封装了常用的 Ant Design Form 与 Table 联动逻辑
  */
 export function useAntdTable<T>(
-  service: (params: { current: number; pageSize: number; [key: string]: any }) => Promise<{ list: T[]; total: number }>,
+  service: (params: { current: number; pageSize: number;[key: string]: any }) => Promise<{ list: T[]; total: number }>,
   options: {
     defaultPageSize?: number;
     form?: any; // Ant Design Form instance
@@ -769,7 +769,7 @@ export function useVirtualList<T>(
     let endIndex = 0;
 
     // Find start index
-    for (let i = 0; i < list.length; i++) {
+    for (let i = 0;i < list.length;i++) {
       const height = getItemHeight(i, list[i]);
       if (totalHeight + height > scrollTop) {
         startIndex = Math.max(0, i - overscan);
@@ -780,7 +780,7 @@ export function useVirtualList<T>(
 
     // Find end index
     let visibleHeight = 0;
-    for (let i = startIndex; i < list.length; i++) {
+    for (let i = startIndex;i < list.length;i++) {
       const height = getItemHeight(i, list[i]);
       visibleHeight += height;
       if (visibleHeight > containerHeight + overscan * getItemHeight(i, list[i])) {
@@ -794,7 +794,7 @@ export function useVirtualList<T>(
     let totalListHeight = 0;
     let offsetY = 0;
 
-    for (let i = 0; i < list.length; i++) {
+    for (let i = 0;i < list.length;i++) {
       const height = getItemHeight(i, list[i]);
       if (i < startIndex) {
         offsetY += height;
@@ -929,7 +929,7 @@ export function useInfiniteScroll<T>(
  * usePagination - 分页 Hook
  */
 export function usePagination<T>(
-  service: (params: { current: number; pageSize: number; [key: string]: any }) => Promise<{ list: T[]; total: number }>,
+  service: (params: { current: number; pageSize: number;[key: string]: any }) => Promise<{ list: T[]; total: number }>,
   options: {
     defaultCurrent?: number;
     defaultPageSize?: number;

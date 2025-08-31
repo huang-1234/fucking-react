@@ -433,20 +433,35 @@ export const useClipboard = () => {
   };
 };
 
+
+export function setTitle(title: string) {
+  document.title = title;
+}
+
 /**
  * Hook for dynamically setting the page title
  * @param title - The title to set
  */
-export const useTitle = (title: string) => {
+export const useTitle = (titleInitial?: string) => {
+  const setTitle = (title: string) => {
+    document.title = title;
+  }
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = title;
+    if (titleInitial) {
+      setTitle(titleInitial);
+    }
 
     return () => {
-      document.title = previousTitle;
+      setTitle(previousTitle);
     };
-  }, [title]);
+  }, [titleInitial]);
+
+  return {
+    setTitle
+  };
 };
+
 
 /**
  * Hook for dynamically changing the favicon

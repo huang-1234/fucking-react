@@ -11,7 +11,7 @@
 
 ## 🏗️ 项目架构
 
-```
+```markdown
 fucking-react/
 ├── packages/           # 核心包
 │   ├── hooks/         # React Hooks链表实现
