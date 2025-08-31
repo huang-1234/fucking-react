@@ -1,59 +1,60 @@
 # 搜索算法技术方案
-
-- [二分查找](https://leetcode.cn/problems/binary-search/)
-- [深度优先搜索](https://leetcode.cn/problems/depth-first-search/)
-- [广度优先搜索](https://leetcode.cn/problems/breadth-first-search/)
-- [回溯算法](https://leetcode.cn/problems/backtracking/)
-
-
+* [二分查找](https://leetcode.cn/problems/binary-search/)
+* [深度优先搜索](https://leetcode.cn/problems/depth-first-search/)
+* [广度优先搜索](https://leetcode.cn/problems/breadth-first-search/)
+* [回溯算法](https://leetcode.cn/problems/backtracking/)
 # 可视化技术栈
 
 ## 图表与数据可视化
 
 ### 通用图表库
-- [ECharts](https://echarts.apache.org/) - 功能强大的交互式图表库，支持多种图表类型和定制化选项
-- [Recharts](https://recharts.org/) - 基于React组件的可组合图表库，使用D3构建，提供声明式API
-- [D3.js](https://d3js.org/) - 强大的数据驱动文档操作库，用于创建复杂的自定义可视化
+
+* [ECharts](https://echarts.apache.org/) - 功能强大的交互式图表库，支持多种图表类型和定制化选项
+* [Recharts](https://recharts.org/) - 基于React组件的可组合图表库，使用D3构建，提供声明式API
+* [D3.js](https://d3js.org/) - 强大的数据驱动文档操作库，用于创建复杂的自定义可视化
 
 ### 流程图与关系图
-- [Mermaid](https://mermaid.js.org/) - 基于文本描述生成流程图、时序图、甘特图等图表
-- [Lucide React](https://lucide.dev/) - 美观简洁的SVG图标集合，可用于图表标记和UI元素
+
+* [Mermaid](https://mermaid.js.org/) - 基于文本描述生成流程图、时序图、甘特图等图表
+* [Lucide React](https://lucide.dev/) - 美观简洁的SVG图标集合，可用于图表标记和UI元素
 
 ## 布局与交互组件
 
 ### 布局组件
-- [React-Rnd](https://github.com/bokuweb/react-rnd) - 可调整大小和位置的拖拽组件，适用于构建仪表盘和自定义布局
-- [React-Window](https://github.com/bvaughn/react-window) - 高效渲染大型列表和表格的虚拟化组件
+
+* [React-Rnd](https://github.com/bokuweb/react-rnd) - 可调整大小和位置的拖拽组件，适用于构建仪表盘和自定义布局
+* [React-Window](https://github.com/bvaughn/react-window) - 高效渲染大型列表和表格的虚拟化组件
 
 ### 代码与文档展示
-- [React-Markdown](https://github.com/remarkjs/react-markdown) - 将Markdown渲染为React组件
-- [React-Syntax-Highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) - 代码语法高亮组件
-- [Monaco Editor](https://github.com/microsoft/monaco-editor) - VS Code使用的代码编辑器，支持智能提示和语法高亮
-- [Katex](https://katex.org/) - 数学公式渲染库，支持在文档中展示复杂数学表达式
+
+* [React-Markdown](https://github.com/remarkjs/react-markdown) - 将Markdown渲染为React组件
+* [React-Syntax-Highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter) - 代码语法高亮组件
+* [Monaco Editor](https://github.com/microsoft/monaco-editor) - VS Code使用的代码编辑器，支持智能提示和语法高亮
+* [Katex](https://katex.org/) - 数学公式渲染库，支持在文档中展示复杂数学表达式
 
 ## 数据处理与状态管理
 
-- [Immer](https://immerjs.github.io/immer/) - 不可变数据结构处理库，简化状态更新逻辑
-- [Lodash-es](https://lodash.com/) - 提供实用工具函数，用于数据转换和处理
-- [Dayjs](https://day.js.org/) - 轻量级日期处理库，用于时间序列数据格式化
+* [Immer](https://immerjs.github.io/immer/) - 不可变数据结构处理库，简化状态更新逻辑
+* [Lodash-es](https://lodash.com/) - 提供实用工具函数，用于数据转换和处理
+* [Dayjs](https://day.js.org/) - 轻量级日期处理库，用于时间序列数据格式化
 
 ## 自定义Hooks
 
 项目包含自定义DOM Hooks集合，提供了与可视化相关的功能：
 
-- 元素尺寸监测 (`useElementSize`)
-- 元素可见性检测 (`useElementVisibility`)
-- 拖拽交互 (`useDrag`, `useDrop`)
-- 鼠标位置跟踪 (`useMousePosition`)
-- 滚动位置监测 (`useScrollPosition`)
-- 全屏控制 (`useFullscreen`)
+* 元素尺寸监测 (`useElementSize`)
+* 元素可见性检测 (`useElementVisibility`)
+* 拖拽交互 (`useDrag`,  `useDrop`)
+* 鼠标位置跟踪 (`useMousePosition`)
+* 滚动位置监测 (`useScrollPosition`)
+* 全屏控制 (`useFullscreen`)
 
 好的，我将为你提供DFS、BFS和回溯算法的详细技术文档，包括代码实现和可视化方案。以下是主要内容：
 
-- **DFS和BFS算法原理**：对比分析两种图遍历算法的特点与差异。
-- **典型问题及解决思路**：通过岛屿计数、单词接龙和全排列问题展示算法应用。
-- **核心代码实现**：提供TypeScript和Rust版本的算法实现代码。
-- **可视化实现方案**：介绍基于React+TypeScript的技术栈和组件设计。
+* **DFS和BFS算法原理**：对比分析两种图遍历算法的特点与差异。
+* **典型问题及解决思路**：通过岛屿计数、单词接龙和全排列问题展示算法应用。
+* **核心代码实现**：提供TypeScript和Rust版本的算法实现代码。
+* **可视化实现方案**：介绍基于React+TypeScript的技术栈和组件设计。
 
 接下来，我将详细解释DFS和BFS算法的原理、应用场景以及可视化实现方案。
 
@@ -75,13 +76,13 @@ BFS采用**广度优先**策略，从起始节点开始，首先访问所有相�
 
 下表展示了两种算法的关键差异：
 
-| **特性** | **深度优先搜索 (DFS)** | **广度优先搜索 (BFS)** |
-|---------|---------------------|---------------------|
-| **遍历方式** | 一条路径走到底，再回溯 | 一层一层向外扩展 |
-| **数据结构** | 栈（递归或显式栈） | 队列（先进先出，FIFO） |
-| **空间复杂度** | O(h)（h为树高） | O(w)（w为树/图的最大宽度） |
-| **适用场景** | 连通性检测、路径存在性、拓扑排序 | 最短路径、层级遍历、网络传播 |
-| **解的特点** | 可能找到非最优解 | 保证找到最短路径（无权图） |
+| **特性**       | **深度优先搜索 (DFS)**           | **广度优先搜索 (BFS)**       |
+| -------------- | -------------------------------- | ---------------------------- |
+| **遍历方式**   | 一条路径走到底，再回溯           | 一层一层向外扩展             |
+| **数据结构**   | 栈（递归或显式栈）               | 队列（先进先出，FIFO）       |
+| **空间复杂度** | O(h)（h为树高）                  | O(w)（w为树/图的最大宽度）   |
+| **适用场景**   | 连通性检测、路径存在性、拓扑排序 | 最短路径、层级遍历、网络传播 |
+| **解的特点**   | 可能找到非最优解                 | 保证找到最短路径（无权图）   |
 
 ## 2 典型问题及解决思路
 
@@ -90,10 +91,11 @@ BFS采用**广度优先**策略，从起始节点开始，首先访问所有相�
 **问题描述**：给定一个由'1'(陆地)和'0'(水)组成的二维网格，计算岛屿数量。岛屿被水包围，且通过水平或垂直方向连接。
 
 **解决思路**：
-- 遍历网格中的每个单元格
-- 当遇到'1'时，使用DFS或BFS标记所有相连的陆地
-- 整个相连区域标记为一个岛屿，计数器增加
-- 继续遍历直到结束
+
+* 遍历网格中的每个单元格
+* 当遇到'1'时，使用DFS或BFS标记所有相连的陆地
+* 整个相连区域标记为一个岛屿，计数器增加
+* 继续遍历直到结束
 
 **算法选择**：DFS适合此问题，因为需要探索所有相连的陆地，且不需要最短路径特性。
 
@@ -102,10 +104,11 @@ BFS采用**广度优先**策略，从起始节点开始，首先访问所有相�
 **问题描述**：给定开始单词、结束单词和单词字典，每次改变一个字母，找到最短转换序列。
 
 **解决思路**：
-- 从起始词开始，使用BFS层级遍历
-- 每次变换一个字母，生成所有可能的转换词
-- 检查生成的词是否在字典中且未被访问
-- 一旦找到目标词，立即返回当前层级（步数）
+
+* 从起始词开始，使用BFS层级遍历
+* 每次变换一个字母，生成所有可能的转换词
+* 检查生成的词是否在字典中且未被访问
+* 一旦找到目标词，立即返回当前层级（步数）
 
 **算法选择**：BFS保证找到最短转换路径，符合此题需求。
 
@@ -114,10 +117,11 @@ BFS采用**广度优先**策略，从起始节点开始，首先访问所有相�
 **问题描述**：给定一个不含重复数字的数组，返回所有可能的全排列。
 
 **解决思路**：
-- 使用DFS+回溯框架遍历所有可能性
-- 维护当前路径和已使用元素标记
-- 递归尝试所有未使用的元素
-- 回溯时撤销选择，恢复状态
+
+* 使用DFS+回溯框架遍历所有可能性
+* 维护当前路径和已使用元素标记
+* 递归尝试所有未使用的元素
+* 回溯时撤销选择，恢复状态
 
 ## 3 核心代码实现
 
@@ -344,8 +348,8 @@ fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
 // 包依赖配置 (package.json)
 const dependencies = {
   // 核心框架
-  "react": "^18.2.0",
-  "react-dom": "^18.2.0",
+  "react": "19.1.1",
+  "react-dom": "19.1.1",
   "typescript": "^5.0.0",
 
   // 可视化库

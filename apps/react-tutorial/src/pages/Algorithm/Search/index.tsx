@@ -6,8 +6,7 @@ import {
   ApartmentOutlined,
   ClusterOutlined
 } from '@ant-design/icons';
-import loadable from '@loadable/component';
-const DFSVisualizer = loadable(() => import('./DFS/DFSVisualizer'));
+import DFSVisualizer from './DFS/DFSVisualizer';
 import { renderReactNode } from '@/utils/react';
 
 const { Title, Paragraph } = Typography;

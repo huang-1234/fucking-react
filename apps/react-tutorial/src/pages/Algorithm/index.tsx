@@ -114,4 +114,4 @@ const AlgorithmPage: React.FC = () => {
   );
 };
 
-export default AlgorithmPage;
+export default React.memo(AlgorithmPage);
