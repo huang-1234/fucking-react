@@ -256,7 +256,8 @@ export function makeQueueDeque(algorithmFunctions?: {
   };
 
   // 处理步骤改变
-  const handleStepChange = (value: number) => {
+  const handleStepChange = (value: number | null) => {
+    if(value === null) return;
     updateStepState(value);
   };
 
