@@ -94,6 +94,9 @@ importers:
       '@formily/reactive':
         specifier: ^2.3.7
         version: 2.3.7
+      '@formily/reactive-react':
+        specifier: ^2.3.7
+        version: 2.3.7(@types/react-dom@19.1.9(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@18.3.1)(react@19.1.1)
       '@loadable/component':
         specifier: ^5.16.7
         version: 5.16.7(react@19.1.1)

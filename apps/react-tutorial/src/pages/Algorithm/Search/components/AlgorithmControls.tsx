@@ -108,7 +108,7 @@ const AlgorithmControls: React.FC<AlgorithmControlsProps> = ({
               onClick={onPlay}
               shape="circle"
               size="large"
-              disabled={currentStep >= totalSteps}
+              // disabled={currentStep >= totalSteps}
             />
           </Tooltip>
         )}
@@ -183,4 +183,4 @@ const AlgorithmControls: React.FC<AlgorithmControlsProps> = ({
   );
 };
 
-export default AlgorithmControls;
+export default React.memo(AlgorithmControls);

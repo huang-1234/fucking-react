@@ -33,6 +33,7 @@
     "@formily/json-schema": "^2.3.7",
     "@formily/react": "^2.3.7",
     "@formily/reactive": "^2.3.7",
+    "@formily/reactive-react": "^2.3.7",
     "@loadable/component": "^5.16.7",
     "@mdx-js/react": "^3.1.0",
     "@mdx-js/rollup": "^3.1.0",

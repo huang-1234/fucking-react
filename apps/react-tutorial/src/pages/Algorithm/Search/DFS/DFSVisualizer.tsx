@@ -1,498 +1,96 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Form, Input, Button, Select, Space, Divider, Switch, message, InputNumber } from 'antd';
 import { type Graph, dfsRecursive, dfsIterative, numIslands, findAllPaths } from '../al/dfs/dfs_ts';
 import SearchVisualizerBase from '../components/SearchVisualizerBase';
 import GraphVisualizer from '../components/GraphVisualizer';
 import GridVisualizer from '../components/GridVisualizer';
 import AlgorithmControls from '../components/AlgorithmControls';
-import ExecutionHistory, { OperationType, type Operation } from '../components/ExecutionHistory';
+import ExecutionHistory from '../components/ExecutionHistory';
 import CodeDisplay from '../components/CodeDisplay';
-
+import { observer } from '@formily/reactive-react'
+import { makeQueueDeque, DFSMode, DFSAlgorithm, OperationType, type Operation } from '../../model/search_dfs';
 const { Option } = Select;
 
-enum DFSMode {
-  GRAPH = 'graph',
-  GRID = 'grid'
-}
-
-enum DFSAlgorithm {
-  RECURSIVE = 'recursive',
-  ITERATIVE = 'iterative',
-  FIND_PATHS = 'find_paths',
-  NUM_ISLANDS = 'num_islands'
-}
-
-export const DFSVisualizer: React.FC = () => {
-    // 使用React.useRef来跟踪组件是否已挂载
-  const isMountedRef = React.useRef(true);
+export const DFSVisualizer: React.FC = observer(() => {
+  // 使用响应式对象管理状态
+  const {
+    queueDeque,
+    resetAlgorithm,
+    handleModeChange,
+    handleAlgorithmChange,
+    handleGraphInput,
+    handleGridInput,
+    handleGridSizeChange,
+    handleCellClick,
+    generateRandomIslands,
+    handleSpeedChange,
+    updateStepState,
+    handleStepChange,
+    playAnimation,
+    handlePlay,
+    handlePause,
+    handleReset,
+    handleStepForward,
+    handleStepBackward,
+    executeAlgorithm,
+    cleanup
+  } = makeQueueDeque({
+    dfsRecursive,
+    dfsIterative,
+    numIslands,
+    findAllPaths,
+  });
 
   // 组件卸载时清理资源
   React.useEffect(() => {
     return () => {
-      isMountedRef.current = false;
-      // 清理所有可能的定时器
-      if (animationTimer) {
-        clearTimeout(animationTimer);
-      }
+      cleanup();
     };
-  }, []);
-  // 算法模式和类型
-  const [mode, setMode] = useState<DFSMode>(DFSMode.GRAPH);
-  const [algorithm, setAlgorithm] = useState<DFSAlgorithm>(DFSAlgorithm.RECURSIVE);
-
-  // 图数据
-  const [graph, setGraph] = useState<Graph>({
-    'A': ['B', 'C'],
-    'B': ['A', 'D', 'E'],
-    'C': ['A', 'F'],
-    'D': ['B'],
-    'E': ['B', 'F'],
-    'F': ['C', 'E']
-  });
-  const [startNode, setStartNode] = useState<string>('A');
-  const [endNode, setEndNode] = useState<string>('F');
-
-  // 网格数据
-  const [grid, setGrid] = useState<string[][]>([
-    ['1', '1', '0', '0', '0'],
-    ['1', '1', '0', '0', '0'],
-    ['0', '0', '1', '0', '0'],
-    ['0', '0', '0', '1', '1']
-  ]);
-  const [gridRows, setGridRows] = useState<number>(4);
-  const [gridCols, setGridCols] = useState<number>(5);
-
-  // 算法执行状态
-  /** visitedNodes：已访问节点 */
-  const [visitedNodes, setVisitedNodes] = useState<Set<string>>(new Set());
-  /** currentNode：当前节点 */
-  const [currentNode, setCurrentNode] = useState<string | null>(null);
-  /** stack：栈 */
-  const [stack, setStack] = useState<string[]>([]);
-  /** path：路径 */
-  const [path, setPath] = useState<string[]>([]);
-  /** operations：操作 */
-  const [operations, setOperations] = useState<Operation[]>([]);
-  /** islandGrid：岛屿网格 */
-  const [islandGrid, setIslandGrid] = useState<number[][]>([]);
-  /** visitedCells：已访问单元格 */
-  const [visitedCells, setVisitedCells] = useState<boolean[][]>([]);
-  /** currentCell：当前单元格 */
-  const [currentCell, setCurrentCell] = useState<[number, number] | null>(null);
-
-  // 动画控制
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  /** currentStep：当前步骤 */
-  const [currentStep, setCurrentStep] = useState<number>(0);
-  /** totalSteps：总步骤 */
-  const [totalSteps, setTotalSteps] = useState<number>(0);
-  /** speed：速度 */
-  const [speed, setSpeed] = useState<number>(500);
-  /** animationTimer：动画定时器 */
-  const [animationTimer, setAnimationTimer] = useState<NodeJS.Timeout | null>(null);
-
-  // 执行历史
-  const [executionHistory, setExecutionHistory] = useState<any[]>([]);
-
-  // 重置算法执行状态
-  const resetAlgorithm = useCallback(() => {
-    setVisitedNodes(new Set());
-    setCurrentNode(null);
-    setStack([]);
-    setPath([]);
-    setOperations([]);
-    setCurrentStep(0);
-    setIsPlaying(false);
-
-    if (mode === DFSMode.GRID) {
-      setIslandGrid(Array(gridRows).fill(0).map(() => Array(gridCols).fill(0)));
-      setVisitedCells(Array(gridRows).fill(false).map(() => Array(gridCols).fill(false)));
-      setCurrentCell(null);
-    }
-
-    if (animationTimer) {
-      clearTimeout(animationTimer);
-      setAnimationTimer(null);
-    }
-
-    // 记录操作
-    setOperations([{
-      type: OperationType.START,
-      timestamp: Date.now(),
-      description: '算法重置'
-    }]);
-  }, [animationTimer, gridRows, gridCols, mode]);
+  }, [cleanup]);
 
   // 初始化网格
   useEffect(() => {
-    if (mode === DFSMode.GRID) {
-      setIslandGrid(Array(gridRows).fill(0).map(() => Array(gridCols).fill(0)));
-      setVisitedCells(Array(gridRows).fill(false).map(() => Array(gridCols).fill(false)));
+    if (queueDeque.mode === DFSMode.GRID) {
+      queueDeque.islandGrid = Array(queueDeque.gridRows).fill(0).map(() => Array(queueDeque.gridCols).fill(0));
+      queueDeque.visitedCells = Array(queueDeque.gridRows).fill(false).map(() => Array(queueDeque.gridCols).fill(false));
     }
-  }, [gridRows, gridCols, mode]);
+  }, [queueDeque.gridRows, queueDeque.gridCols, queueDeque.mode]);
 
-  // 执行图的DFS
-  const executeGraphDFS = useCallback(() => {
-    resetAlgorithm();
-
-    const executionSteps: any[] = [];
-    const visited = new Set<string>();
-    const result: string[] = [];
-
-    // 限制执行步骤数量，避免性能问题
-    const MAX_STEPS = 1000;
-
-    if (algorithm === DFSAlgorithm.RECURSIVE) {
-      // 记录递归DFS的每一步
-      dfsRecursive(graph, startNode, visited, result, (node, visitedSet, stack) => {
-        if (executionSteps.length < MAX_STEPS) {
-          executionSteps.push({
-            currentNode: node,
-            visited: new Set(visitedSet),
-            stack: [...stack],
-            path: [...result]
-          });
-        }
-      });
-    } else if (algorithm === DFSAlgorithm.ITERATIVE) {
-      // 记录迭代DFS的每一步
-      dfsIterative(graph, startNode, (node, visitedSet, stack) => {
-        if (executionSteps.length < MAX_STEPS) {
-          executionSteps.push({
-            currentNode: node,
-            visited: new Set(visitedSet),
-            stack: [...stack],
-            path: [...result]
-          });
-          result.push(node);
-        }
-      });
-    } else if (algorithm === DFSAlgorithm.FIND_PATHS) {
-      // 记录查找路径的每一步
-      findAllPaths(graph, startNode, endNode, (currentPath, visitedSet) => {
-        if (executionSteps.length < MAX_STEPS) {
-          executionSteps.push({
-            currentNode: currentPath[currentPath.length - 1],
-            visited: new Set(visitedSet),
-            stack: [],
-            path: [...currentPath]
-          });
-        }
-      });
-    }
-
-    // 如果步骤太多，提示用户
-    if (executionSteps.length >= MAX_STEPS) {
-      message.warning(`算法执行步骤过多，仅显示前 ${MAX_STEPS} 步`);
-    }
-
-    setExecutionHistory(executionSteps);
-    setTotalSteps(executionSteps.length - 1);
-
-    // 记录操作
-    setOperations([{
-      type: OperationType.START,
-      timestamp: Date.now(),
-      description: `开始执行 ${algorithm === DFSAlgorithm.RECURSIVE ? '递归DFS' :
-        algorithm === DFSAlgorithm.ITERATIVE ? '迭代DFS' : '查找路径'}`
-    }]);
-  }, [algorithm, graph, startNode, endNode, resetAlgorithm]);
-
-  // 执行网格的DFS
-  const executeGridDFS = useCallback(() => {
-    resetAlgorithm();
-
-    const executionSteps: any[] = [];
-
-    // 限制执行步骤数量，避免性能问题
-    const MAX_STEPS = 1000;
-
-    if (algorithm === DFSAlgorithm.NUM_ISLANDS) {
-      // 记录岛屿数量问题的每一步
-      const visited = Array(gridRows).fill(false).map(() => Array(gridCols).fill(false));
-      const islandIds = Array(gridRows).fill(0).map(() => Array(gridCols).fill(0));
-
-      numIslands(grid, (r, c, islandId, visitedGrid) => {
-        if (executionSteps.length < MAX_STEPS) {
-          const newVisited = visitedGrid.map(row => [...row]);
-          const newIslandIds = [...islandIds];
-          newIslandIds[r][c] = islandId;
-
-          executionSteps.push({
-            currentCell: [r, c],
-            visited: newVisited,
-            islandIds: newIslandIds.map(row => [...row])
-          });
-        }
-      });
-    }
-
-    // 如果步骤太多，提示用户
-    if (executionSteps.length >= MAX_STEPS) {
-      message.warning(`算法执行步骤过多，仅显示前 ${MAX_STEPS} 步`);
-    }
-
-    setExecutionHistory(executionSteps);
-    setTotalSteps(executionSteps.length - 1);
-
-    // 记录操作
-    setOperations([{
-      type: OperationType.START,
-      timestamp: Date.now(),
-      description: '开始执行岛屿数量问题'
-    }]);
-  }, [algorithm, grid, gridRows, gridCols, resetAlgorithm]);
-
-  // 执行算法
-  const executeAlgorithm = useCallback(() => {
-    if (mode === DFSMode.GRAPH) {
-      executeGraphDFS();
-    } else {
-      executeGridDFS();
-    }
-  }, [mode, executeGraphDFS, executeGridDFS]);
-
-  // 更新当前步骤的状态
-  const updateStepState = useCallback((step: number) => {
-    if (!executionHistory || step < 0 || step >= executionHistory.length) {
-      return;
-    }
-
-    const currentState = executionHistory[step];
-
-    // 批量更新状态，减少重渲染次数
-    React.startTransition(() => {
-      if (mode === DFSMode.GRAPH) {
-        setVisitedNodes(currentState.visited);
-        setCurrentNode(currentState.currentNode);
-        setStack(currentState.stack || []);
-        setPath(currentState.path || []);
-
-        // 仅在步骤变化时添加一次操作记录
-        if (step !== currentStep) {
-          setOperations(prev => {
-            // 限制操作记录数量，避免内存泄漏
-            const newOps = [...prev];
-            if (newOps.length > 50) newOps.shift();
-
-            return [...newOps, {
-              type: OperationType.VISIT,
-              node: currentState.currentNode,
-              timestamp: Date.now(),
-              description: `访问节点 ${currentState.currentNode}`
-            }];
-          });
-        }
-      } else if (mode === DFSMode.GRID) {
-        setVisitedCells(currentState.visited);
-        setCurrentCell(currentState.currentCell);
-        setIslandGrid(currentState.islandIds);
-
-        // 仅在步骤变化时添加一次操作记录
-        if (step !== currentStep) {
-          setOperations(prev => {
-            // 限制操作记录数量，避免内存泄漏
-            const newOps = [...prev];
-            if (newOps.length > 50) newOps.shift();
-
-            return [...newOps, {
-              type: OperationType.VISIT,
-              node: `(${currentState.currentCell[0]}, ${currentState.currentCell[1]})`,
-              timestamp: Date.now(),
-              description: `访问单元格 (${currentState.currentCell[0]}, ${currentState.currentCell[1]})`
-            }];
-          });
-        }
-      }
-
-      setCurrentStep(step);
-    });
-  }, [executionHistory, mode, currentStep]);
-
-    // 播放动画 - 只负责创建单步定时器，不负责控制播放状态
-  const playAnimation = useCallback(() => {
-    // 清除之前的定时器，避免多个定时器同时运行
-    if (animationTimer) {
-      clearTimeout(animationTimer);
-    }
-
-    // 创建新的定时器
-    const timer = setTimeout(() => {
-      if (isMountedRef.current) {
-        // 如果已经到达最后一步，停止播放
-        if (currentStep >= totalSteps) {
-          setIsPlaying(false);
-        } else {
-          // 否则更新到下一步
-          updateStepState(currentStep + 1);
-        }
-      }
-    }, speed);
-
-    // 记录当前定时器
-    setAnimationTimer(timer);
-  }, [currentStep, totalSteps, speed, updateStepState, animationTimer]);
 
   // 当播放状态或当前步骤改变时，控制动画
   useEffect(() => {
     // 只在播放状态为true时创建定时器
-    if (isPlaying && isMountedRef.current) {
+    if (queueDeque.isPlaying && queueDeque.isMounted) {
       playAnimation();
     }
     // 如果停止播放，清除定时器
-    else if (!isPlaying && animationTimer) {
-      clearTimeout(animationTimer);
-      setAnimationTimer(null);
+    else if (!queueDeque.isPlaying && queueDeque.animationTimer) {
+      clearTimeout(queueDeque.animationTimer);
+      queueDeque.animationTimer = null;
     }
 
     // 清理函数
     return () => {
-      if (animationTimer) {
-        clearTimeout(animationTimer);
+      if (queueDeque.animationTimer) {
+        clearTimeout(queueDeque.animationTimer);
       }
     };
-  }, [isPlaying, currentStep, playAnimation]);
+  }, [queueDeque.isPlaying, queueDeque.currentStep, playAnimation]);
 
-  // 不再需要这个单独的useEffect，因为我们已经在playAnimation中处理了这个逻辑
-
-  // 处理播放按钮点击
-  const handlePlay = () => {
-    // 如果没有执行步骤，先运行算法
-    if (executionHistory.length === 0 || totalSteps === 0) {
-      executeAlgorithm();
-      // 短暂延迟后开始播放，确保算法执行完毕
-      setTimeout(() => {
-        if (isMountedRef.current) {
-          setIsPlaying(true);
-        }
-      }, 100);
-    } else if (currentStep >= totalSteps) {
-      // 如果已经到达最后一步，重置到第一步并开始播放
-      updateStepState(0);
-      setIsPlaying(true);
-    } else {
-      // 正常播放
-      setIsPlaying(true);
+  // 处理图形输入的包装函数
+  const handleGraphInputWrapper = (value: string) => {
+    const result = handleGraphInput(value);
+    if (!result.success) {
+      message.error(result.error);
     }
   };
 
-  // 处理暂停按钮点击
-  const handlePause = () => {
-    setIsPlaying(false);
-  };
-
-  // 处理重置按钮点击
-  const handleReset = () => {
-    resetAlgorithm();
-    executeAlgorithm();
-  };
-
-  // 处理下一步按钮点击
-  const handleStepForward = () => {
-    // 如果没有执行步骤，先运行算法
-    if (executionHistory.length === 0 || totalSteps === 0) {
-      executeAlgorithm();
-      // 短暂延迟后前进一步，确保算法执行完毕
-      setTimeout(() => {
-        updateStepState(0);
-      }, 100);
-    } else if (currentStep < totalSteps) {
-      updateStepState(currentStep + 1);
+  // 处理网格输入的包装函数
+  const handleGridInputWrapper = (value: string) => {
+    const result = handleGridInput(value);
+    if (!result.success) {
+      message.error(result.error);
     }
-  };
-
-  // 处理上一步按钮点击
-  const handleStepBackward = () => {
-    if (currentStep > 0) {
-      updateStepState(currentStep - 1);
-    }
-  };
-
-  // 处理速度改变
-  const handleSpeedChange = (value: number) => {
-    setSpeed(value);
-  };
-
-  // 处理步骤改变
-  const handleStepChange = (value: number) => {
-    updateStepState(value);
-  };
-
-  // 处理模式改变
-  const handleModeChange = (value: DFSMode) => {
-    setMode(value);
-    resetAlgorithm();
-
-    // 根据模式设置默认算法
-    if (value === DFSMode.GRAPH) {
-      setAlgorithm(DFSAlgorithm.RECURSIVE);
-    } else {
-      setAlgorithm(DFSAlgorithm.NUM_ISLANDS);
-    }
-  };
-
-  // 处理算法改变
-  const handleAlgorithmChange = (value: DFSAlgorithm) => {
-    setAlgorithm(value);
-    resetAlgorithm();
-  };
-
-  // 处理图形输入
-  const handleGraphInput = (value: string) => {
-    try {
-      const parsedGraph = JSON.parse(value);
-      setGraph(parsedGraph);
-      resetAlgorithm();
-    } catch (error) {
-      message.error('图形输入格式不正确，请使用有效的JSON格式');
-    }
-  };
-
-  // 处理网格输入
-  const handleGridInput = (value: string) => {
-    try {
-      const parsedGrid = JSON.parse(value);
-      if (Array.isArray(parsedGrid) && parsedGrid.every(row => Array.isArray(row))) {
-        setGrid(parsedGrid);
-        setGridRows(parsedGrid.length);
-        setGridCols(parsedGrid[0].length);
-        resetAlgorithm();
-      } else {
-        throw new Error('网格格式不正确');
-      }
-    } catch (error) {
-      message.error('网格输入格式不正确，请使用有效的二维数组JSON格式');
-    }
-  };
-
-  // 处理网格大小改变
-  const handleGridSizeChange = (rows: number, cols: number) => {
-    setGridRows(rows);
-    setGridCols(cols);
-
-    // 创建新的网格
-    const newGrid = Array(rows).fill(0).map(() => Array(cols).fill('0'));
-    setGrid(newGrid);
-    resetAlgorithm();
-  };
-
-  // 处理单元格点击
-  const handleCellClick = (row: number, col: number) => {
-    const newGrid = [...grid];
-    newGrid[row][col] = newGrid[row][col] === '1' ? '0' : '1';
-    setGrid(newGrid);
-    resetAlgorithm();
-  };
-
-  // 生成随机岛屿
-  const generateRandomIslands = () => {
-    const newGrid = Array(gridRows).fill(0).map(() =>
-      Array(gridCols).fill(0).map(() =>
-        Math.random() > 0.7 ? '1' : '0'
-      )
-    );
-    setGrid(newGrid);
-    resetAlgorithm();
   };
 
   // 渲染操作区域内容
@@ -500,15 +98,15 @@ export const DFSVisualizer: React.FC = () => {
     <Space direction="vertical" style={{ width: '100%' }}>
       <Form layout="vertical">
         <Form.Item label="算法模式">
-          <Select value={mode} onChange={handleModeChange} style={{ width: '100%' }}>
+          <Select value={queueDeque.mode} onChange={handleModeChange} style={{ width: '100%' }}>
             <Option value={DFSMode.GRAPH}>图遍历</Option>
             <Option value={DFSMode.GRID}>网格问题</Option>
           </Select>
         </Form.Item>
 
         <Form.Item label="算法类型">
-          <Select value={algorithm} onChange={handleAlgorithmChange} style={{ width: '100%' }}>
-            {mode === DFSMode.GRAPH ? (
+          <Select value={queueDeque.algorithm} onChange={handleAlgorithmChange} style={{ width: '100%' }}>
+            {queueDeque.mode === DFSMode.GRAPH ? (
               <>
                 <Option value={DFSAlgorithm.RECURSIVE}>递归 DFS</Option>
                 <Option value={DFSAlgorithm.ITERATIVE}>迭代 DFS</Option>
@@ -520,30 +118,30 @@ export const DFSVisualizer: React.FC = () => {
           </Select>
         </Form.Item>
 
-        {mode === DFSMode.GRAPH && (
+        {queueDeque.mode === DFSMode.GRAPH && (
           <>
             <Form.Item label="图数据 (JSON 格式)">
               <Input.TextArea
                 rows={4}
-                value={JSON.stringify(graph, null, 2)}
-                onChange={(e) => handleGraphInput(e.target.value)}
+                value={JSON.stringify(queueDeque.graph, null, 2)}
+                onChange={(e) => handleGraphInputWrapper(e.target.value)}
               />
             </Form.Item>
 
             <Space>
               <Form.Item label="起始节点">
                 <Input
-                  value={startNode}
-                  onChange={(e) => setStartNode(e.target.value)}
+                  value={queueDeque.startNode}
+                  onChange={(e) => { queueDeque.startNode = e.target.value; }}
                   style={{ width: 100 }}
                 />
               </Form.Item>
 
-              {algorithm === DFSAlgorithm.FIND_PATHS && (
+              {queueDeque.algorithm === DFSAlgorithm.FIND_PATHS && (
                 <Form.Item label="目标节点">
                   <Input
-                    value={endNode}
-                    onChange={(e) => setEndNode(e.target.value)}
+                    value={queueDeque.endNode}
+                    onChange={(e) => { queueDeque.endNode = e.target.value; }}
                     style={{ width: 100 }}
                   />
                 </Form.Item>
@@ -552,15 +150,15 @@ export const DFSVisualizer: React.FC = () => {
           </>
         )}
 
-        {mode === DFSMode.GRID && (
+        {queueDeque.mode === DFSMode.GRID && (
           <>
             <Space>
               <Form.Item label="行数">
                 <InputNumber
                   min={1}
                   max={10}
-                  value={gridRows}
-                  onChange={(value) => handleGridSizeChange(value || 4, gridCols)}
+                  value={queueDeque.gridRows}
+                  onChange={(value) => handleGridSizeChange(value || 4, queueDeque.gridCols)}
                 />
               </Form.Item>
 
@@ -568,8 +166,8 @@ export const DFSVisualizer: React.FC = () => {
                 <InputNumber
                   min={1}
                   max={10}
-                  value={gridCols}
-                  onChange={(value) => handleGridSizeChange(gridRows, value || 5)}
+                  value={queueDeque.gridCols}
+                  onChange={(value) => handleGridSizeChange(queueDeque.gridRows, value || 5)}
                 />
               </Form.Item>
             </Space>
@@ -600,10 +198,10 @@ export const DFSVisualizer: React.FC = () => {
       <Divider />
 
       <AlgorithmControls
-        isPlaying={isPlaying}
-        currentStep={currentStep}
-        totalSteps={totalSteps}
-        speed={speed}
+        isPlaying={queueDeque.isPlaying}
+        currentStep={queueDeque.currentStep}
+        totalSteps={queueDeque.totalSteps}
+        speed={queueDeque.speed}
         onPlay={handlePlay}
         onPause={handlePause}
         onReset={handleReset}
@@ -615,30 +213,30 @@ export const DFSVisualizer: React.FC = () => {
 
       <Divider />
 
-      <ExecutionHistory operations={operations.slice(-10)} limit={10} />
+      <ExecutionHistory operations={queueDeque.operations.slice(-10)} limit={10} />
     </Space>
   );
 
   // 渲染可视化区域内容
   const renderVisualizationContent = () => {
-    if (mode === DFSMode.GRAPH) {
+    if (queueDeque.mode === DFSMode.GRAPH) {
       return (
         <GraphVisualizer
-          graph={graph}
-          visitedNodes={visitedNodes}
-          currentNode={currentNode || undefined}
-          path={path}
-          stack={stack}
+          graph={queueDeque.graph}
+          visitedNodes={queueDeque.visitedNodes}
+          currentNode={queueDeque.currentNode || undefined}
+          path={queueDeque.path}
+          stack={queueDeque.stack}
           height={400}
         />
       );
     } else {
       return (
         <GridVisualizer
-          grid={grid}
-          visited={visitedCells}
-          currentCell={currentCell || undefined}
-          islandIds={islandGrid}
+          grid={queueDeque.grid}
+          visited={queueDeque.visitedCells}
+          currentCell={queueDeque.currentCell || undefined}
+          islandIds={queueDeque.islandGrid}
           cellSize={50}
           onCellClick={handleCellClick}
           showCoordinates={true}
@@ -777,7 +375,7 @@ function numIslands(grid) {
 }`;
 
     let code = '';
-    switch (algorithm) {
+    switch (queueDeque.algorithm) {
       case DFSAlgorithm.RECURSIVE:
         code = dfsRecursiveCode;
         break;
@@ -795,9 +393,9 @@ function numIslands(grid) {
     return (
       <CodeDisplay
         tsCode={code}
-        title={`${algorithm === DFSAlgorithm.RECURSIVE ? '递归DFS' :
-          algorithm === DFSAlgorithm.ITERATIVE ? '迭代DFS' :
-          algorithm === DFSAlgorithm.FIND_PATHS ? '查找所有路径' :
+        title={`${queueDeque.algorithm === DFSAlgorithm.RECURSIVE ? '递归DFS' :
+          queueDeque.algorithm === DFSAlgorithm.ITERATIVE ? '迭代DFS' :
+          queueDeque.algorithm === DFSAlgorithm.FIND_PATHS ? '查找所有路径' :
           '岛屿数量问题'} 代码实现`}
       />
     );
@@ -805,11 +403,11 @@ function numIslands(grid) {
 
   // 渲染状态信息
   const renderStatusInfo = () => {
-    if (mode === DFSMode.GRAPH) {
-      return `已访问节点: ${visitedNodes.size} | 当前节点: ${currentNode || 'N/A'} | 路径长度: ${path.length}`;
+    if (queueDeque.mode === DFSMode.GRAPH) {
+      return `已访问节点: ${queueDeque.visitedNodes.size} | 当前节点: ${queueDeque.currentNode || 'N/A'} | 路径长度: ${queueDeque.path.length}`;
     } else {
-      const islandCount = new Set(islandGrid.flat().filter(id => id > 0)).size;
-      return `岛屿数量: ${islandCount} | 已访问单元格: ${visitedCells.flat().filter(Boolean).length} | 当前单元格: ${currentCell ? `(${currentCell[0]}, ${currentCell[1]})` : 'N/A'}`;
+      const islandCount = new Set(queueDeque.islandGrid.flat().filter(id => id > 0)).size;
+      return `岛屿数量: ${islandCount} | 已访问单元格: ${queueDeque.visitedCells.flat().filter(Boolean).length} | 当前单元格: ${queueDeque.currentCell ? `(${queueDeque.currentCell[0]}, ${queueDeque.currentCell[1]})` : 'N/A'}`;
     }
   };
 
@@ -860,6 +458,6 @@ function numIslands(grid) {
       showExtra={true}
     />
   );
-};
+})
 
 export default React.memo(DFSVisualizer);
