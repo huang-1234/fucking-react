@@ -56,7 +56,19 @@ export default defineConfig(({ command, mode }) => {
   return {
     ...sharedConfig,
     server: {
-      port: 3000
+      port: 5174,
+      hmr: {
+        protocol: 'ws',
+        host: 'localhost',
+        port: 5174,
+        clientPort: 5174,
+        overlay: true,
+        timeout: 30000
+      },
+      watch: {
+        usePolling: true,
+        interval: 1000,
+      }
     }
   };
 });

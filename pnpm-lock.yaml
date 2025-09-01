@@ -379,13 +379,32 @@ importers:
         specifier: 2.2.12
         version: 2.2.12(typescript@5.8.3)
 
-  libs/ECMAScript:
+  libs/algorithm:
+    dependencies:
+      '@antv/g6':
+        specifier: ^5.0.49
+        version: 5.0.49(workerize-loader@2.0.2(webpack@5.101.2))
+      react:
+        specifier: 19.1.1
+        version: 19.1.1
+      typescript:
+        specifier: 5.8.3
+        version: 5.8.3
+    devDependencies:
+      rspress:
+        specifier: ^1.45.1
+        version: 1.45.1(webpack@5.101.2)
+      vitest:
+        specifier: 2.1.5
+        version: 2.1.5(@types/node@22.17.0)(jsdom@24.1.3)(less@4.4.0)(sass-embedded@1.90.0)(sass@1.90.0)(terser@5.43.1)
+
+  libs/ecmascript:
     devDependencies:
       vitest:
         specifier: 2.1.5
         version: 2.1.5(@types/node@22.17.0)(jsdom@24.1.3)(less@4.4.0)(sass-embedded@1.90.0)(sass@1.90.0)(terser@5.43.1)
 
-  libs/Nodejs:
+  libs/nodejs:
     dependencies:
       '@ant-design/icons':
         specifier: 6.0.0
@@ -569,25 +588,6 @@ importers:
         specifier: ^5.0.2
         version: 5.2.2(webpack-cli@5.1.4)(webpack@5.101.2)
 
-  libs/algorithm:
-    dependencies:
-      '@antv/g6':
-        specifier: ^5.0.49
-        version: 5.0.49(workerize-loader@2.0.2(webpack@5.101.2))
-      react:
-        specifier: 19.1.1
-        version: 19.1.1
-      typescript:
-        specifier: 5.8.3
-        version: 5.8.3
-    devDependencies:
-      rspress:
-        specifier: ^1.45.1
-        version: 1.45.1(webpack@5.101.2)
-      vitest:
-        specifier: 2.1.5
-        version: 2.1.5(@types/node@22.17.0)(jsdom@24.1.3)(less@4.4.0)(sass-embedded@1.90.0)(sass@1.90.0)(terser@5.43.1)
-
   packages/Reconciler:
     dependencies:
       shared:
@@ -676,6 +676,9 @@ importers:
       react-dom:
         specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
+      react-helmet:
+        specifier: 6.1.0
+        version: 6.1.0(react@19.1.1)
       react-helmet-async:
         specifier: ^2.0.5
         version: 2.0.5(react@19.1.1)
@@ -716,6 +719,9 @@ importers:
       '@types/react-dom':
         specifier: 19.1.9
         version: 19.1.9(@types/react@19.1.9)
+      '@types/react-helmet':
+        specifier: ^6.1.11
+        version: 6.1.11
       '@types/react-helmet-async':
         specifier: ^1.0.3
         version: 1.0.3(react@19.1.1)
@@ -3334,6 +3340,9 @@ packages:
   '@types/react-helmet-async@1.0.3':
     resolution: {integrity: sha512-DqbSuZPSHiH1l3XI/y8LbhrAGNh+Bpc9QY4MsYRM1yD4+qhax8bN4DInUMpv/tNyIdjsa+1V8XXmbRx8W5dB0w==}
     deprecated: This is a stub types definition. react-helmet-async provides its own type definitions, so you do not need this installed.
+
+  '@types/react-helmet@6.1.11':
+    resolution: {integrity: sha512-0QcdGLddTERotCXo3VFlUSWO3ztraw8nZ6e3zJSgG7apwV5xt+pJUS8ewPBqT4NYB1optGLprNQzFleIY84u/g==}
 
   '@types/react-syntax-highlighter@15.5.13':
     resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
@@ -8792,6 +8801,11 @@ packages:
     peerDependencies:
       react: 19.1.1
 
+  react-helmet@6.1.0:
+    resolution: {integrity: sha512-4uMzEY9nlDlgxr61NL3XbKRy1hEkXmKNXhjbAIOVw5vcFrsdYbH2FEwcNyWvWinl103nXgzYNlns9ca+8kFiWw==}
+    peerDependencies:
+      react: 19.1.1
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -8878,6 +8892,11 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
+
+  react-side-effect@2.1.2:
+    resolution: {integrity: sha512-PVjOcvVOyIILrYoyGEpDN3vmYNLdy1CajSFNt4TDsVQC5KpTijDvWVoR+/7Rz2xT978D8/ZtFceXxzsPwZEDvw==}
+    peerDependencies:
+      react: 19.1.1
 
   react-sticky-box@1.0.2:
     resolution: {integrity: sha512-Kyvtppdtv1KqJyNU4DtrSMI0unyQRgtraZvVQ0GAazVbYiTsIVpyhpr+5R0Aavzu4uJNSe1awj2rk/qI7i6Zfw==}
@@ -14733,6 +14752,10 @@ snapshots:
     transitivePeerDependencies:
       - react
 
+  '@types/react-helmet@6.1.11':
+    dependencies:
+      '@types/react': 19.1.9
+
   '@types/react-syntax-highlighter@15.5.13':
     dependencies:
       '@types/react': 19.1.9
@@ -16291,7 +16314,7 @@ snapshots:
     dependencies:
       cipher-base: 1.0.6
       inherits: 2.0.4
-      ripemd160: 2.0.1
+      ripemd160: 2.0.2
       sha.js: 2.4.12
 
   create-hash@1.2.0:
@@ -21767,6 +21790,14 @@ snapshots:
       react-fast-compare: 3.2.2
       shallowequal: 1.1.0
 
+  react-helmet@6.1.0(react@19.1.1):
+    dependencies:
+      object-assign: 4.1.1
+      prop-types: 15.8.1
+      react: 19.1.1
+      react-fast-compare: 3.2.2
+      react-side-effect: 2.1.2(react@19.1.1)
+
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
@@ -21853,6 +21884,10 @@ snapshots:
       turbo-stream: 2.4.0
     optionalDependencies:
       react-dom: 19.1.1(react@19.1.1)
+
+  react-side-effect@2.1.2(react@19.1.1):
+    dependencies:
+      react: 19.1.1
 
   react-sticky-box@1.0.2(react@19.1.1):
     dependencies:
