@@ -79,17 +79,25 @@ export class AntdTracker {
     const OriginalModal = Modal;
 
     class WrappedModal extends React.Component<any> {
+      // 保存原始回调的引用
+      private originalAfterClose: Function | null = null;
+
       componentDidMount() {
         if (this.props.visible || this.props.open) {
           this.trackModalEvent('open');
         }
 
+        // 保存原始的 afterClose 回调，但不修改 props
         if (this.props.afterClose) {
-          const originalAfterClose = this.props.afterClose;
-          this.props.afterClose = () => {
-            this.trackModalEvent('close');
-            originalAfterClose();
-          };
+          this.originalAfterClose = this.props.afterClose as Function;
+        }
+      }
+
+      // 拦截 afterClose 调用
+      handleAfterClose = () => {
+        this.trackModalEvent('close');
+        if (this.originalAfterClose) {
+          this.originalAfterClose();
         }
       }
 
@@ -168,6 +176,7 @@ export class AntdTracker {
             {...restProps}
             onOk={wrappedOnOk}
             onCancel={wrappedOnCancel}
+            afterClose={this.handleAfterClose}
           />
         );
       }
@@ -177,7 +186,7 @@ export class AntdTracker {
     Object.keys(OriginalModal).forEach(key => {
       if (typeof OriginalModal[key] === 'function') {
         // 对于静态方法，如 Modal.confirm
-        WrappedModal[key] = (...args: any[]) => {
+        (WrappedModal as any)[key as keyof typeof WrappedModal] = (...args: any[]) => {
           try {
             const config = args[0] || {};
             const title = config.title || 'modal-static';
@@ -244,7 +253,8 @@ export class AntdTracker {
           }
         };
       } else {
-        WrappedModal[key as keyof typeof WrappedModal] = OriginalModal[key as keyof typeof OriginalModal];
+        // 使用类型断言来处理索引签名
+        (WrappedModal as any)[key] = (OriginalModal as any)[key];
       }
     });
 

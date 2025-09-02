@@ -12,7 +12,7 @@ export const useExposureTracking = (
   eventData: Partial<IExposureEvent>,
   options: { once?: boolean; threshold?: number } = {}
 ) => {
-  const elementRef = useRef<HTMLElement>(null);
+  const elementRef = useRef<HTMLElement>(undefined);
 
   useEffect(() => {
     const element = elementRef.current;
@@ -109,13 +109,21 @@ export const usePageViewTracking = (
   useEffect(() => {
     try {
       const tracker = getTracker();
-      tracker.track({
+      // 构建页面浏览事件数据，避免重复属性
+      const eventData: Partial<ITrackingEvent> = {
         eventType: 'pageview',
         eventCategory: pageInfo.pageCategory || 'page',
         eventAction: 'view',
-        eventLabel: pageInfo.pageName,
-        pageName: pageInfo.pageName,
-        ...pageInfo
+        eventLabel: pageInfo.pageName
+      };
+
+      // 添加其他页面信息，但排除已使用的属性
+      const { pageName, pageCategory, ...restPageInfo } = pageInfo;
+
+      tracker.track({
+        ...eventData,
+        ...restPageInfo,
+        pageName
       });
     } catch (error) {
       console.error('[usePageViewTracking] 错误:', error);

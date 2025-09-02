@@ -10,6 +10,9 @@ export default defineConfig({
       insertTypesEntry: true,
     }),
   ],
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),

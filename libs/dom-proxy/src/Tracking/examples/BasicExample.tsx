@@ -42,7 +42,7 @@ const ProductCard = ({ product }: { product: any }) => {
 
   return (
     <Card
-      ref={ref}
+      ref={ref as React.RefObject<HTMLDivElement>}
       onClick={handleClick}
       hoverable
       cover={<img alt={product.name} src={product.image} />}
