@@ -1,0 +1,37 @@
+{
+  "name": "@vitejs/plugin-rsc-examples-starter",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "resolutions": {
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.9",
+    "antd": "5.26.7"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "antd": "5.26.7",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.35.1",
+    "vite": "5.4.19",
+    "vitest": "2.1.5",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "latest",
+    "@vitejs/plugin-rsc": "latest",
+    "rsc-html-stream": "^0.0.7"
+  }
+}
