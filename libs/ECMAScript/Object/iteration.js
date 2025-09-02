@@ -92,7 +92,13 @@ if (!Array.prototype[Symbol.iterator]) {
       console.log(Object.prototype.__proto__ === null);
       break;
     case 'object_prorotype':
-      console.log(Object.prototype);
+      const obj = new Object();
+      console.log(obj.prototype);
+      // console.log(Object.prototype.__proto__ === null);
+      // console.log(obj.toString());
+      // console.log(obj.hasOwnProperty('toString'));
+      // console.log(obj.toString === Object.prototype.toString);
+      // console.log(obj.toString === Object.prototype.toString);
       break;
     default:
       break;

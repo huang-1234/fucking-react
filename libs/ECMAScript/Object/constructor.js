@@ -149,23 +149,47 @@ function instanceofTest() {
 }
 (function (key) {
   let k = key;
-  if (typeof process === 'object' && process.argv.length > 2) {
+  if (typeof process === 'object' && process.argv.length > 2 && process.argv[2]) {
     k = process.argv[2];
-  } else if (typeof window !== 'undefined') {
+  } else if (typeof window !== 'undefined' && window.location.href) {
     k = window.location.href;
   } else {
-    k = 'new';
+    k = 'func_stack';
   }
   console.log('first', k);
   switch (k) {
     case 'new':
       newTest();
+      break;
     case 'instanceof':
       instanceofTest();
+      break;
     case 'deepCopy':
       deepCopyTest();
+      break;
+    case 'func_stack':
+      let a = 1
+      function funcStackTest() {
+        function setState(a) {
+          a = a;
+        }
+        function changeA() {
+          function func() {
+            console.log(a);
+          }
+          setState(3);
+          return {
+            func
+          }
+        }
+        const { func } = changeA();
+        func();
+        console.log(a);
+      }
+      funcStackTest();
+      break;
     default:
       break;
   }
-})();
+})('func_stack');
 
