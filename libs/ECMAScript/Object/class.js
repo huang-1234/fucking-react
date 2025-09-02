@@ -9,7 +9,7 @@ function _classCallCheck(instance, Constructor) {
 
 // 辅助函数：定义属性（用于方法）
 function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
+  for (var i = 0;i < props.length;i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false; // 方法默认不可枚举
     descriptor.configurable = true;
@@ -95,7 +95,7 @@ function _isNativeReflectConstruct() {
   if (Reflect.construct.sham) return false;
   if (typeof Proxy === "function") return true;
   try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () { }));
     return true;
   } catch (e) {
     return false;
@@ -118,31 +118,33 @@ function _typeof(obj) {
 }
 
 // 定义 Parent 类
-var Parent = /*#__PURE__*/ (function() {
+var Parent = /*#__PURE__*/ (function () {
   function Parent() {
     _classCallCheck(this, Parent); // 检查必须通过 new 调用
     this.name = 'Parent';
   }
-  _createClass(Parent, [
-    {
-      key: "sayName", // 添加原型方法 sayName
-      value: function sayName() {
-        console.log("Parent inner sayName: ".concat(this.name));
+  _createClass(Parent,
+    [
+      {
+        key: "sayName", // 添加原型方法 sayName
+        value: function sayName() {
+          console.log("Parent inner sayName: ".concat(this.name));
+        }
       }
-    }
-  ], [
-    {
-      key: "staticFunc1", // 添加静态方法 staticFunc1
-      value: function staticFunc1() {
-        console.log("Parent static staticFunc1: ".concat(this.name));
+    ],
+    [
+      {
+        key: "staticFunc1", // 添加静态方法 staticFunc1
+        value: function staticFunc1() {
+          console.log("Parent static staticFunc1: ".concat(this.name));
+        }
       }
-    }
-  ]);
+    ]);
   return Parent;
 })();
 
 // 定义 Child 类，继承自 Parent
-var Child = /*#__PURE__*/ (function(_Parent) {
+var Child = /*#__PURE__*/ (function (_Parent) {
   _inherits(Child, _Parent); // 设置继承关系
 
   var _super = _createSuper(Child); // 创建 super 函数
