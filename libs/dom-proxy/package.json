@@ -1,24 +1,27 @@
 {
-  "name": "@vitejs/plugin-rsc-examples-starter",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@libs/dom-proxy",
+  "version": "1.0.0",
+  "description": "基于 Proxy 代理和 Intersection Observer 的前端全埋点解决方案",
   "license": "MIT",
   "type": "module",
+  "main": "dist/dom-proxy.umd.js",
+  "module": "dist/dom-proxy.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts,.tsx"
   },
-  "resolutions": {
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "@types/react": "19.1.9",
-    "@types/react-dom": "19.1.9",
-    "antd": "5.26.7"
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
   },
   "dependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "react": "19.1.1",
@@ -27,11 +30,10 @@
     "typescript": "5.8.3",
     "typescript-eslint": "8.35.1",
     "vite": "5.4.19",
+    "vite-plugin-dts": "^3.7.3",
     "vitest": "2.1.5",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.9",
-    "@vitejs/plugin-react": "latest",
-    "@vitejs/plugin-rsc": "latest",
-    "rsc-html-stream": "^0.0.7"
+    "@vitejs/plugin-react": "latest"
   }
 }

@@ -1,73 +1,35 @@
-import rsc from '@vitejs/plugin-rsc'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 import { defineConfig } from 'vite'
-// import inspect from "vite-plugin-inspect";
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   plugins: [
-    rsc({
-      // `entries` option is only a shorthand for specifying each `rollupOptions.input` below
-      // > entries: { rsc, ssr, client },
-      //
-      // by default, the plugin setup request handler based on `default export` of `rsc` environment `rollupOptions.input.index`.
-      // This can be disabled when setting up own server handler e.g. `@cloudflare/vite-plugin`.
-      // > serverHandler: false
-    }),
-
-    // use any of react plugins https://github.com/vitejs/vite-plugin-react
-    // to enable client component HMR
     react(),
-
-    // use https://github.com/antfu-collective/vite-plugin-inspect
-    // to understand internal transforms required for RSC.
-    // inspect(),
+    dts({
+      insertTypesEntry: true,
+    }),
   ],
-
-  // specify entry point for each environment.
-  // (currently the plugin assumes `rollupOptions.input.index` for some features.)
-  environments: {
-    // `rsc` environment loads modules with `react-server` condition.
-    // this environment is responsible for:
-    // - RSC stream serialization (React VDOM -> RSC stream)
-    // - server functions handling
-    rsc: {
-      build: {
-        rollupOptions: {
-          input: {
-            index: './src/framework/entry.rsc.tsx',
-          },
-        },
-      },
+  build: {
+    lib: {
+      entry: resolve(__dirname, 'src/index.ts'),
+      name: 'DomProxy',
+      fileName: (format) => `dom-proxy.${format}.js`,
+      formats: ['es', 'umd']
     },
-
-    // `ssr` environment loads modules without `react-server` condition.
-    // this environment is responsible for:
-    // - RSC stream deserialization (RSC stream -> React VDOM)
-    // - traditional SSR (React VDOM -> HTML string/stream)
-    ssr: {
-      build: {
-        rollupOptions: {
-          input: {
-            index: './src/framework/entry.ssr.tsx',
-          },
-        },
-      },
+    rollupOptions: {
+      // 确保外部化处理那些你不想打包进库的依赖
+      external: ['react', 'react-dom'],
+      output: {
+        // 在 UMD 构建模式下为这些外部化的依赖提供全局变量
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM'
+        }
+      }
     },
-
-    // client environment is used for hydration and client-side rendering
-    // this environment is responsible for:
-    // - RSC stream deserialization (RSC stream -> React VDOM)
-    // - traditional CSR (React VDOM -> Browser DOM tree mount/hydration)
-    // - refetch and re-render RSC
-    // - calling server functions
-    client: {
-      build: {
-        rollupOptions: {
-          input: {
-            index: './src/framework/entry.browser.tsx',
-          },
-        },
-      },
-    },
+    sourcemap: true,
+    // 确保生成的类型声明文件
+    emptyOutDir: false,
   },
 })
