@@ -170,12 +170,13 @@ function instanceofTest() {
     case 'func_stack':
       let a = 1
       function funcStackTest() {
-        function setState(a) {
-          a = a;
+        function setState(__a) {
+          a = __a;
         }
         function changeA() {
           function func() {
             console.log(a);
+            setState(4);
           }
           setState(3);
           return {
