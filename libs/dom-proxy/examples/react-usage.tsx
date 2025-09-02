@@ -29,7 +29,7 @@ const ProductCard = ({ product }: { product: any }) => {
 
   return (
     <div
-      ref={ref}
+      ref={ref as React.RefObject<HTMLDivElement>}
       onClick={handleClick}
       style={{
         border: '1px solid #eee',

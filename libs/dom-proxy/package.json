@@ -12,7 +12,11 @@
   ],
   "scripts": {
     "dev": "vite",
+    "dev:react": "cross-env EXAMPLE=true EXAMPLE_NAME=react-usage vite",
+    "dev:antd": "cross-env EXAMPLE=true EXAMPLE_NAME=antd-usage vite",
+    "dev:simple": "cross-env EXAMPLE=true EXAMPLE_NAME=simple-usage vite",
     "build": "vite build",
+    "build:example": "cross-env EXAMPLE=true vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint src --ext .ts,.tsx"
@@ -22,18 +26,19 @@
     "react-dom": ">=17.0.0"
   },
   "dependencies": {
+    "cross-env": "7.0.3"
   },
   "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "latest",
+    "antd": "5.26.7",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "antd": "5.26.7",
     "typescript": "5.8.3",
     "typescript-eslint": "8.35.1",
     "vite": "5.4.19",
     "vite-plugin-dts": "^3.7.3",
-    "vitest": "2.1.5",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.9",
-    "@vitejs/plugin-react": "latest"
+    "vitest": "2.1.5"
   }
 }
