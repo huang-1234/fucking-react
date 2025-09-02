@@ -91,7 +91,10 @@ if (!Array.prototype[Symbol.iterator]) {
       console.log(Parent.__proto__ === Object.prototype);
       console.log(Object.prototype.__proto__ === null);
       break;
+    case 'object_prorotype':
+      console.log(Object.prototype);
+      break;
     default:
       break;
   }
-})('prototype')
+})('object_prorotype')
