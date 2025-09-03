@@ -1,4 +1,5 @@
 import { describe, beforeEach, afterEach, it } from "node:test";
+import { LazyLoader } from "../core";
 
 const advancedLoader = new LazyLoader('[data-lazy]', {
   root: document.getElementById('scroll-container'),

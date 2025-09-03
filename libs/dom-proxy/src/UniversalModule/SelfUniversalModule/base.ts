@@ -3,34 +3,9 @@
  * 支持 AMD、CJS、ESM、UMD 的多格式 JS 模块加载
  */
 
-import { createSandbox, customRequire } from "../Global/base";
+import { createSandbox, detectModuleType, ModuleType, type SandboxContext } from "../Global/base";
 
 
-/**
- * 模块类型枚举
- */
-export enum ModuleType {
-  AMD = 'amd',
-  CJS = 'cjs',
-  ESM = 'esm',
-  UMD = 'umd',
-  IIFE = 'iife',
-}
-
-/**
- * 通过代码特征识别模块类型
- * @param code 模块代码
- * @returns 模块类型
- */
-export const detectModuleType = (code: string): ModuleType => {
-  // 修改ESM检测正则，使其更准确地匹配export语句
-  if (/\bexport\s+(default\b|\{|\*|const\s+|let\s+|var\s+|function\s+|class\s+)|import\s+/.test(code)) return ModuleType.ESM;
-  if (/define\(.*?function\s*\(/.test(code)) return ModuleType.AMD;
-  // UMD检测需要在CJS之前，因为UMD通常也包含CJS的特征
-  if (/\(function\s*\([^)]*\broot\b[^)]*,\s*\bfactory\b[^)]*\)/.test(code)) return ModuleType.UMD;
-  if (/exports.*?\=|\bmodule\.exports\b/.test(code)) return ModuleType.CJS;
-  return ModuleType.IIFE; // 兜底为立即执行函数
-};
 
 
 /**
@@ -296,43 +271,4 @@ export const unloadModule = (moduleId: string): boolean => {
  */
 export const clearModuleCache = (): void => {
   moduleCache.clear();
-};
-
-/**
- * 过滤恶意代码
- * @param code 要检查的代码
- * @returns 是否包含恶意代码
- */
-export const containsMaliciousCode = (code: string): boolean => {
-  // 检测常见的恶意代码模式
-  const maliciousPatterns = [
-    /\beval\s*\(/,                    // eval()
-    /new\s+Function\s*\(/,            // new Function()
-    /\bdocument\.cookie\b/,           // document.cookie
-    /\blocation\s*=/,                 // location=
-    /\bwindow\s*\.\s*open\s*\(/,      // window.open()
-    /\bnavigator\s*\.\s*userAgent\b/, // navigator.userAgent
-  ];
-
-  return maliciousPatterns.some(pattern => pattern.test(code));
-};
-
-/**
- * 安全加载模块
- * @param code 模块代码
- * @param moduleId 可选的模块ID
- * @returns Promise，解析为模块导出或错误
- */
-export const safeLoadModule = async (code: string, moduleId?: string): Promise<any> => {
-  // 检查恶意代码
-  if (containsMaliciousCode(code)) {
-    throw new Error('检测到潜在的恶意代码');
-  }
-
-  try {
-    return await loadModule(code, moduleId);
-  } catch (error) {
-    console.error('[ModuleLoader] 模块加载失败:', error);
-    throw error;
-  }
 };

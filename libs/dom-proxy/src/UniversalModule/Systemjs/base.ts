@@ -3,124 +3,10 @@
  * 支持AMD、CJS、ESM、UMD、IIFE多种模块格式
  */
 
-import { fakeWindow } from "../Global/base";
+import { createSandbox, detectModuleType, ModuleType, SandboxContext } from "../Global/base";
+import { containsMaliciousCode } from "../Tools/code";
 import { consoleColor } from "../Tools/console";
 
-/**
- * 模块类型枚举
- */
-export enum ModuleType {
-  AMD = 'amd',
-  CJS = 'cjs',
-  ESM = 'esm',
-  UMD = 'umd',
-  IIFE = 'iife',
-}
-
-/**
- * 通过代码特征识别模块类型
- * @param code 模块代码
- * @returns 模块类型
- */
-export const detectModuleType = (code: string): ModuleType => {
-  if (/\bexport\s+(default\b|\{|\*|const\s+|let\s+|var\s+|function\s+|class\s+)|import\s+/.test(code))
-    return ModuleType.ESM;
-  if (/define\(.*?function\s*\(/.test(code))
-    return ModuleType.AMD;
-  if (/\(function\s*\([^)]*\broot\b[^)]*,\s*\bfactory\b[^)]*\)/.test(code))
-    return ModuleType.UMD;
-  if (/exports.*?\=|\bmodule\.exports\b/.test(code))
-    return ModuleType.CJS;
-  return ModuleType.IIFE;
-};
-
-// 沙箱上下文接口
-export interface SandboxContext {
-  require: (path: string) => any;
-  exports: any;
-  module: { exports: any };
-  define: (deps: string[] | Function, factory?: Function) => any;
-  console: any;
-  setTimeout: (callback: () => void, timeout: number) => number;
-  clearTimeout: (id: number) => void;
-  window?: any;
-  global?: any;
-  self?: any;
-}
-
-/**
- * 自定义的require函数
- * 用于CJS模块加载依赖
- */
-const customRequire = (path: string) => {
-  console.log(`[SystemJS Sandbox] 请求加载模块: ${path}`);
-  return {};
-};
-
-/**
- * 创建沙箱环境
- * @returns 沙箱上下文对象
- */
-export const createSandbox = (): SandboxContext => {
-  // 创建模块上下文
-  const context: SandboxContext = {
-    require: customRequire,
-    exports: {},
-    module: { exports: {} },
-    define: () => { }, // 将在执行器中定义
-    console: {
-      log: (...args: any[]) => console.log('[SystemJS Sandbox]', ...args),
-      warn: (...args: any[]) => console.warn('[SystemJS Sandbox]', ...args),
-      error: (...args: any[]) => console.error('[SystemJS Sandbox]', ...args),
-    },
-    setTimeout: setTimeout.bind(fakeWindow),
-    clearTimeout: clearTimeout.bind(fakeWindow),
-  };
-
-  // 设置循环引用
-  context.window = context;
-  context.global = context;
-  context.self = context;
-
-  // 使用Proxy进行安全访问控制
-  return new Proxy(context, {
-    get(target, key: string | symbol) {
-      // 允许访问预定义的安全属性
-      if (key in target) {
-        return target[key as keyof typeof target];
-      }
-
-      // 阻止访问全局对象
-      if (key === 'document' || key === 'localStorage' || key === 'location') {
-        console.warn(`[SystemJS Sandbox] 阻止访问全局对象: ${String(key)}`);
-        return {};
-      }
-
-      // 默认返回undefined
-      return undefined;
-    },
-    set(target, key, value) {
-      if (key === 'module' || key === 'exports') {
-        // 允许修改module.exports的内容
-        if (typeof value === 'object') {
-          Object.assign(target[key as keyof typeof target], value);
-        } else {
-          target.module.exports = value;
-          target.exports = value;
-        }
-        return true;
-      } else if (key === 'require' || key === 'define') {
-        target[key as keyof typeof target] = value;
-        return true;
-      }
-
-      // 允许设置其他属性，但发出警告
-      console.warn(`[SystemJS Sandbox] 设置属性: ${String(key)}`);
-      (target as any)[key] = value;
-      return true;
-    }
-  });
-};
 
 /**
  * SystemJS模块加载器核心类
@@ -473,25 +359,6 @@ export const loadModuleFromUrl = async (
     });
     throw error;
   }
-};
-
-/**
- * 检测恶意代码
- * @param code 要检查的代码
- * @returns 是否包含恶意代码
- */
-export const containsMaliciousCode = (code: string): boolean => {
-  // 检测常见的恶意代码模式
-  const maliciousPatterns = [
-    /\beval\s*\(/,                    // eval()
-    /new\s+Function\s*\(/,            // new Function()
-    /\bdocument\.cookie\b/,           // document.cookie
-    /\blocation\s*=/,                 // location=
-    /\bwindow\s*\.\s*open\s*\(/,      // window.open()
-    /\bnavigator\s*\.\s*userAgent\b/, // navigator.userAgent
-  ];
-
-  return maliciousPatterns.some(pattern => pattern.test(code));
 };
 
 // 导出模块示例

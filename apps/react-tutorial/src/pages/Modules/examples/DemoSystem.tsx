@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Button, Space, Input, Typography, notification, Spin } from 'antd';
 import { PlayCircleOutlined, CodeOutlined, ReloadOutlined, BugOutlined } from '@ant-design/icons';
 import MonacoEditor from '@monaco-editor/react';
-import { safeLoadModule, loadModuleFromUrl, detectModuleType, ModuleType, moduleExamples } from '../Systemjs/base';
-import { dashboard } from '../Systemjs/ModuleDashboard';
+
+import { safeLoadModule, loadModuleFromUrl, moduleExamples } from '@dom-proxy/universal-module/Systemjs';
+import { ModuleType } from '@dom-proxy/universal-module/Global/base';
+import { detectModuleType } from '@dom-proxy/universal-module/Global/base';
+import { dashboard } from '@dom-proxy/universal-module/Systemjs/ModuleDashboard';
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;

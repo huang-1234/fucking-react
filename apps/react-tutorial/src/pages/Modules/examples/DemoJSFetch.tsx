@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Input, Button, Spin, Alert, Tabs, Space } from 'antd';
 import MonacoEditor from '@monaco-editor/react';
-import { fetchModuleCode } from '../UniversalModuleLoad/fetch-js';
-import { safeLoadModule, detectModuleType, ModuleType } from '../UniversalModuleLoad/base';
+import { fetchModuleCode } from '@dom-proxy/universal-module/SelfUniversalModule/fetch-js';
+import { detectModuleType, ModuleType } from '@dom-proxy/universal-module/Global/base';
+import { safeLoadModule } from '@dom-proxy/universal-module/Systemjs';
 
 const { TabPane } = Tabs;
 

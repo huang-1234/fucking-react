@@ -36,24 +36,28 @@ export const customRequire = (path: string) => {
  * @description 创建沙箱环境
  * @returns 沙箱上下文对象
  */
-export const createSandbox = (): SandboxContext => {
+/**
+ * 创建沙箱环境
+ * @returns 沙箱上下文对象
+ */
+export const createSandbox = () => {
   // 创建模块上下文
   const context: SandboxContext = {
     require: customRequire,
     exports: {},
     module: { exports: {} },
-    define: () => { }, // 将在 AMD 执行器中定义
+    define: () => { }, // 将在执行器中定义
     console: {
-      log: (...args: any[]) => console.log('[Sandbox]', ...args),
-      warn: (...args: any[]) => console.warn('[Sandbox]', ...args),
-      error: (...args: any[]) => console.error('[Sandbox]', ...args),
+      log: (...args: any[]) => console.log('[SystemJS Sandbox]', ...args),
+      warn: (...args: any[]) => console.warn('[SystemJS Sandbox]', ...args),
+      error: (...args: any[]) => console.error('[SystemJS Sandbox]', ...args),
     },
     setTimeout: setTimeout.bind(fakeWindow),
     clearTimeout: clearTimeout.bind(fakeWindow),
-    window: {} as SandboxContext, // 初始化为空对象，避免循环引用
-    global: {} as SandboxContext,
-    self: {} as SandboxContext,
-    returnExports: {},
+    window: undefined as unknown as SandboxContext,
+    global: undefined as unknown as SandboxContext,
+    self: undefined as unknown as SandboxContext,
+    returnExports: undefined
   };
 
   // 设置循环引用
@@ -61,7 +65,7 @@ export const createSandbox = (): SandboxContext => {
   context.global = context;
   context.self = context;
 
-  // 使用 Proxy 进行安全访问控制
+  // 使用Proxy进行安全访问控制
   return new Proxy(context, {
     get(target, key: string | symbol) {
       // 允许访问预定义的安全属性
@@ -70,17 +74,17 @@ export const createSandbox = (): SandboxContext => {
       }
 
       // 阻止访问全局对象
-      if (key === 'window' || key === 'globalThis' || key === 'document') {
-        console.warn(`[Sandbox] 阻止访问全局对象: ${String(key)}`);
+      if (key === 'document' || key === 'localStorage' || key === 'location') {
+        console.warn(`[SystemJS Sandbox] 阻止访问全局对象: ${String(key)}`);
         return {};
       }
 
-      // 默认返回 undefined
+      // 默认返回undefined
       return undefined;
     },
     set(target, key, value) {
       if (key === 'module' || key === 'exports') {
-        // 允许修改module.exports的内容，但不允许完全替换对象
+        // 允许修改module.exports的内容
         if (typeof value === 'object') {
           Object.assign(target[key as keyof typeof target], value);
         } else {
@@ -88,15 +92,42 @@ export const createSandbox = (): SandboxContext => {
           target.exports = value;
         }
         return true;
-      } else if (key === 'require') {
+      } else if (key === 'require' || key === 'define') {
         target[key as keyof typeof target] = value;
         return true;
       }
 
       // 允许设置其他属性，但发出警告
-      console.warn(`[Sandbox] 设置属性: ${String(key)}`);
+      console.warn(`[SystemJS Sandbox] 设置属性: ${String(key)}`);
       (target as any)[key] = value;
       return true;
     }
   });
+};
+
+
+/**
+ * 模块类型枚举
+ */
+export enum ModuleType {
+  AMD = 'amd',
+  CJS = 'cjs',
+  ESM = 'esm',
+  UMD = 'umd',
+  IIFE = 'iife',
+}
+
+/**
+ * 通过代码特征识别模块类型
+ * @param code 模块代码
+ * @returns 模块类型
+ */
+export const detectModuleType = (code: string): ModuleType => {
+  // 修改ESM检测正则，使其更准确地匹配export语句
+  if (/\bexport\s+(default\b|\{|\*|const\s+|let\s+|var\s+|function\s+|class\s+)|import\s+/.test(code)) return ModuleType.ESM;
+  if (/define\(.*?function\s*\(/.test(code)) return ModuleType.AMD;
+  // UMD检测需要在CJS之前，因为UMD通常也包含CJS的特征
+  if (/\(function\s*\([^)]*\broot\b[^)]*,\s*\bfactory\b[^)]*\)/.test(code)) return ModuleType.UMD;
+  if (/exports.*?\=|\bmodule\.exports\b/.test(code)) return ModuleType.CJS;
+  return ModuleType.IIFE; // 兜底为立即执行函数
 };
