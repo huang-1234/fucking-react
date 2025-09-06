@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Select, Button, Input, Alert, Tabs, Typography, Space, Divider, Upload, message } from 'antd';
-import { SwapOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Card, Form, Select, Button, Input, Alert, Typography, Divider } from 'antd';
+import { SwapOutlined, DownloadOutlined } from '@ant-design/icons';
 import * as protobuf from 'protobufjs';
 import {
   jsonToProtobuf,
@@ -13,8 +13,7 @@ import {
 import styles from '../index.module.less';
 
 const { TextArea } = Input;
-const { Title, Text } = Typography;
-const { TabPane } = Tabs;
+const { Text } = Typography;
 const { Option } = Select;
 
 interface ConverterToolProps {
@@ -185,6 +184,11 @@ const ConverterTool: React.FC<ConverterToolProps> = ({ root }) => {
     try {
       setError(null);
 
+      // 检查数据是否有效
+      if (binaryInput.length === 0) {
+        throw new Error('二进制数据为空');
+      }
+
       // 转换为JSON
       const result = protobufToJson(messageType, binaryInput, {
         toJson: true,
@@ -195,7 +199,13 @@ const ConverterTool: React.FC<ConverterToolProps> = ({ root }) => {
 
       setJsonOutput(result);
     } catch (err: any) {
-      setError(`转换失败: ${err.message}`);
+      console.error('转换错误详情:', err);
+      // 添加更详细的错误信息
+      const errorMessage = err.message.includes('invalid wire type')
+        ? `无效的二进制格式: 数据可能损坏或不匹配选定的消息类型。错误详情: ${err.message}`
+        : `转换失败: ${err.message}`;
+
+      setError(errorMessage);
       setJsonOutput('');
     }
   };
@@ -206,15 +216,41 @@ const ConverterTool: React.FC<ConverterToolProps> = ({ root }) => {
 
     try {
       if (value) {
+        // 验证Base64格式
+        if (!/^[A-Za-z0-9+/=]+$/.test(value.replace(/\s/g, ''))) {
+          throw new Error('无效的Base64格式');
+        }
+
         const buffer = base64ToBuffer(value);
         setBinaryInput(buffer);
         setHexOutput(formatHex(buffer));
+
+        // 检查是否为有效的protobuf数据
+        if (messageType && buffer.length > 0) {
+          try {
+            // 尝试读取第一个字段，检查是否有效
+            const reader = new protobuf.Reader(buffer);
+            if (reader.len > 0) {
+              const firstByte = reader.uint32();
+              const wireType = firstByte & 0x7;
+              if (wireType > 5) { // protobuf wire type 应该在0-5之间
+                throw new Error(`无效的wire type: ${wireType}`);
+              }
+            }
+          } catch (protoErr) {
+            console.warn('警告: 数据可能不是有效的Protobuf格式', protoErr);
+            // 这里只显示警告，不报错，因为用户可能还没选择正确的消息类型
+          }
+        }
       } else {
         setBinaryInput(null);
         setHexOutput('');
       }
     } catch (err: any) {
+      console.error('Base64解码错误:', err);
       setError(`Base64解码失败: ${err.message}`);
+      setBinaryInput(null);
+      setHexOutput('');
     }
   };
 

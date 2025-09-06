@@ -195,6 +195,29 @@ export const protobufToJson = (
   } = {}
 ): object | string => {
   try {
+    // 验证二进制数据
+    if (!binaryData || binaryData.length === 0) {
+      throw new Error('二进制数据为空');
+    }
+
+    // 检查数据是否可能被损坏
+    try {
+      // 尝试使用Reader验证数据格式
+      const reader = new protobuf.Reader(binaryData);
+      // 读取第一个字段，检查是否有效
+      if (reader.len > 0) {
+        // 读取字段号和类型
+        const firstByte = reader.uint32();
+        const wireType = firstByte & 0x7;
+        if (wireType > 5) { // protobuf wire type 应该在0-5之间
+          throw new Error(`无效的wire type: ${wireType}`);
+        }
+      }
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : '未知错误';
+      throw new Error(`二进制数据格式无效: ${errorMessage}`);
+    }
+
     // 解码二进制数据
     const decoded = messageType.decode(binaryData);
 
