@@ -3,7 +3,8 @@
  * 支持 AMD、CJS、ESM、UMD 的多格式 JS 模块加载
  */
 
-import { createSandbox, customRequire, type SandboxContext } from "@dom-proxy/universal-module";
+import { createSandbox, customRequire, type SandboxContext } from "@dom-proxy/universal-module/Global/base";
+import { containsMaliciousCode } from "@dom-proxy/universal-module/Tools/code";
 
 
 /**
@@ -298,32 +299,14 @@ export const clearModuleCache = (): void => {
   moduleCache.clear();
 };
 
-/**
- * 过滤恶意代码
- * @param code 要检查的代码
- * @returns 是否包含恶意代码
- */
-export const containsMaliciousCode = (code: string): boolean => {
-  // 检测常见的恶意代码模式
-  const maliciousPatterns = [
-    /\beval\s*\(/,                    // eval()
-    /new\s+Function\s*\(/,            // new Function()
-    /\bdocument\.cookie\b/,           // document.cookie
-    /\blocation\s*=/,                 // location=
-    /\bwindow\s*\.\s*open\s*\(/,      // window.open()
-    /\bnavigator\s*\.\s*userAgent\b/, // navigator.userAgent
-  ];
-
-  return maliciousPatterns.some(pattern => pattern.test(code));
-};
 
 /**
- * 安全加载模块
+ * 通过loadModule安全加载模块
  * @param code 模块代码
  * @param moduleId 可选的模块ID
  * @returns Promise，解析为模块导出或错误
  */
-export const safeLoadModule = async (code: string, moduleId?: string): Promise<any> => {
+export const safeLoadModuleSelf = async (code: string, moduleId?: string): Promise<any> => {
   // 检查恶意代码
   if (containsMaliciousCode(code)) {
     throw new Error('检测到潜在的恶意代码');

@@ -3,7 +3,7 @@ import { Card, Tabs, Button, Space, Input, Typography, notification, Spin } from
 import { PlayCircleOutlined, CodeOutlined, ReloadOutlined, BugOutlined } from '@ant-design/icons';
 import MonacoEditor from '@monaco-editor/react';
 
-import { safeLoadModule, loadModuleFromUrl, moduleExamples } from '@dom-proxy/universal-module/Systemjs';
+import { safeLoadModuleSystem, loadModuleFromUrl, moduleExamples } from '@dom-proxy/universal-module/Systemjs';
 import { ModuleType } from '@dom-proxy/universal-module/Global/base';
 import { detectModuleType } from '@dom-proxy/universal-module/Global/base';
 import { dashboard } from '@dom-proxy/universal-module/Systemjs/ModuleDashboard';
@@ -176,7 +176,7 @@ const DemoSystem: React.FC = () => {
 
     setLoading(true);
     try {
-      const exports = await safeLoadModule(code, moduleId);
+      const exports = await safeLoadModuleSystem(code, moduleId);
       setModuleExports(exports);
       notification.success({ message: '模块加载成功' });
     } catch (error) {
