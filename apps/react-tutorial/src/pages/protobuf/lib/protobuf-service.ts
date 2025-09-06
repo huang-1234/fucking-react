@@ -147,3 +147,122 @@ export const getObjectIconType = (obj: protobuf.ReflectionObject): string => {
   if (obj instanceof protobuf.Namespace) return 'folder';
   return 'file';
 };
+
+/**
+ * 将JSON对象转换为Protobuf二进制数据
+ * @param messageType Protobuf消息类型
+ * @param jsonData JSON对象或字符串
+ * @returns Uint8Array 二进制数据
+ */
+export const jsonToProtobuf = (messageType: protobuf.Type, jsonData: object | string): Uint8Array => {
+  try {
+    // 如果输入是JSON字符串，则解析为对象
+    const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+
+    // 验证数据
+    const errMsg = messageType.verify(data);
+    if (errMsg) {
+      throw new Error(`数据验证失败: ${errMsg}`);
+    }
+
+    // 创建消息实例
+    const message = messageType.create(data);
+
+    // 编码为二进制
+    return messageType.encode(message).finish();
+  } catch (error) {
+    console.error('JSON转Protobuf失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 将Protobuf二进制数据转换为JSON对象
+ * @param messageType Protobuf消息类型
+ * @param binaryData 二进制数据(Uint8Array或Buffer)
+ * @param options 转换选项
+ * @returns 解码后的JSON对象
+ */
+export const protobufToJson = (
+  messageType: protobuf.Type,
+  binaryData: Uint8Array | Buffer,
+  options: {
+    toObject?: boolean;
+    toJson?: boolean;
+    longs?: string | number;
+    enums?: string | number;
+    bytes?: string | Uint8Array;
+  } = {}
+): object | string => {
+  try {
+    // 解码二进制数据
+    const decoded = messageType.decode(binaryData);
+
+    // 转换为普通对象
+    const objOptions: protobuf.IConversionOptions = {
+      longs: options.longs === 'string' ? String : options.longs === 'number' ? Number : String,
+      enums: options.enums === 'string' ? String : options.enums === 'number' ? Number : String,
+      bytes: options.bytes === 'string' ? String : options.bytes instanceof Uint8Array ? Uint8Array : String,
+    };
+
+    const obj = messageType.toObject(decoded, objOptions);
+
+    // 根据选项返回对象或JSON字符串
+    if (options.toJson) {
+      return JSON.stringify(obj);
+    }
+
+    return obj;
+  } catch (error) {
+    console.error('Protobuf转JSON失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 将Base64字符串转换为Uint8Array
+ * @param base64 Base64编码的字符串
+ * @returns Uint8Array
+ */
+export const base64ToBuffer = (base64: string): Uint8Array => {
+  try {
+    // 移除可能的data URI前缀
+    const base64Data = base64.replace(/^data:[^,]+,/, '');
+
+    // 在浏览器环境中解码
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    return bytes;
+  } catch (error) {
+    console.error('Base64转Buffer失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 将Uint8Array转换为Base64字符串
+ * @param buffer Uint8Array数据
+ * @returns Base64编码的字符串
+ */
+export const bufferToBase64 = (buffer: Uint8Array): string => {
+  try {
+    // 转换为二进制字符串
+    let binaryString = '';
+    const len = buffer.byteLength;
+
+    for (let i = 0; i < len; i++) {
+      binaryString += String.fromCharCode(buffer[i]);
+    }
+
+    // 编码为Base64
+    return btoa(binaryString);
+  } catch (error) {
+    console.error('Buffer转Base64失败:', error);
+    throw error;
+  }
+};

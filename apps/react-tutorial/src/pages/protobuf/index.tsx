@@ -5,11 +5,10 @@ const ReflectionViewer = loadable(() => import('./components/ReflectionViewer'))
 const MessageBuilder = loadable(() => import('./components/MessageBuilder'));
 const RpcSimulator = loadable(() => import('./components/RpcSimulator'));
 const FeatureExplorer = loadable(() => import('./components/FeatureExplorer'));
+const ConverterTool = loadable(() => import('./components/ConverterTool'));
 const ProtoErrorBoundary = loadable(() => import('./components/ProtoErrorBoundary'));
 import { loadProto } from './lib/protobuf-service';
 import styles from './index.module.less';
-import stylesLayout from '@/layouts/container.module.less';
-import classNames from 'classnames';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -123,6 +122,12 @@ const ProtobufPage: React.FC = () => {
         <TabPane tab="版本特性对比" key="features">
           <ProtoErrorBoundary>
             <FeatureExplorer />
+          </ProtoErrorBoundary>
+        </TabPane>
+
+        <TabPane tab="二进制转换工具" key="converter">
+          <ProtoErrorBoundary>
+            <ConverterTool root={root} />
           </ProtoErrorBoundary>
         </TabPane>
       </Tabs>
