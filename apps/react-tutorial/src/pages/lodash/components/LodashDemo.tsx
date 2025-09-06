@@ -27,6 +27,29 @@ const LodashDemo: React.FC = () => {
     setActiveCategory(category);
   };
 
+  const _renderFunctions = (key: string) => {
+    switch (key) {
+      case 'array':
+        return <ArrayFunctions />;
+      case 'collection':
+        return <CollectionFunctions />;
+      case 'function':
+        return <FunctionFunctions />;
+      case 'language':
+        return <LanguageFunctions />;
+      case 'math':
+        return <MathFunctions />;
+      case 'number':
+        return <NumberFunctions />;
+      case 'object':
+        return <ObjectFunctions />;
+      case 'string':
+        return <StringFunctions />;
+      case 'utility':
+        return <UtilityFunctions />;
+    }
+  };
+
   return (
     <div className="lodash-demo">
       <BackTop />
@@ -46,15 +69,7 @@ const LodashDemo: React.FC = () => {
       </div>
 
       <div className="demo-container">
-        {activeCategory === 'array' && <ArrayFunctions />}
-        {activeCategory === 'collection' && <CollectionFunctions />}
-        {activeCategory === 'function' && <FunctionFunctions />}
-        {activeCategory === 'language' && <LanguageFunctions />}
-        {activeCategory === 'math' && <MathFunctions />}
-        {activeCategory === 'number' && <NumberFunctions />}
-        {activeCategory === 'object' && <ObjectFunctions />}
-        {activeCategory === 'string' && <StringFunctions />}
-        {activeCategory === 'utility' && <UtilityFunctions />}
+        {_renderFunctions(urlState.category)}
       </div>
     </div>
   );

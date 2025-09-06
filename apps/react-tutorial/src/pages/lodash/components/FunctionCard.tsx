@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Card, Button, Tooltip, Typography, Divider, Space } from 'antd';
-import { CodeOutlined, PlayCircleOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons';
+import { CodeOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import Highlight from 'react-highlight';
 import 'highlight.js/styles/atom-one-dark.css';
-
+import { Check, CopyCheckIcon ,CopyIcon } from 'lucide-react';
+import { WlIcon } from '@/components/Icon/lucide';
 const { Text, Paragraph } = Typography;
 
 interface FunctionCardProps {
@@ -70,7 +71,7 @@ const FunctionCard: React.FC<FunctionCardProps> = ({
           <Tooltip title={copied ? "已复制" : "复制代码"}>
             <Button
               type="text"
-              icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+              icon={copied ? <WlIcon Icon={Check} /> : <WlIcon Icon={CopyIcon} />}
               onClick={handleCopyCode}
             />
           </Tooltip>
