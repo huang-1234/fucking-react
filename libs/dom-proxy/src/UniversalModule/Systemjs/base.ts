@@ -307,12 +307,12 @@ export class SystemJSLoader {
 export const systemJSLoader = new SystemJSLoader();
 
 /**
- * 安全加载模块（公共API）
+ * 通过systemjs安全加载模块（公共API）
  * @param code 模块代码
  * @param moduleId 模块标识符
  * @returns Promise，解析为模块导出
  */
-export const safeLoadModule = async (
+export const safeLoadModuleSystem = async (
   code: string,
   moduleId?: string
 ): Promise<any> => {
@@ -352,7 +352,7 @@ export const loadModuleFromUrl = async (
     }
 
     const code = await response.text();
-    return await safeLoadModule(code, moduleId || url);
+    return await safeLoadModuleSystem(code, moduleId || url);
   } catch (error) {
     consoleColor.logGroup(`[SystemJS] 从URL加载模块失败: ${url}`, () => {
       console.error(error);

@@ -1,14 +1,20 @@
 import {
+  moduleExamples,
+  systemJSLoader
+} from '../Systemjs/base';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+/**
+ *
   ModuleType,
   containsMaliciousCode,
   detectModuleType,
-  moduleExamples,
-  safeLoadModule,
-  systemJSLoader
-} from './base';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-import { createSandbox } from '../Global/base';
+  safeLoadModuleSystem,
+ */
+import {
+  containsMaliciousCode,
+} from '../Tools/code'
+import { createSandbox, detectModuleType, ModuleType } from '../Global/base';
+import { safeLoadModuleSelf } from '../SelfUniversalModule/base';
 
 /**
  * SystemJS模块加载器测试套件
@@ -102,39 +108,39 @@ describe('SystemJS模块加载器', () => {
 
   describe('模块加载', () => {
     it('应加载 AMD 模块', async () => {
-      const result = await safeLoadModule(moduleExamples.amd, 'test-amd');
+      const result = await safeLoadModuleSelf(moduleExamples.amd, 'test-amd');
       expect(result).toBeDefined();
     });
 
     it('应加载 CJS 模块', async () => {
-      const result = await safeLoadModule(moduleExamples.cjs, 'test-cjs');
+      const result = await safeLoadModuleSelf(moduleExamples.cjs, 'test-cjs');
       expect(result).toBeDefined();
     });
 
     it('应加载 ESM 模块', async () => {
-      const result = await safeLoadModule(moduleExamples.esm, 'test-esm');
+      const result = await safeLoadModuleSelf(moduleExamples.esm, 'test-esm');
       expect(result).toBeDefined();
     });
 
     it('应加载 UMD 模块', async () => {
-      const result = await safeLoadModule(moduleExamples.umd, 'test-umd');
+      const result = await safeLoadModuleSelf(moduleExamples.umd, 'test-umd');
       expect(result).toBeDefined();
     });
 
     it('应加载 IIFE 模块', async () => {
-      const result = await safeLoadModule(moduleExamples.iife, 'test-iife');
+      const result = await safeLoadModuleSelf(moduleExamples.iife, 'test-iife');
       expect(result).toBeDefined();
     });
 
     it('应从缓存加载模块', async () => {
       // 首次加载
-      await safeLoadModule(moduleExamples.cjs, 'cached-module');
+      await safeLoadModuleSelf(moduleExamples.cjs, 'cached-module');
 
       // 模拟importModule，检查是否从缓存加载
       const importSpy = vi.spyOn(systemJSLoader, 'importModule');
 
       // 再次加载
-      await safeLoadModule(moduleExamples.cjs, 'cached-module');
+      await safeLoadModuleSelf(moduleExamples.cjs, 'cached-module');
 
       // 不应该再次调用importModule
       expect(importSpy).not.toHaveBeenCalled();
@@ -142,7 +148,7 @@ describe('SystemJS模块加载器', () => {
 
     it('应卸载模块', async () => {
       // 加载模块
-      await safeLoadModule(moduleExamples.cjs, 'module-to-unload');
+      await safeLoadModuleSelf(moduleExamples.cjs, 'module-to-unload');
 
       // 卸载模块
       const unloaded = systemJSLoader.unloadModule('module-to-unload');
@@ -150,7 +156,7 @@ describe('SystemJS模块加载器', () => {
 
       // 再次加载，应该重新调用importModule
       const importSpy = vi.spyOn(systemJSLoader, 'importModule');
-      await safeLoadModule(moduleExamples.cjs, 'module-to-unload');
+      await safeLoadModuleSelf(moduleExamples.cjs, 'module-to-unload');
       expect(importSpy).toHaveBeenCalled();
     });
   });
@@ -171,7 +177,7 @@ describe('SystemJS模块加载器', () => {
         eval("alert('hacked')");
       `;
 
-      await expect(safeLoadModule(maliciousCode)).rejects.toThrow('检测到潜在的恶意代码');
+      await expect(safeLoadModuleSelf(maliciousCode)).rejects.toThrow('检测到潜在的恶意代码');
     });
   });
 
@@ -184,7 +190,7 @@ describe('SystemJS模块加载器', () => {
         }
       });
 
-      await expect(safeLoadModule('const x = 1;', 'circular-module')).rejects.toThrow('检测到循环依赖');
+      await expect(safeLoadModuleSelf('const x = 1;', 'circular-module')).rejects.toThrow('检测到循环依赖');
     });
   });
 });

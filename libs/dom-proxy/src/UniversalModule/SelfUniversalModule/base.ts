@@ -4,6 +4,7 @@
  */
 
 import { createSandbox, detectModuleType, ModuleType, type SandboxContext } from "../Global/base";
+import { containsMaliciousCode } from "../Tools/code";
 
 
 
@@ -220,8 +221,6 @@ export async function loadModule(code: string, moduleId?: string): Promise<any> 
     const type = detectModuleType(code);
     const sandbox = createSandbox();
 
-    console.log('loadModule', moduleCache, moduleId)
-
     let exports;
     switch (type) {
       case ModuleType.AMD:
@@ -271,4 +270,27 @@ export const unloadModule = (moduleId: string): boolean => {
  */
 export const clearModuleCache = (): void => {
   moduleCache.clear();
+};
+
+
+
+
+/**
+ * 通过loadModule安全加载模块
+ * @param code 模块代码
+ * @param moduleId 可选的模块ID
+ * @returns Promise，解析为模块导出或错误
+ */
+export const safeLoadModuleSelf = async (code: string, moduleId?: string): Promise<any> => {
+  // 检查恶意代码
+  if (containsMaliciousCode(code)) {
+    throw new Error('检测到潜在的恶意代码');
+  }
+
+  try {
+    return await loadModule(code, moduleId);
+  } catch (error) {
+    console.error('[ModuleLoader] 模块加载失败:', error);
+    throw error;
+  }
 };

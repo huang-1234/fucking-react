@@ -1,22 +1,24 @@
 // 模拟executeESM函数，因为在Node.js测试环境中无法使用import()动态导入Blob URL
-import * as baseModule from './base';
+import * as baseModule from '../SelfUniversalModule/base.ts';
+import { containsMaliciousCode } from "../Tools/code.ts";
 
 import {
-  ModuleType,
   clearModuleCache,
-  containsMaliciousCode,
-  detectModuleType,
   executeAMD,
   executeCJS,
   executeIIFE,
   executeUMD,
   loadModule,
-  safeLoadModule,
   unloadModule
-} from './base';
+} from '../SelfUniversalModule/base.ts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createSandbox } from "../Global/base";
+import {
+  createSandbox,
+  ModuleType,
+  detectModuleType,
+} from "../Global/base.ts";
+import { safeLoadModuleSelf } from '../SelfUniversalModule/base.ts'
 
 /**
  * @desc 测试总结：
@@ -138,7 +140,7 @@ describe('通用模块加载器', () => {
 
     it('应阻止访问全局对象', () => {
       const sandbox = createSandbox();
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
       // 测试访问不在沙箱中定义的全局对象
       const windowAccess = sandbox.document;
@@ -149,7 +151,7 @@ describe('通用模块加载器', () => {
 
     it('应阻止修改非模块相关属性', () => {
       const sandbox = createSandbox();
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
       sandbox.customProp = 'test';
       expect(consoleSpy).toHaveBeenCalled();
@@ -271,7 +273,7 @@ describe('通用模块加载器', () => {
         eval("alert('hacked')");
       `;
 
-      await expect(safeLoadModule(maliciousCode)).rejects.toThrow('检测到潜在的恶意代码');
+      await expect(safeLoadModuleSelf(maliciousCode)).rejects.toThrow('检测到潜在的恶意代码');
     });
   });
 });

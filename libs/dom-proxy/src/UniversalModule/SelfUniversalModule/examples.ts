@@ -1,4 +1,5 @@
-import { loadModule, detectModuleType, ModuleType } from './base';
+import { detectModuleType } from '../Global/base';
+import { loadModule } from './base';
 
 /**
  * AMD 模块示例

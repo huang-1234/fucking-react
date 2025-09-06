@@ -64,6 +64,8 @@ export const createSandbox = () => {
   context.window = context;
   context.global = context;
   context.self = context;
+  // 设置 document 属性
+  // context.document = undefined;
 
   // 使用Proxy进行安全访问控制
   return new Proxy(context, {
