@@ -100,12 +100,12 @@ function getType(source) {
 }
 
 /**
- * @description 深拷贝
+ * @description 深拷贝V2版本
  * @param {*} source 源对象
  * @param {WeakMap} memory 记忆对象，用于处理循环引用
  * @returns {*} 深拷贝后的对象
  */
-function deepClone(source, memory = new WeakMap()) {
+function deepCloneV2(source, memory = new WeakMap()) {
   // 处理循环引用
   if (memory.has(source)) {
     return memory.get(source);
