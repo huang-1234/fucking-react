@@ -87,3 +87,106 @@ const obj = {
 };
 
 console.log(deepClone(obj));
+
+// deepClone.js
+
+/**
+ * 获取对象的准确类型字符串
+ * @param {*} source 源对象
+ * @returns {string} 类型字符串，如 'Object', 'Array', 'Date' 等
+ */
+function getType(source) {
+  return Object.prototype.toString.call(source).slice(8, -1);
+}
+
+/**
+ * @description 深拷贝
+ * @param {*} source 源对象
+ * @param {WeakMap} memory 记忆对象，用于处理循环引用
+ * @returns {*} 深拷贝后的对象
+ */
+function deepClone(source, memory = new WeakMap()) {
+  // 处理循环引用
+  if (memory.has(source)) {
+    return memory.get(source);
+  }
+
+  const type = getType(source);
+
+  // 处理基本类型和函数（函数通常直接共享）
+  if (typeof source !== 'object' || source === null) {
+    return source;
+  }
+
+  // 处理特殊对象类型
+  switch (type) {
+    case 'Date':
+      return new Date(source.getTime());
+    case 'RegExp':
+      return new RegExp(source.source, source.flags);
+    case 'Error':
+      return new Error(source.message);
+    case 'Map':
+      const clonedMap = new Map();
+      memory.set(source, clonedMap);
+      source.forEach((value, key) => {
+        clonedMap.set(deepClone(key, memory), deepClone(value, memory));
+      });
+      return clonedMap;
+    case 'Set':
+      const clonedSet = new Set();
+      memory.set(source, clonedSet);
+      source.forEach((value) => {
+        clonedSet.add(deepClone(value, memory));
+      });
+      return clonedSet;
+    case 'Array':
+      const clonedArray = [];
+      memory.set(source, clonedArray);
+      for (let i = 0; i < source.length; i++) {
+        clonedArray[i] = deepClone(source[i], memory);
+      }
+      // 处理稀疏数组
+      if (source.length !== clonedArray.length) {
+        clonedArray.length = source.length;
+      }
+      return clonedArray;
+    // 注意：WeakMap、WeakSet 由于其特性，通常无法也不建议进行深拷贝。
+    // 如果业务场景确实需要，可能需要非常特殊和谨慎的处理，这里返回原引用（浅拷贝）并警告。
+    case 'WeakMap':
+      console.warn('Deep cloning a WeakMap is not supported. Returning shallow reference.');
+      return source;
+    case 'WeakSet':
+      console.warn('Deep cloning a WeakSet is not supported. Returning shallow reference.');
+      return source;
+    case 'Promise':
+      // Promise 的状态和值是不可变的，通常直接返回原引用或考虑其当前状态？
+      // 一种可能：如果Promise是resolved或rejected，则返回一个新的resolved或rejected的Promise，其值为拷贝后的值或原因。
+      // 但这很复杂且可能不必要。通常直接返回原引用。
+      console.warn('Deep cloning a Promise is complex and often unnecessary. Returning shallow reference.');
+      return source;
+    default:
+      // 处理其他对象（包括普通对象、可能的内置对象如ArrayBuffer等——需要更完整的switch case）和自定义对象
+      // 这里以普通对象为例
+      if (typeof source === 'object' && source !== null) {
+        // 获取源对象的原型以创建正确类型的空对象
+        const clonedObject = Object.create(Object.getPrototypeOf(source));
+        memory.set(source, clonedObject);
+
+        //  Reflect.ownKeys 可以获取所有自身属性（包括Symbol和不可枚举）
+        const keys = Reflect.ownKeys(source);
+        for (const key of keys) {
+          // 避免拷贝原型链上的属性
+          if (source.propertyIsEnumerable(key)) {
+            clonedObject[key] = deepClone(source[key], memory);
+          }
+        }
+        return clonedObject;
+      }
+      // 对于无法识别的类型，保守返回原对象
+      console.warn(`Unsupported object type during deep cloning: ${type}. Returning shallow reference.`);
+      return source;
+  }
+}
+
+export default deepClone;
