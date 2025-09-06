@@ -83,6 +83,7 @@ const ConverterTool: React.FC<ConverterToolProps> = ({ root }) => {
   // 生成示例对象
   const generateExampleObject = (type: protobuf.Type): any => {
     const result: any = {};
+    console.log('type.fieldsArray', type.fieldsArray)
 
     type.fieldsArray.forEach(field => {
       if (field.repeated) {
