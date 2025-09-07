@@ -1,12 +1,12 @@
 {
-  "name": "web-swiss-knife",
-  "version": "0.0.1",
-  "description": "前端Web瑞士军刀、浏览器插件、支持安全检测、Service Worker缓存可视化、性能可视化、缓存状态监控",
-  "main": "dist/web-swiss-knife.umd.js",
-  "module": "dist/web-swiss-knife.es.js",
+  "name": "seclinter",
+  "version": "0.0.5-beta.0",
+  "description": "前端Web安全检测与攻防工具包",
+  "main": "dist/seclinter.umd.js",
+  "module": "dist/seclinter.es.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "web-swiss-knife": "./dist/cli/index.js"
+    "seclinter": "./dist/cli/index.js"
   },
   "scripts": {
     "dev": "vite",
@@ -18,9 +18,9 @@
     "test:coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build",
     "prepublishOnly:test": "npm run build && npm run test:coverage && npm run test",
-    "publish:npm": "node ../../scripts/publish.js",
-    "publish:beta": "node ../../scripts/publish.js main:beta",
-    "publish:plugins": "node ../../scripts/publish.js plugins"
+    "publish:npm": "node scripts/publish.js",
+    "publish:beta": "node scripts/publish.js main:beta",
+    "publish:plugins": "node scripts/publish.js plugins"
   },
   "keywords": [],
   "author": "",
