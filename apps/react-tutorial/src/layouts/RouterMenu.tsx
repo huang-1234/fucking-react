@@ -43,6 +43,9 @@ const RichTextPage = loadable(() => import('@/pages/RichTextHomePage/subpage/Ric
 // Markdown渲染
 const RenderMDPage = loadable(() => import('@/pages/RenderMD'));
 
+// lodash
+const LodashPage = loadable(() => import('@/pages/lodash'));
+
 
 export interface IMenu {
   key: string;
@@ -133,6 +136,22 @@ export const menuItems: IMenu[] = [
     label: 'Protobuf',
     icon: <CodeOutlined />,
     component: ProtobufPage
+  },
+
+  // fe utils
+  {
+    key: '/fe-utils',
+    label: 'FE Utils',
+    icon: <CodeOutlined />,
+    children: [
+      // lodash路由
+      {
+        key: '/lodash',
+        label: 'Lodash',
+        icon: <CodeOutlined />,
+        component: LodashPage
+      },
+    ]
   },
   {
     key: '/modules',

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Button, Input, Select, message } from 'antd';
 import MonacoEditor from '@monaco-editor/react';
-import { loadModule, detectModuleType, ModuleType } from '../UniversalModuleLoad/base';
+import { loadModule } from '@dom-proxy/universal-module/SelfUniversalModule/base';
 import {
   amdModuleExample,
   cjsModuleExample,
   esmModuleExample,
   umdModuleExample,
   iifeModuleExample
-} from '../UniversalModuleLoad/examples';
+} from '@dom-proxy/universal-module/SelfUniversalModule/examples';
+import { ModuleType } from '@dom-proxy/universal-module/Global/base';
+import { detectModuleType } from '@dom-proxy/universal-module/Global/base';
 
 const { TabPane } = Tabs;
 const { Option } = Select;

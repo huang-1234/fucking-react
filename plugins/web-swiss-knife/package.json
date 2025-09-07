@@ -1,0 +1,71 @@
+{
+  "name": "seclinter",
+  "version": "0.0.5-beta.0",
+  "description": "前端Web安全检测与攻防工具包",
+  "main": "dist/seclinter.umd.js",
+  "module": "dist/seclinter.es.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "seclinter": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "node ../../scripts/build.js",
+    "build:main": "node ../../scripts/build.js main",
+    "build:plugins": "node ../../scripts/build.js plugins",
+    "test": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build",
+    "prepublishOnly:test": "npm run build && npm run test:coverage && npm run test",
+    "publish:npm": "node ../../scripts/publish.js",
+    "publish:beta": "node ../../scripts/publish.js main:beta",
+    "publish:plugins": "node ../../scripts/publish.js plugins"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "resolutions": {
+    "commander": "12.1.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.9",
+    "antd": "5.26.7"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.6",
+    "@types/express": "^4.17.21",
+    "@types/lodash-es": "4.17.12",
+    "@types/node": "22.13.10",
+    "@types/react": "18.3.1",
+    "@types/react-dom": "18.3.1",
+    "@types/uuid": "^9.0.8",
+    "@vitejs/plugin-react": "4.3.4",
+    "axios": "1.7.9",
+    "commander": "^12.0.0",
+    "eslint": "9.30.1",
+    "lodash-es": "4.17.21",
+    "prettier": "^3.6.2",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "rollup-plugin-visualizer": "^6.0.3",
+    "ts-node": "10.9.2",
+    "typescript": "5.8.3",
+    "vite": "6.0.0",
+    "vitest": "2.1.5",
+    "webpack": "^5.101.3"
+  },
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "chalk": "^5.3.0",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "file-type": "^19.0.0",
+    "immer": "^10.1.1",
+    "mermaid": "^11.10.1",
+    "uuid": "^9.0.1",
+    "vscode": "^1.1.37"
+  }
+}

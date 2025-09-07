@@ -1,0 +1,26 @@
+{
+  "name": "seclinter-plugins",
+  "version": "0.0.1",
+  "description": "SecLinter插件系统 - 提供多平台安全检测插件集成",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "keywords": [
+    "security",
+    "linter",
+    "plugin",
+    "webpack",
+    "vite",
+    "browser",
+    "vscode"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "seclinter": "^0.0.1",
+    "vm2": "^3.9.19"
+  },
+  "peerDependencies": {
+    "vite": ">=4.0.0",
+    "webpack": ">=5.0.0"
+  }
+}

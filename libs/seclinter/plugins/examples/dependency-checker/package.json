@@ -1,0 +1,31 @@
+{
+  "name": "seclinter-plugin-dependency-checker",
+  "version": "1.0.0",
+  "description": "Dependency vulnerability checker plugin for SecLinter",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "seclinter",
+    "security",
+    "dependency",
+    "vulnerability",
+    "plugin"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "seclinter": "^1.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "semver": "^7.5.4"
+  }
+}

@@ -12,9 +12,12 @@ const __dirname = path.dirname(__filename);
 async function createServer() {
   const app = new Koa();
 
-  // Create Vite server in middleware mode
+  // Create Vite server in middleware mode with HMR support
   const vite = await createViteServer({
-    server: { middlewareMode: true },
+    configFile: path.resolve(__dirname, 'vite.config.ts'),
+    server: {
+      middlewareMode: true
+    },
     appType: 'custom'
   });
 
@@ -94,6 +97,7 @@ async function createServer() {
 
   // Handle SSR requests
   app.use(async (ctx) => {
+    console.log('SSR request:', ctx.url);
     try {
       // 检查是否有 public/index.html 文件
       let template;
@@ -121,6 +125,12 @@ async function createServer() {
 
       // Apply Vite HTML transforms
       template = await vite.transformIndexHtml(ctx.url, template);
+
+      // 添加 Vite HMR 客户端脚本
+      template = template.replace(
+        '</head>',
+        `<script type="module" src="/@vite/client"></script></head>`
+      );
 
       // 模拟渲染结果
       const head = {

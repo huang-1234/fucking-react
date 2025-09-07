@@ -1,0 +1,26 @@
+{
+  "name": "seclinter-plugin-xss-detector",
+  "version": "1.0.0",
+  "description": "XSS vulnerability detection plugin for SecLinter",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "seclinter",
+    "security",
+    "xss",
+    "plugin"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "seclinter": "^1.0.0"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "web-service-work",
+  "version": "0.0.1",
+  "description": "增强型Service Worker缓存方案",
+  "main": "../../dist/service-work.umd.js",
+  "module": "../../dist/service-work.es.js",
+  "types": "../../dist/types/service-work/index.d.ts",
+  "private": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "keywords": [
+    "service-worker",
+    "cache",
+    "offline",
+    "pwa"
+  ],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  }
+}

@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from 'react-helmet';
 import App from '../shared/App';
 import { AppProvider } from '../shared/store';
 import { Router } from '../shared/router';

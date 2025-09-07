@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Input, Button, Spin, Alert, Tabs, Space } from 'antd';
 import MonacoEditor from '@monaco-editor/react';
-import { fetchModuleCode } from '../UniversalModuleLoad/fetch-js';
-import { safeLoadModule, detectModuleType, ModuleType } from '../UniversalModuleLoad/base';
+import { fetchModuleCode } from '@dom-proxy/universal-module/SelfUniversalModule/fetch-js';
+import { detectModuleType, ModuleType } from '@dom-proxy/universal-module/Global/base';
+import { safeLoadModuleSystem } from '@dom-proxy/universal-module/Systemjs';
 
 const { TabPane } = Tabs;
 
@@ -64,7 +65,7 @@ export const DemoJSFetch: React.FC = () => {
 
       // 尝试加载模块
       try {
-        const exports = await safeLoadModule(fetchedCode, moduleId);
+        const exports = await safeLoadModuleSystem(fetchedCode, moduleId);
         setModuleExports(exports);
       } catch (loadError) {
         console.error('模块加载失败:', loadError);
