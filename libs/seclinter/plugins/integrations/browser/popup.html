@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecLinter</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      width: 350px;
+      padding: 15px;
+      margin: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    header img {
+      width: 32px;
+      height: 32px;
+      margin-right: 10px;
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+      color: #333;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #3367d6;
+    }
+
+    button.secondary {
+      background-color: #f1f3f4;
+      color: #202124;
+    }
+
+    button.secondary:hover {
+      background-color: #e8eaed;
+    }
+
+    .results {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .plugin-result {
+      margin-bottom: 15px;
+    }
+
+    .plugin-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .issue {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .issue.critical {
+      background-color: #fdecea;
+      border-left: 4px solid #d93025;
+    }
+
+    .issue.high {
+      background-color: #fef7e0;
+      border-left: 4px solid #f29900;
+    }
+
+    .issue.medium {
+      background-color: #e8f0fe;
+      border-left: 4px solid #4285f4;
+    }
+
+    .issue.low {
+      background-color: #e6f4ea;
+      border-left: 4px solid #137333;
+    }
+
+    .issue-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .issue-level {
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .issue-context {
+      font-family: monospace;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.05);
+      padding: 5px;
+      border-radius: 2px;
+      margin-top: 5px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .no-issues {
+      text-align: center;
+      padding: 20px;
+      color: #5f6368;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #5f6368;
+    }
+
+    footer {
+      font-size: 12px;
+      color: #5f6368;
+      text-align: center;
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="icons/icon48.png" alt="SecLinter Logo">
+    <h1>SecLinter Security Scanner</h1>
+  </header>
+
+  <div class="actions">
+    <button id="scanButton">Scan Page</button>
+    <button id="optionsButton" class="secondary">Options</button>
+  </div>
+
+  <div id="results" class="results">
+    <div class="loading">Loading scan results...</div>
+  </div>
+
+  <footer>
+    <p>SecLinter v1.0.0 | Web Security Scanner</p>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
