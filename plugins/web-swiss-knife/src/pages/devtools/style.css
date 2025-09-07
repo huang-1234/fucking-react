@@ -1,0 +1,136 @@
+/* 开发者工具页面样式 */
+.ant-layout {
+  transition: all 0.2s;
+}
+
+.ant-layout-sider {
+  max-width: 220px !important;
+  min-width: 220px !important;
+  width: 220px !important;
+}
+
+.ant-layout-sider-collapsed {
+  max-width: 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+}
+
+.ant-layout-header {
+  height: 64px;
+  line-height: 64px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+/* 表格样式 */
+.ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 500;
+}
+
+.ant-table-row:hover {
+  background-color: #f5f5f5;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .ant-layout-content {
+    margin: 8px !important;
+    padding: 8px !important;
+  }
+
+  .ant-statistic {
+    font-size: 12px;
+  }
+
+  .ant-statistic-title {
+    font-size: 12px;
+  }
+
+  .ant-statistic-content {
+    font-size: 16px;
+  }
+
+  .ant-table {
+    font-size: 12px;
+  }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 左右伸缩布局 */
+.ant-layout-sider {
+  transition: all 0.3s !important;
+  resize: horizontal;
+  overflow: auto;
+  min-width: 80px !important;
+  max-width: 400px !important;
+}
+
+.ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-menu {
+  flex: 1;
+  border-right: none !important;
+}
+
+.ant-layout-sider-trigger {
+  border-right: 1px solid #f0f0f0;
+}
+
+/* 抽屉样式 */
+.ant-drawer-body {
+  padding: 24px;
+}
+
+.ant-drawer-header {
+  padding: 16px 24px;
+}
+
+/* 图表容器 */
+.chart-container {
+  height: 300px;
+  margin-bottom: 24px;
+}
+
+/* 表格操作按钮 */
+.ant-table-cell .ant-btn-text {
+  padding: 0 8px;
+}
+
+/* 统计数据 */
+.ant-statistic-title {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* 卡片样式 */
+.ant-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+}
+
+/* 标签样式 */
+.ant-tag {
+  margin-right: 0;
+}

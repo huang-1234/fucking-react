@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "label": "npm: build",
+      "detail": "vite build && node scripts/build-extension.js"
+    },
+    {
+      "type": "npm",
+      "script": "build:watch",
+      "group": "build",
+      "problemMatcher": [
+        "$tsc-watch"
+      ],
+      "label": "npm: build:watch",
+      "detail": "vite build --watch",
+      "isBackground": true
+    }
+  ]
+}

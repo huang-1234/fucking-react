@@ -35,6 +35,7 @@ export default defineConfig({
         background: resolve(__dirname, 'src/background/index.ts'),
         popup: resolve(__dirname, 'src/pages/popup/index.tsx'),
         options: resolve(__dirname, 'src/pages/options/index.tsx'),
+        devtools: resolve(__dirname, 'src/pages/devtools/index.tsx'),
         content: resolve(__dirname, 'src/content/index.ts')
       },
       output: {

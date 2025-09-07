@@ -1,5 +1,5 @@
-// 移除无效的 chrome 类型声明
-import { getStorageFromStorage, setStorageToStorage } from '../utils/storage';
+/// <reference types="chrome" />
+import { getStorageFromStorage as getStorage, setStorageToStorage as setStorage } from '../utils/storage';
 
 // 默认设置
 const DEFAULT_SETTINGS = {
@@ -121,7 +121,7 @@ async function saveSettings() {
       }
     };
 
-    await setStorage({ settings });
+    await setStorage('settings', settings);
     console.log('[Options] 设置已保存', settings);
     showAlert('设置已保存', 'success');
 

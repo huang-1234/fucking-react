@@ -14,12 +14,38 @@ export async function getStorage<T>(key: string | string[] | { [key: string]: an
 }
 
 /**
+ * 从 storage 获取存储数据（兼容旧版）
+ * @param key 键名
+ * @returns 存储的数据
+ */
+export async function getStorageFromStorage<T>(key: string): Promise<T | null> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(key, (result) => {
+      resolve(result[key] || null);
+    });
+  });
+}
+
+/**
  * 设置存储数据
  * @param items 键值对对象
  */
 export async function setStorage(items: { [key: string]: any }): Promise<void> {
   return new Promise((resolve) => {
     chrome.storage.local.set(items, () => {
+      resolve();
+    });
+  });
+}
+
+/**
+ * 设置存储数据到 storage（兼容旧版）
+ * @param key 键名
+ * @param value 值
+ */
+export async function setStorageToStorage<T>(key: string, value: T): Promise<void> {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ [key]: value }, () => {
       resolve();
     });
   });

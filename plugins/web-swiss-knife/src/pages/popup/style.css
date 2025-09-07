@@ -1,0 +1,85 @@
+/* 弹出窗口样式 */
+.ant-layout {
+  transition: all 0.2s;
+}
+
+.ant-layout-sider {
+  max-width: 200px !important;
+  min-width: 200px !important;
+  width: 200px !important;
+}
+
+.ant-layout-sider-collapsed {
+  max-width: 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+}
+
+.ant-layout-header {
+  height: 50px;
+  line-height: 50px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+.ant-card-small .ant-card-head {
+  min-height: auto;
+  padding: 8px 12px;
+}
+
+/* 响应式布局 */
+@media (max-width: 600px) {
+  .ant-layout-content {
+    margin: 8px !important;
+    padding: 8px !important;
+  }
+
+  .ant-statistic {
+    font-size: 12px;
+  }
+
+  .ant-statistic-title {
+    font-size: 12px;
+  }
+
+  .ant-statistic-content {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 600px) {
+  body {
+    width: 100%;
+    min-width: 600px;
+  }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 动画效果 */
+.ant-card {
+  transition: all 0.3s;
+}
+
+.ant-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
