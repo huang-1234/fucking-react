@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Swiss Knife</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      width: 380px;
+      min-height: 500px;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .logo h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1890ff;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e8e8e8;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      border-bottom-color: #1890ff;
+      color: #1890ff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-weight: 500;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      color: white;
+    }
+
+    .badge.critical {
+      background-color: #ff4d4f;
+    }
+
+    .badge.high {
+      background-color: #fa8c16;
+    }
+
+    .badge.medium {
+      background-color: #faad14;
+    }
+
+    .badge.low {
+      background-color: #52c41a;
+    }
+
+    .badge.info {
+      background-color: #1890ff;
+    }
+
+    .card-content {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .card-footer {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .suggestion {
+      background-color: #f6ffed;
+      border: 1px solid #b7eb8f;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .summary-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .summary-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .action-btn {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .action-btn:hover {
+      background-color: #40a9ff;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: #999;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #1890ff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="../assets/icons/icon48.png" alt="Web Swiss Knife Logo">
+      <h1>Web Swiss Knife</h1>
+    </div>
+    <button id="refresh-btn" class="action-btn">刷新</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="security">安全检测</div>
+    <div class="tab" data-tab="cache">缓存可视化</div>
+    <div class="tab" data-tab="performance">性能监控</div>
+  </div>
+
+  <div id="security" class="tab-content active">
+    <div id="security-loading">
+      <div class="spinner"></div>
+      <div style="text-align: center;">加载中...</div>
+    </div>
+
+    <div id="security-content" style="display: none;">
+      <div id="security-summary" class="summary">
+        <!-- 安全问题摘要将在这里动态生成 -->
+      </div>
+
+      <div id="security-issues">
+        <!-- 安全问题详情将在这里动态生成 -->
+      </div>
+
+      <div id="security-empty" class="empty-state" style="display: none;">
+        <p>未检测到安全问题</p>
+        <button id="scan-btn" class="action-btn" style="margin-top: 16px;">开始扫描</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cache" class="tab-content">
+    <div class="empty-state">
+      <p>缓存可视化功能开发中</p>
+    </div>
+  </div>
+
+  <div id="performance" class="tab-content">
+    <div class="empty-state">
+      <p>性能监控功能开发中</p>
+    </div>
+  </div>
+
+  <script src="../assets/popup.js"></script>
+</body>
+</html>

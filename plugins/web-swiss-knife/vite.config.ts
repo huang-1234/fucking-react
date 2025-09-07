@@ -1,33 +1,51 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
+import copy from 'rollup-plugin-copy';
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'SecLinter',
-      fileName: (format) => `seclinter.${format}.js`
-    },
-    rollupOptions: {
-      // 确保外部化处理那些你不想打包进库的依赖
-      external: ['commander', 'axios', 'fs', 'path', 'child_process', 'express', 'express-rate-limit', 'node:crypto', 'node:buffer', 'node:net', 'file-type', 'uuid'],
-      output: {
-        // 提供全局变量以便在 UMD 构建模式下使用
-        globals: {
-          commander: 'commander',
-          axios: 'axios',
-          express: 'express',
-          'express-rate-limit': 'rateLimit'
-        }
-      }
-    },
-    sourcemap: true,
-    // 确保 CLI 脚本能正确执行
-    target: 'node14',
-  },
+  plugins: [
+    react(),
+    dts({
+      insertTypesEntry: true,
+    }),
+    copy({
+      targets: [
+        { src: 'src/manifest.json', dest: 'dist' },
+        { src: 'src/assets', dest: 'dist' },
+        { src: 'src/pages/popup/index.html', dest: 'dist/popup' },
+        { src: 'src/pages/options/index.html', dest: 'dist/options' },
+        { src: 'src/pages/devtools/index.html', dest: 'dist/devtools' }
+      ],
+      hook: 'writeBundle'
+    })
+  ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
+      '@': resolve(__dirname, './src')
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      input: {
+        background: resolve(__dirname, 'src/background/index.ts'),
+        popup: resolve(__dirname, 'src/pages/popup/index.tsx'),
+        options: resolve(__dirname, 'src/pages/options/index.tsx'),
+        content: resolve(__dirname, 'src/content/index.ts')
+      },
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
+    }
+  },
+  server: {
+    port: 3000,
+    open: '/src/pages/popup/index.html'
   }
 });

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Swiss Knife 设置</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #333;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .logo h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1890ff;
+    }
+
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+
+    .checkbox-group {
+      margin-bottom: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .checkbox-input {
+      margin-right: 8px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background-color: #1890ff;
+      color: white;
+      border-color: #1890ff;
+    }
+
+    .btn-primary:hover {
+      background-color: #40a9ff;
+      border-color: #40a9ff;
+    }
+
+    .btn-default {
+      background-color: white;
+      border-color: #d9d9d9;
+    }
+
+    .btn-default:hover {
+      border-color: #40a9ff;
+      color: #40a9ff;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-success {
+      background-color: #f6ffed;
+      border: 1px solid #b7eb8f;
+      color: #52c41a;
+    }
+
+    .alert-error {
+      background-color: #fff2f0;
+      border: 1px solid #ffccc7;
+      color: #ff4d4f;
+    }
+
+    .card {
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #1890ff;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #1890ff;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .toggle-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toggle-label {
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="../assets/icons/icon48.png" alt="Web Swiss Knife Logo">
+      <h1>Web Swiss Knife 设置</h1>
+    </div>
+  </div>
+
+  <div id="alert" class="alert"></div>
+
+  <form id="settings-form">
+    <div class="section">
+      <h2 class="section-title">安全检测设置</h2>
+
+      <div class="card">
+        <div class="toggle-group">
+          <div class="toggle-label">启用自动安全检测</div>
+          <label class="switch">
+            <input type="checkbox" id="security-auto-scan" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p class="help-text">当页面加载完成时自动进行安全检测</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">安全规则级别</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="security-level-critical" checked>
+            严重
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="security-level-high" checked>
+            高危
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="security-level-medium" checked>
+            中危
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="security-level-low">
+            低危
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="security-level-info">
+            信息
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="security-notification">通知设置</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="security-notification-popup" checked>
+            在页面上显示弹窗通知
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="security-notification-badge" checked>
+            在扩展图标上显示徽章
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">缓存可视化设置</h2>
+
+      <div class="card">
+        <div class="toggle-group">
+          <div class="toggle-label">启用缓存监控</div>
+          <label class="switch">
+            <input type="checkbox" id="cache-enabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p class="help-text">监控并可视化Service Worker缓存</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cache-refresh-interval">缓存刷新间隔（秒）</label>
+        <input type="number" class="form-control" id="cache-refresh-interval" min="5" value="30">
+        <p class="help-text">缓存数据自动刷新的时间间隔</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">性能监控设置</h2>
+
+      <div class="card">
+        <div class="toggle-group">
+          <div class="toggle-label">启用性能监控</div>
+          <label class="switch">
+            <input type="checkbox" id="performance-enabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p class="help-text">监控并可视化页面性能指标</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">监控指标</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="performance-metric-fcp" checked>
+            First Contentful Paint (FCP)
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="performance-metric-lcp" checked>
+            Largest Contentful Paint (LCP)
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="performance-metric-cls" checked>
+            Cumulative Layout Shift (CLS)
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="performance-metric-fid" checked>
+            First Input Delay (FID)
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox-input" id="performance-metric-ttfb" checked>
+            Time to First Byte (TTFB)
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="button" id="reset-btn" class="btn btn-default">恢复默认设置</button>
+      <button type="submit" id="save-btn" class="btn btn-primary">保存设置</button>
+    </div>
+  </form>
+
+  <script src="../assets/options.js"></script>
+</body>
+</html>
