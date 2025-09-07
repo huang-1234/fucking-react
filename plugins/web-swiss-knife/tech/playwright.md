@@ -1,457 +1,285 @@
-好的，这是一份基于 Playwright 技术栈的 Chrome 浏览器本地调试与测试技术文档，旨在为 Cursor 提供清晰的编码指导。
+使用 Playwright 对现有的 Chrome 插件项目进行本地开发和调试，核心在于**让 Playwright 启动一个加载了你本地插件目录的浏览器实例**，并在此环境下进行自动化测试和交互。以下是具体步骤和代码示例。
 
-# Playwright for Chrome：本地调试与测试技术文档
+### 核心配置：启动加载了本地插件的浏览器
 
-## 1. 核心概念与环境设置
+关键在于在 `playwright.config.ts` 中或直接在使用 `browserType.launch` 时，通过 `args` 选项指定 `--disable-extensions-except` 和 `--load-extension` 参数。
 
-Playwright 是一个由 Microsoft 开发的现代化浏览器自动化与测试框架。它支持 Chromium（包括 Chrome）、Firefox 和 WebKit，提供跨平台、跨语言的稳定且快速的自动化能力。
+**1. 指定插件路径和启动参数**
 
-### 1.1 环境安装
-在 Node.js 项目中使用以下命令安装 Playwright：
-```bash
-# 初始化项目（如果尚未初始化）
-npm init -y
+在你的 Playwright 测试文件（例如 `tests/extension.spec.ts`）中，这样启动浏览器：
 
-# 安装 Playwright 测试库
-npm install @playwright/test --save-dev
+```typescript
+import { test, chromium } from '@playwright/test';
 
-# 安装 Playwright 支持的浏览器二进制文件（包括 Chromium）
-npx playwright install
-```
-
-若要**使用系统已安装的 Chrome 浏览器**而非 Playwright 自带的 Chromium，请在启动浏览器时指定可执行路径：
-```javascript
-const { chromium } = require('playwright');
-
-(async () => {
+test('测试已加载的插件', async () => {
+  // 启动浏览器，并加载位于指定路径的插件
   const browser = await chromium.launch({
-    executablePath: '/path/to/your/chrome', // 例如 MacOS: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-    headless: false // 显式运行浏览器，方便观察
+    headless: false, // 设为 false 以便观察浏览器行为
+    args: [
+      `--disable-extensions-except=/path/to/your/extension/dist`, // 替换为你的插件项目根目录的绝对路径
+      `--load-extension=/path/to/your/extension/dist` // 同上
+    ]
   });
-  // ... 后续操作
-})();
-```
 
-### 1.2 项目结构建议
-一个良好的项目结构有助于维护：
-```
-your-project/
-├── tests/                 # 测试用例目录
-│   ├── example.spec.js   # 测试文件
-│   └── auth-setup.js     # 认证等 setup 逻辑
-├── playwright.config.js   # Playwright 配置文件
-└── package.json
-```
-
-## 2. 编写基本测试
-
-Playwright 测试通常使用 `@playwright/test` 运行器，它提供了测试结构、断言和并行执行等能力。
-
-### 2.1 第一个测试用例
-创建一个测试文件 `tests/first-test.spec.js`：
-
-```javascript
-const { test, expect } = require('@playwright/test');
-
-test('访问示例网站并验证标题', async ({ page }) => { // `page` fixture 提供隔离的页面环境
-  // 导航到目标网址
-  await page.goto('https://example.com');
-
-  // 断言页面标题
-  await expect(page).toHaveTitle('Example Domain');
-
-  // 截图（可用于调试或验证UI）
-  await page.screenshot({ path: 'example-homepage.png' });
-});
-```
-使用 `npx playwright test tests/first-test.spec.js` 运行测试。
-
-### 2.2 元素定位与交互
-Playwright 提供多种精准定位元素的方法：
-```javascript
-test('模拟用户登录', async ({ page }) => {
-  await page.goto('https://your-app.com/login');
-
-  // 使用 CSS 选择器定位输入框并输入文本
-  await page.locator('input#username').fill('testuser');
-  await page.locator('input#password').fill('password123');
-
-  // 使用文本定位器点击按钮
-  await page.getByText('登录').click();
-
-  // 等待导航完成并验证URL
-  await expect(page).toHaveURL('https://your-app.com/dashboard');
-  // 验证页面内容
-  await expect(page.locator('.welcome-message')).toContainText('Welcome, testuser');
-});
-```
-
-**定位策略优先级建议**：
-1.  **语义化选择器**：优先使用 `page.getByRole()`, `page.getByText()`, `page.getByLabel()` 等，它们更贴近用户视角，不易因前端代码微小变动而失效。
-2.  **CSS 选择器**：`page.locator('css')`，适用于复杂结构。
-3.  **XPath**：`page.locator('xpath=...')`，应作为最后手段。
-
-## 3. 高级调试技巧
-
-### 3.1 有头模式与慢动作
-在 `playwright.config.js` 中配置全局调试选项，或直接在 `launch`/`launchPersistentContext` 中设置：
-```javascript
-// 在 playwright.config.js 中配置
-module.exports = {
-  use: {
-    headless: false, // 显示浏览器窗口
-    slowMo: 1000, // 每个操作间隔1000毫秒，方便观察
-  },
-};
-```
-或在测试中动态设置：
-```javascript
-const { chromium } = require('playwright');
-const browser = await chromium.launch({ headless: false, slowMo: 1000 });
-```
-
-### 3.2 使用 Playwright Inspector 进行逐步调试
-**方法一：设置 `PWDEBUG` 环境变量**
-```bash
-# Bash
-PWDEBUG=1 npx playwright test your-test.spec.js
-
-# Windows (PowerShell)
-$env:PWDEBUG=1; npx playwright test your-test.spec.js
-```
-此模式会：1) 以有头模式运行；2) 禁用超时；3) 打开 Inspector。
-
-**方法二：在代码中插入 `page.pause()`**
-```javascript
-test('调试用例', async ({ page }) => {
-  await page.goto('https://example.com');
-  await page.pause(); // 执行到此会暂停，并打开 Inspector
-  // ... 后续代码
-});
-```
-
-**方法三：使用 `playwright codegen` 录制脚本**
-```bash
-# 启动录制器并打开指定网址
-npx playwright codegen https://example.com
-```
-操作浏览器，工具会自动生成代码。非常适合快速生成基础脚本或学习 API。
-
-### 3.3 Trace Viewer：记录执行追踪
-在配置中启用追踪或在测试中手动启动，非常适合在 CI 中调试失败的测试：
-```javascript
-// playwright.config.js
-module.exports = {
-  // ... 其他配置
-  use: {
-    // ... 其他设置
-    trace: 'on-first-retry', // 首次重试时记录 trace
-  },
-};
-
-// 或在测试中手动控制
-await context.tracing.start({ screenshots: true, snapshots: true });
-// ... 执行测试操作 ...
-await context.tracing.stop({ path: 'trace.zip' });
-```
-使用 `npx playwright show-trace trace.zip` 查看详细的执行过程，包括网络请求、DOM 快照和操作日志。
-
-## 4. 模拟复杂场景
-
-### 4.1 认证状态持久化
-避免每个测试都重复登录：
-```javascript
-// auth-setup.js
-const { test: setup } = require('@playwright/test');
-
-setup('获取认证状态', async ({ browser }) => {
   const context = await browser.newContext();
   const page = await context.newPage();
 
-  await page.goto('https://your-app.com/login');
-  await page.locator('#username').fill('user');
-  await page.locator('#password').fill('pass');
-  await page.locator('button[type="submit"]').click();
+  // 你的测试逻辑...
+  await page.goto('https://example.com'); // 导航到目标页面，测试插件功能
 
-  // 等待登录成功，例如跳转到dashboard
-  await page.waitForURL('**/dashboard');
+  // 例如，测试插件的弹出页 (popup)
+  // 获取插件的背景页或弹出页可能需要通过 page.backgroundPages() 或 page.popups() 等（具体API请查阅Playwright文档）
 
-  // 将认证状态保存到文件
-  await context.storageState({ path: 'auth-state.json' });
-  await context.close();
-});
-
-// 在测试中复用认证状态
-test('使用已保存的认证状态', async ({ browser }) => {
-  const context = await browser.newContext({ storageState: 'auth-state.json' });
-  const page = await context.newPage();
-  // 现在页面已处于登录状态
-  await page.goto('https://your-app.com/dashboard');
-  // ... 测试逻辑 ...
+  await browser.close();
 });
 ```
 
-### 4.2 网络请求拦截与模拟 (Mocking)
-模拟 API 响应，使测试不依赖后端：
+**重要提示**：
+*   **路径替换**：请将 `/path/to/your/extension/dist` 替换为你本地 Chrome 插件项目**构建输出目录或源码目录的绝对路径**。例如，在 Windows 上可能是 `C:\Users\Username\projects\my-extension\dist`，在 macOS 或 Linux 上可能是 `/home/username/projects/my-extension/dist`。
+*   **Manifest 版本**：确保你的插件项目使用的是 **Manifest V3**，因为 Playwright 对 V3 的支持最好。
+
+### 常用调试技巧
+
+**1. 启用无头模式和慢动作 (Slow Mo)**
+在调试初期，建议显示浏览器窗口并降低操作速度，以便观察。
+```typescript
+await chromium.launch({
+  headless: false, // 显示浏览器
+  slowMo: 500, // 每个操作后延迟500毫秒
+  args: [
+    `--disable-extensions-except=/path/to/your/extension/dist`,
+    `--load-extension=/path/to/your/extension/dist`
+  ]
+});
+```
+
+**2. 使用 `page.pause()` 进入调试模式**
+在你的测试代码中插入 `page.pause()`，Playwright 会自动打开 Inspector，允许你逐步执行和检查。
+```typescript
+await page.goto('https://example.com');
+await page.pause(); // 执行到这里会暂停，并打开调试器
+// ... 后续代码
+```
+
+**3. 与插件页面交互**
+要与插件的弹出页 (popup) 或选项页 (options page) 交互，你需要先定位到这些页面。这通常可以通过 `context.backgroundPages()` 或等待特定的弹出窗口事件来实现（具体方法请查阅 Playwright 关于处理弹出窗口和新页面的文档）。
+
+### 进阶配置（可选）
+
+**在 `playwright.config.ts` 中全局配置**
+如果你希望所有测试都默认加载此插件，可以在配置文件中进行全局设置：
+```typescript
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  use: {
+    // ... 其他配置
+    launchOptions: { // 全局启动选项
+      args: [
+        `--disable-extensions-except=/path/to/your/extension/dist`,
+        `--load-extension=/path/to/your/extension/dist`
+      ]
+    }
+  },
+  // ... 其他配置
+});
+```
+
+### 工作流程概要
+
+以下是使用 Playwright 进行 Chrome 插件本地调试的工作流程概要：
+
+```mermaid
+flowchart TD
+    A[配置 Playwright<br>启动参数] --> B[启动加载插件的浏览器]
+    B --> C[执行自动化测试]
+    C --> D{发现问题？}
+    D -- 是 --> E[使用调试技巧<br>（如 page.pause, 慢动作）]
+    E --> F[修改插件代码]
+    F --> B
+    D -- 否 --> G[测试通过]
+    G --> H[关闭浏览器]
+```
+
+### 💡 注意事项
+
+*   **插件权限**：Playwright 启动的浏览器实例中的插件，其权限仍然由插件的 `manifest.json` 文件定义。
+*   **浏览器选择**：此示例使用的是 `chromium`。你也可以尝试用 `chrome`（如果 Playwright 支持你系统上的 Chrome），但通常使用 Chromium 即可。
+*   **热重载**：修改插件代码后，通常需要**重启 Playwright 启动的浏览器**才能生效，因为插件是启动时加载的。
+
+通过以上配置，你就可以使用 Playwright 自动化测试和调试你现有的 Chrome 插件项目了。
+
+测试 Chrome 插件中 Background Script 和 Content Script 之间的通信非常关键。由于它们运行在不同的上下文中，你需要模拟或触发这些交互并验证行为。下面为你介绍几种主流的测试方法、工具和最佳实践。
+
+### 🔧 一、核心通信方式与测试关注点
+
+Background Script (后台脚本) 和 Content Script (内容脚本) 之间主要通过以下两种方式进行通信，这也是你测试的重点：
+
+| 通信方式 | 特点 | 适用场景 | 关键测试点 |
+| :--- | :--- | :--- | :--- |
+| **短期连接**<br>(`chrome.runtime.sendMessage` / `chrome.runtime.onMessage`) | 一次性请求-响应模式 | 简单的数据请求、执行一次性操作 | 消息能否正确发送和接收；响应数据是否正确；错误处理是否健全 |
+| **长连接**<br>(`chrome.runtime.connect` / `port.postMessage`) | 建立持久连接，可多次双向通信 | 持续的数据交换（如日志流）、大文件分片传输、长时间的状态监听 | 连接能否正确建立；通过端口(`port`)的消息能否正确来回传递；连接超时或断开处理是否正常 |
+
+### 🧪 二、测试策略与实用方法
+
+你可以根据项目规模和阶段选择合适的测试方法。
+
+1.  **手动测试与调试**：非常适合开发初期快速验证。
+*   **使用 `console.log`**：在 Background Script 和 Content Script 的关键位置（如消息监听器、消息发送后）添加日志，然后在 Chrome 开发者工具中查看输出。
+*   **查看 Background Script 日志**：访问 `chrome://extensions/`，找到你的插件，点击 **“服务工作者”** 或 **“背景页”** 链接来打开调试控制台。
+*   **查看 Content Script 日志**：在你的目标网页上打开开发者工具 (F12)，Console 标签页会显示注入的 Content Script 的日志。Sources 标签页中也能找到并调试 Content Script 文件。
+
+2.  **单元测试 (Unit Testing)**：用于独立测试脚本的逻辑，**需要模拟 Chrome API**。
+*   **核心思想**：使用测试框架(如Jest)和模拟库(如`sinon-chrome`)来模拟 `chrome.runtime.sendMessage`, `chrome.runtime.onMessage` 等 API 的行为，让你能在无需启动浏览器的情况下测试消息处理逻辑。
+*   **示例 (测试 Background Script 的消息监听器)**：
 ```javascript
-test('模拟API数据', async ({ page }) => {
-  // 拦截特定API请求并返回模拟数据
-  await page.route('**/api/user/profile', async route => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ name: 'Mock User', email: 'mock@example.com' })
+// background.js (待测试代码)
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'getUser') {
+    sendResponse({ name: 'Alice', id: 123 });
+  }
+});
+
+// background.test.js (测试代码 - 以Jest为例)
+const chrome = require('sinon-chrome'); // 需要先安装 sinon-chrome
+// 在测试前加载你的background.js，这通常会重新注册监听器
+
+test('background script 应响应 getUser 消息', () => {
+  // 模拟一个请求消息
+  const mockRequest = { action: 'getUser' };
+  const mockSender = { tab: { id: 1 } };
+  const mockSendResponse = jest.fn();
+
+  // 模拟 chrome.runtime.onMessage 的监听器被调用
+  // 假设你的监听器已通过某种方式暴露给测试文件
+  myMessageListener(mockRequest, mockSender, mockSendResponse);
+
+  // 验证 sendResponse 被正确调用
+  expect(mockSendResponse).toHaveBeenCalledWith({ name: 'Alice', id: 123 });
+});
+```
+
+3.  **集成测试 (Integration Testing)**：**在（无头）浏览器中启动你的插件**，模拟真实用户操作来测试整个通信流程。**Playwright** 或 **Puppeteer** 等浏览器自动化工具非常适合此场景。
+*   **优势**：能更真实地模拟扩展环境，包括弹出页(popup)、选项页(options)与背景页/服务工作者(service worker)的交互。
+*   **示例 (使用 Playwright 测试消息发送)**：
+```javascript
+const { test } = require('@playwright/test');
+
+test('content script 应能向 background script 发送消息并获响应', async ({ page }) => {
+  // 1. 加载一个测试页面，该页面已注入你的 content script
+  await page.goto('https://example.com');
+
+  // 2. 在页面上下文中执行代码，模拟 content script 发送消息
+  const response = await page.evaluate(async () => {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({ action: 'getData' }, (response) => {
+        resolve(response);
+      });
     });
   });
 
-  await page.goto('https://your-app.com/profile');
-  // 页面将显示模拟数据
-  await expect(page.locator('.user-name')).toContainText('Mock User');
+  // 3. 断言来自 background script 的响应
+  expect(response).toEqual({ data: 'some expected data' });
 });
 ```
+*   **启动配置**：通常需要通过 `--load-extension` 标志启动浏览器，并指定你的插件目录，以便在测试中加载插件。
 
-### 4.3 设备与视口模拟
-测试响应式设计或移动端体验：
+4.  **端到端测试 (E2E Testing)**：这是最全面的测试，**模拟真实用户在与网页和插件交互时的完整流程**。同样可使用 Playwright 或 Puppeteer 等工具，覆盖从页面交互触发 Content Script 通信，到 Background Script 处理并可能更新插件界面（如弹出页）的整个链条。
+
+### 📋 三、测试用例示例：短期通信
+
+假设你的 Content Script 向 Background Script 发送一个 `getData` 请求，Background Script 返回特定数据。
+
+1.  **Content Script 测试思路**：
+*   在单元测试中，模拟 `chrome.runtime.sendMessage` 并断言它被以正确的参数调用。
+*   在集成测试中，在页面上下文中调用发送消息的函数，并验证是否收到预期的响应。
+
+2.  **Background Script 测试思路**：
+*   在单元测试中，模拟 `chrome.runtime.onMessage.addListener` 被调用，并触发监听器回调，检查 `sendResponse` 是否以预期数据被调用。
+*   以下是一个使用 Jest 和 `jest-chrome` (或其他模拟库) 的单元测试示例：
 ```javascript
-const { devices } = require('@playwright/test');
+// background.test.js
+const chrome = require('sinon-chrome'); // 假设使用 sinon-chrome
 
-test('移动端测试', async ({ browser }) => {
-  // 模拟 iPhone 13
-  const iPhone13 = devices['iPhone 13'];
-  const context = await browser.newContext({
-    ...iPhone13, // 继承设备的 userAgent, viewport, deviceScaleFactor 等
-  });
-  const page = await context.newPage();
-  await page.goto('https://m.your-app.com');
-  // ... 移动端测试逻辑 ...
+// 假设这是你的背景脚本中的消息监听器
+const messageHandler = (request, sender, sendResponse) => {
+  if (request.action === 'getData') {
+    sendResponse({ data: 'mock data from background' });
+  }
+};
+
+test('background 应处理 getData 动作并返回数据', () => {
+  const mockSendResponse = jest.fn();
+  const mockSender = { tab: { id: 123 } };
+
+  // 调用消息处理器
+  messageHandler({ action: 'getData' }, mockSender, mockSendResponse);
+
+  // 验证响应函数被正确调用
+  expect(mockSendResponse).toHaveBeenCalledWith({ data: 'mock data from background' });
 });
 ```
 
-## 5. 配置文件 (playwright.config.js) 详解
+### 📋 四、测试用例示例：长连接通信
 
-一个功能丰富的配置文件示例：
+测试使用 `chrome.runtime.connect` 建立的持久连接，例如 Content Script 向 Background Script 持续发送日志。
+
+1.  **建立连接测试**：
+*   单元测试中，模拟 `chrome.runtime.connect`，断言它被调用，并返回一个模拟的 `port` 对象。
+*   模拟 `port.onMessage.addListener` 和 `port.postMessage`，验证消息监听器是否设置正确。
+
+2.  **消息流测试**：
+*   模拟通过端口发送消息，验证另一端是否正确接收和处理。
+*   示例 (测试 Background Script 端的连接处理)：
 ```javascript
-const { defineConfig, devices } = require('@playwright/test');
+// background.test.js (单元测试)
+test('background 应处理通过端口的消息', () => {
+  // 创建一个模拟的 port 对象
+  const mockPort = {
+    name: 'test-connection',
+    onMessage: { addListener: jest.fn() },
+    postMessage: jest.fn(),
+    onDisconnect: { addListener: jest.fn() }
+  };
+  const mockListener = (msg) => {
+    if (msg.type === 'log') {
+      mockPort.postMessage({ received: true });
+    }
+  };
+  mockPort.onMessage.addListener.mockImplementation(mockListener);
 
-module.exports = defineConfig({
-  // 并行工作进程数，可设置为 '50%' 使用一半的CPU核心
-  workers: process.env.CI ? 2 : undefined,
-  // 重试策略，特别是在CI环境中
-  retries: process.env.CI ? 1 : 0,
-  // 全局超时设置
-  timeout: 30000,
-  // 每个测试用例的超时时间
-  expect: { timeout: 10000 },
+  // 模拟 chrome.runtime.onConnect 的监听器被触发
+  // 假设你的连接处理器已暴露
+  myConnectionHandler(mockPort);
 
-  // 全局使用选项
-  use: {
-    // 基础URL，page.goto('/') 会导航到 baseURL + '/'
-    // baseURL: 'http://localhost:3000',
-    headless: true, // 通常CI为true，本地调试可设为false
-    trace: 'on-first-retry', // 追踪策略
-    screenshot: 'only-on-failure', // 失败时截图
-    video: 'retain-on-failure', // 失败时保留录像
-    // ... 其他全局设置
-  },
+  // 模拟通过端口发送一条消息
+  const testMessage = { type: 'log', data: 'test log entry' };
+  const messageListener = mockPort.onMessage.addListener.mock.calls[0][0];
+  messageListener(testMessage);
 
-  // 项目配置，可为不同浏览器或配置创建多个项目
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    // 可添加更多项目配置
-  ],
-
-  // 输出目录
-  outputDir: 'test-results/',
-
-  // 报告器
-  reporter: process.env.CI ? [['html'], ['list']] : 'list',
+  // 验证 background 是否通过端口返回了响应
+  expect(mockPort.postMessage).toHaveBeenCalledWith({ received: true });
 });
 ```
 
-## 6. 实战示例：调试一个用户流程
+### 🛠️ 五、工具推荐
 
-假设需要测试一个购物流程。
-```javascript
-const { test, expect } = require('@playwright/test');
+*   **Jest**: 非常流行的 JavaScript 测试框架，适合单元测试，配合模拟库使用。
+*   **Sinon.js + sinon-chrome**: 常用于模拟 Chrome API。
+*   **Playwright**: 强大的浏览器自动化工具，非常适合进行集成测试和端到端测试，能加载插件并进行测试。
+*   **Puppeteer**: 与 Playwright 类似，也是常用的浏览器自动化工具。
+*   **Chrome DevTools**: 不可或缺的**手动调试**工具，用于查看 console 日志、设置断点、检查网络请求等。
 
-test('完整的用户购物流程', async ({ page }) => {
-  // 1. 浏览商品
-  await page.goto('https://demo-shop.com/products');
-  await page.locator('.product:has-text("Laptop")').click();
+### 💡 六、最佳实践与注意事项
 
-  // 2. 添加到购物车
-  await page.waitForURL('**/products/*');
-  await page.locator('text=Add to Cart').click();
+*   **测试尽可能独立**：单元测试应只关注自身脚本的逻辑，充分模拟外部依赖（如 Chrome API）。
+*   **重视异步处理**：Chrome 的 messaging API 是异步的。确保你的测试框架能妥善处理异步操作（如使用 `async/await`）。
+*   **清理测试状态**：避免测试间相互影响（例如，在 `afterEach` 中重置模拟函数）。
+*   **模拟错误场景**：测试网络错误、超时、无效消息等情况下的脚本行为，确保其健壮性。
+*   **安全考虑**：测试时应对消息来源 (`sender`) 进行验证，确保只有预期的标签页或扩展才能与你的 Background Script 通信。
 
-  // 等待购物车更新动画或确认消息
-  await expect(page.locator('.cart-count')).toHaveText('1');
+---
 
-  // 3. 查看购物车
-  await page.locator('a:has-text("View Cart")').click();
-  await page.waitForURL('**/cart');
+**总之**，测试 Chrome 插件通信需要结合多种方法。从**手动调试**和**单元测试**（快速反馈）到**集成测试**和**端到端测试**（真实环境验证），根据你的需求选择合适的策略和工具，才能有效保证插件通信的可靠性。
 
-  // 断言购物车内有商品
-  await expect(page.locator('.cart-item')).toHaveCount(1);
-
-  // 4. 结账
-  await page.locator('text=Proceed to Checkout').click();
-  await page.waitForURL('**/checkout');
-
-  // 填写配送信息
-  await page.locator('[name="firstName"]').fill('John');
-  await page.locator('[name="lastName"]').fill('Doe');
-  // ... 填写其他字段 ...
-
-  // 5. 提交订单
-  // 拦截创建订单的API请求，避免实际创建
-  await page.route('**/api/orders', route => route.fulfill({ status: 201, body: JSON.stringify({ success: true, orderId: 'MOCK123' }) }));
-  await page.locator('button[type="submit"]').click();
-
-  // 6. 验证订单成功
-  await page.waitForURL('**/order-confirmation');
-  await expect(page.locator('.confirmation-message')).toContainText('Thank you for your order');
-  await expect(page.locator('.order-id')).toContainText('MOCK123');
-});
-```
-
-## 7. 常见问题排查 (QA)
-
-*   **浏览器无法启动**：检查 `executablePath` 是否正确，或直接使用 Playwright 自带的 Chromium (`chromium.launch()`)。
-*   **元素找不到或超时**：
-    *   使用 `page.waitForSelector(selector)` 或 `page.waitForTimeout(timeout)` (谨慎使用) 确保元素加载完成。
-    *   检查选择器是否正确，优先使用 Playwright 推荐的定位策略。
-    *   检查是否有 iframe，需要使用 `page.frameLocator()` 进入 iframe 上下文。
-*   **测试在 CI 中失败，本地却通过**：启用追踪 (`trace: 'on'`) 和视频录制 (`video: 'on'`)，使用 `npx playwright show-trace` 分析 CI 上的失败原因。
-*   **权限问题**：如果需要地理位置等权限，使用 `context.grantPermissions(['geolocation'])`。
-
-Playwright 与 Chrome DevTools Protocol (CDP) 的深度集成是其强大功能的核心，这使得它能实现比传统自动化工具更精细、更高效的浏览器控制。CDP 是 Chrome 及其他基于 Chromium 的浏览器（如 Edge）内置的底层调试协议，允许工具通过程序化方式与浏览器内核交互。
-
-为了让你快速理解 Playwright 如何利用 CDP，下面的表格对比了其与 Selenium 的关键差异，并概括了核心集成机制：
-
-| 特性维度         | Playwright + CDP                                                                                              | Selenium + WebDriver                                                                                 |
-| :--------------- | :------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
-| **通信协议**     | 直接使用 **Chrome DevTools Protocol (CDP)**                                                | 使用 **WebDriver 协议** (W3C 标准)                                                           |
-| **架构与中间层**   | **无独立中间层**，通过 WebSocket **直连**浏览器调试端口                                          | 需通过 **浏览器驱动** (如 ChromeDriver) 中转，HTTP 通信                                      |
-| **功能覆盖与粒度** | **功能广泛且深入**，可访问几乎所有浏览器内部操作（DOM、网络、性能、内存、模拟传感器等）                 | 功能受限于 WebDriver 协议的标准化命令，**粒度较粗**                                          |
-| **性能与延迟**   | **更低延迟**，WebSocket 双向实时通信，减少协议转换开销                                                  | **较高延迟**，HTTP 请求/响应模式带来额外开销                                               |
-| **执行速度**     | **更快**                                                                                              | 相对较慢                                                                                   |
-| **跨浏览器一致性** | 通过统一 API 层处理不同浏览器（Chromium/WebKit/Firefox）的差异，提供一致体验                                  | 依赖各浏览器驱动的实现，可能存在行为和功能上的差异                                                             |
-| **典型应用场景**   | 需要**精细控制**、**高性能**、**深度调试**（如网络拦截、性能分析、内存监测）的复杂自动化测试和爬虫 | 传统的 Web 自动化测试，强调**跨浏览器兼容性**和 **W3C 标准**支持                                          |
-
-Playwright 与 CDP 的深度集成主要体现在以下几个方面：
-
-### 🔧 1. 直接通信架构
-
-Playwright 的核心优势在于其**架构**。它通过 WebSocket **直接连接到浏览器的 CDP 端口**，与浏览器内核进行通信。这意味着它**绕过了 WebDriver 等中间代理**，减少了协议转换的开销，从而实现了更高的执行效率和更低的延迟。
-
-当你启动 Playwright 时，它会启动浏览器进程并注入一个 Playwright 控制器，该控制器通过 WebSocket 或管道与你的测试脚本建立连接，实现双向通信。
-
-### 📊 2. 全方位的监控与控制能力
-
-通过与 CDP 的直接集成，Playwright 可以启用和接收 CDP 各个“域”（Domains）的事件和命令，从而实现精细化的控制。
-
-*   **网络拦截与分析**：可以监听和修改任何网络请求（`Network.requestWillBeSent`, `Network.responseReceived`），模拟慢速网络，或直接返回模拟响应。
-    ```python
-    # 示例：监听网络请求
-    cdp_session.on('Network.requestWillBeSent', lambda params: print(f"Request: {params['request']['url']}"))
-    cdp_session.send('Network.enable')
-    ```
-*   **性能追踪**：可以获取详细的性能指标，如页面加载时间、脚本执行时间、布局计算时间等（`Performance.getMetrics`）。
-*   **内存分析**：能够获取堆内存使用情况、DOM 节点计数等信息（`Memory.getHeapUsage`, `Memory.getDOMCounters`），辅助排查内存泄漏问题。
-*   **精准的输入模拟**：不仅支持键盘鼠标，还能模拟触摸、手势等移动设备操作。
-
-### 🚀 3. 实战应用示例
-
-以下是一些展示 Playwright 与 CDP 集成的常见代码示例：
-
-1.  **建立 CDP 会话并获取性能指标**
-    ```python
-    from playwright.sync_api import sync_playwright
-
-    def performance_tracing_example():
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
-            context = browser.new_context()
-            page = context.new_page()
-
-            # 建立CDP会话
-            cdp_session = page.context.new_cdp_session(page)
-            # 启用Performance域
-            cdp_session.send('Performance.enable')
-
-            page.goto('https://example.com')
-
-            # 收集性能指标
-            metrics = cdp_session.send('Performance.getMetrics')
-            print("性能指标:", metrics)
-
-            browser.close()
-    ```
-
-2.  **监控内存使用**
-    ```python
-    def memory_usage_monitoring():
-        with sync_playwright() as p:
-            browser = p.chromium.launch()
-            context = browser.new_context()
-            page = context.new_page()
-            cdp_session = context.new_cdp_session(page)
-
-            cdp_session.send('Memory.enable') # 启用Memory域
-            page.goto('https://example.com')
-
-            # 获取DOM内存统计
-            dom_counters = cdp_session.send('Memory.getDOMCounters')
-            print("DOM内存统计:", dom_counters)
-
-            # 获取堆内存使用情况
-            heap_usage = cdp_session.send('Memory.getHeapUsage')
-            print("堆内存使用:", heap_usage)
-
-            browser.close()
-    ```
-
-3.  **连接至已打开的浏览器进行调试**
-    你可以让 Chrome 以调试模式启动，然后使用 Playwright 连接上去，这对于调试现有浏览器会话非常有用。
-    ```bash
-    # 首先，以调试模式启动Chrome（在命令行中执行）
-    chrome --remote-debugging-port=9222 --user-data-dir="C:\playwright\user_data"
-    ```
-    ```python
-    # 然后，在Playwright中连接
-    from playwright.sync_api import sync_playwright
-
-    with sync_playwright() as p:
-        # 连接到已存在的浏览器实例
-        browser = p.chromium.connect_over_cdp("http://localhost:9222")
-        default_context = browser.contexts[0]
-        page = default_context.pages[0]
-        print(f'Page title: {page.title()}')
-        # ... 后续操作
-    ```
-
-### 💡 核心优势总结
-
-Playwright 通过与 CDP 的深度集成，带来了诸多优势：
-
-*   **更精细的控制**：可直接调用丰富的 CDP 命令，实现网络拦截、性能分析、内存分析等高级功能。
-*   **更高的性能**：WebSocket 直连减少了中间层和协议转换带来的开销，操作更高效。
-*   **更丰富的功能**：支持设备模拟、网络条件模拟、精准输入模拟等。
-*   **更好的调试能力**：内置强大的调试支持，如追踪录制、截图、视频录制等。
-
-### ⚠️ 注意事项
-
-虽然强大，但直接使用 CDP 时也需注意：
-
-*   **浏览器兼容性**：CDP 主要针对 Chromium 系浏览器。Playwright 虽然为 Firefox 和 WebKit 提供了类似的私有协议实现，但最完整的功能仍在 Chromium 上。
-*   **API 稳定性**：CDP 本身可能仍在发展和变化中，部分实验性 API 可能不稳定。
-*   **概念复杂性**：直接操作 CDP 需要对其概念和结构有更深入的理解，比使用高级 API 更复杂。
-
-希望这些信息能帮助你更好地理解 Playwright 与 Chrome DevTools Protocol 的深度集成。
+希望这些信息能帮助你更好地测试 Chrome 插件的通信功能！如果你在特定工具的使用或测试场景上遇到更具体的问题，我很乐意提供更多细节。

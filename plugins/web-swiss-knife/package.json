@@ -13,7 +13,11 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts,.tsx",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "debug": "node scripts/debug-extension.js debug",
+    "debug:ui": "node scripts/debug-extension.js ui",
+    "test:e2e": "node scripts/debug-extension.js test",
+    "test:report": "node scripts/debug-extension.js report"
   },
   "keywords": [
     "browser-extension",
@@ -32,10 +36,12 @@
     "antd": "5.26.7"
   },
   "devDependencies": {
+    "playwright":"1.45.0",
+    "@playwright/test":"1.45.0",
     "@types/chrome": "^0.0.246",
-    "@types/node": "^20.10.5",
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18",
+    "@types/node": "20.10.5",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.9",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -59,7 +65,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@ant-design/plots": "^2.1.0",
-    "antd": "^5.12.2",
+    "antd": "5.26.7",
     "axios": "^1.6.2",
     "d3": "^7.8.5",
     "dayjs": "1.11.13",
@@ -69,14 +75,14 @@
     "perfor-monitor": "^1.0.0",
     "protobufjs": "^7.5.4",
     "qs": "6.9.7",
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "react-router-dom": "^6.21.0",
     "uuid": "^9.0.1",
     "zustand": "^4.4.7"
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
   }
 }
