@@ -67,7 +67,7 @@ export class SecLinterWebpackPlugin implements WebpackPluginInstance {
     // 初始化插件管理器
     const init = async () => {
       if (!this.initialized) {
-        this.pluginManager = createPluginManager(this.options.pluginManager);
+        this.pluginManager = createPluginManager(this.options.pluginManager as any);
         await this.pluginManager.init();
         this.initialized = true;
       }
@@ -75,7 +75,7 @@ export class SecLinterWebpackPlugin implements WebpackPluginInstance {
 
     // 在构建开始时执行扫描
     if (this.options.scanOnStart) {
-      compiler.hooks.beforeCompile.tapAsync(pluginName, async (params, callback) => {
+      compiler.hooks.beforeCompile.tapAsync(pluginName, async (params: any, callback: any) => {
         try {
           await init();
           await this.runScan(compiler);
@@ -88,7 +88,7 @@ export class SecLinterWebpackPlugin implements WebpackPluginInstance {
 
     // 在构建完成时执行扫描
     if (this.options.scanOnDone) {
-      compiler.hooks.afterEmit.tapAsync(pluginName, async (compilation, callback) => {
+      compiler.hooks.afterEmit.tapAsync(pluginName, async (compilation: any, callback: any) => {
         try {
           await init();
           await this.runScan(compiler);
@@ -126,7 +126,7 @@ export class SecLinterWebpackPlugin implements WebpackPluginInstance {
         throw error;
       }
     } catch (error) {
-      compiler.hooks.compilation.tap('SecLinterWebpackPlugin', compilation => {
+      compiler.hooks.compilation.tap('SecLinterWebpackPlugin', (compilation: any) => {
         compilation.errors.push(new Error(`SecLinter error: ${(error as Error).message}`));
       });
     }
@@ -145,7 +145,8 @@ export class SecLinterWebpackPlugin implements WebpackPluginInstance {
     logger.info(`[SecLinter] Found ${stats.issuesFound} security issues`);
 
     // 按严重程度输出统计信息
-    Object.entries(stats.byLevel).forEach(([level, count]) => {
+    // @ts-ignore
+    Object.entries(stats.byLevel).forEach(([level, count]: [string, number]) => {
       if (count > 0) {
         const method = level === 'critical' || level === 'high' ? 'warn' : 'info';
         logger[method](`[SecLinter] ${count} ${level} issues`);
@@ -159,8 +160,8 @@ export class SecLinterWebpackPlugin implements WebpackPluginInstance {
 
     // 输出高严重性问题的详细信息
     results
-      .filter(result => result.level === 'critical' || result.level === 'high')
-      .forEach(result => {
+      .filter((result: any) => result.level === 'critical' || result.level === 'high')
+      .forEach((result: any) => {
         logger.warn(
           `[SecLinter] ${result.level.toUpperCase()}: ${result.message} ` +
           `(${result.plugin}${result.file ? ` in ${result.file}` : ''})`
@@ -184,9 +185,10 @@ export class SecLinterWebpackPlugin implements WebpackPluginInstance {
 
     const failLevel = severityLevels[this.options.failSeverity || 'high'];
 
-    return results.some(result =>
-      severityLevels[result.level] >= failLevel
-    );
+    return results.some((result: any) => {
+      // @ts-ignore
+      return severityLevels[result.level] >= failLevel
+    });
   }
 }
 

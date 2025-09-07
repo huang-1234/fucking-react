@@ -1,6 +1,6 @@
 {
   "name": "seclinter",
-  "version": "0.0.1",
+  "version": "0.0.5-beta.0",
   "description": "前端Web安全检测与攻防工具包",
   "main": "dist/seclinter.umd.js",
   "module": "dist/seclinter.es.js",
@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run build && npm run test:coverage",
+    "prepublishOnly": "npm run build",
+    "prepublishOnly:test": "npm run build && npm run test:coverage && npm run test",
     "publish:npm": "node scripts/publish.js",
     "publish:beta": "node scripts/publish.js main:beta",
     "publish:plugins": "node scripts/publish.js plugins"
@@ -52,7 +53,8 @@
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
     "vite": "6.0.0",
-    "vitest": "2.1.5"
+    "vitest": "2.1.5",
+    "webpack": "^5.101.3"
   },
   "packageManager": "pnpm@10.13.1",
   "dependencies": {

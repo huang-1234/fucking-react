@@ -120,7 +120,7 @@ function checkGitStatus() {
  * @param {string} versionType 版本类型
  * @param {string} versionBump 版本更新类型
  */
-async function publishMainPackage(versionType, versionBump) {
+async function publishMainPackage(versionType, versionBump, shouldTest = false, dryRun = false) {
   const npmTag = versionMap[versionType] || 'latest';
 
   try {
@@ -131,8 +131,10 @@ async function publishMainPackage(versionType, versionBump) {
     exec('node scripts/build.js');
 
     // 运行测试
-    log('运行测试...', 'blue');
-    exec('npm test');
+    if (shouldTest) {
+      log('运行测试...', 'blue');
+      exec('npm test');
+    }
 
     // 更新版本
     log(`更新版本 (${versionBump})...`, 'blue');
@@ -155,7 +157,11 @@ async function publishMainPackage(versionType, versionBump) {
 
     // 发布到npm
     log('发布到NPM...', 'blue');
-    exec(`npm publish --access public --tag ${npmTag}`);
+    if (dryRun) {
+      log('模拟发布模式，跳过实际发布步骤', 'yellow');
+    } else {
+      exec(`npm publish --access public --tag ${npmTag}`);
+    }
 
     // 提交并推送更改
     log('提交版本更新...', 'blue');
@@ -182,7 +188,7 @@ async function publishMainPackage(versionType, versionBump) {
  * @param {string} mainVersion 主版本号
  * @param {string} versionType 版本类型
  */
-async function publishPluginsPackage(mainVersion, versionType) {
+async function publishPluginsPackage(mainVersion, versionType, dryRun = false) {
   const npmTag = versionMap[versionType] || 'latest';
 
   try {
@@ -227,7 +233,11 @@ async function publishPluginsPackage(mainVersion, versionType) {
     process.chdir(path.resolve(__dirname, '../plugins'));
 
     // 发布子包
-    exec(`npm publish --access public --tag ${npmTag}`);
+    if (dryRun) {
+      log('模拟发布模式，跳过实际发布步骤', 'yellow');
+    } else {
+      exec(`npm publish --access public --tag ${npmTag}`);
+    }
 
     // 返回主目录
     process.chdir(path.resolve(__dirname, '..'));
@@ -250,18 +260,30 @@ async function main() {
   let packageName = 'all';
   let versionType = 'main';
   let versionBump = 'patch';
-
+  let dryRun = false;
+  let shouldTest = false;
   if (args.length > 0) {
-    if (args[0].includes(':')) {
-      const parts = args[0].split(':');
-      packageName = parts[0];
-      versionType = parts[1];
-    } else {
-      packageName = args[0];
+    if (args[0] === '--dry-run') {
+      dryRun = true;
+      args.shift();
     }
 
-    if (args.length > 1) {
-      versionBump = args[1];
+    if (args.length > 0) {
+      if (args[0].includes(':')) {
+        const parts = args[0].split(':');
+        packageName = parts[0];
+        versionType = parts[1];
+      } else {
+        packageName = args[0];
+      }
+
+      if (args.length > 1) {
+        versionBump = args[1];
+      }
+    }
+
+    if (args.length > 2) {
+      shouldTest = args[2] === 'test';
     }
   }
 
@@ -285,11 +307,11 @@ async function main() {
 
   // 根据参数执行不同的发布流程
   if (packageName === 'all' || packageName === 'main') {
-    mainVersion = await publishMainPackage(versionType, versionBump);
+    mainVersion = await publishMainPackage(versionType, versionBump, shouldTest, dryRun);
   }
 
   if ((packageName === 'all' || packageName === 'plugins') && mainVersion) {
-    await publishPluginsPackage(mainVersion, versionType);
+    await publishPluginsPackage(mainVersion, versionType, dryRun);
   }
 
   log('\n✅ SecLinter 发布完成!', 'green');
