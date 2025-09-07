@@ -77,7 +77,7 @@ export class HeaderAuditor {
    * @param headers 原始响应头
    * @returns 规范化后的响应头
    */
-  private normalizeHeaders(headers: Record<string, string | string[]>): Record<string, string> {
+  private normalizeHeaders(headers: any): Record<string, string> {
     const normalized: Record<string, string> = {};
 
     Object.entries(headers).forEach(([key, value]) => {

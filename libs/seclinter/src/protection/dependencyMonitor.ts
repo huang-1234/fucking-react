@@ -140,7 +140,7 @@ export class DependencyMonitor {
           // 如果漏洞严重程度低于最低要求，则跳过
           const severityLevels = { critical: 4, high: 3, medium: 2, low: 1, info: 0 };
           const minSeverityLevel = severityLevels[this.options.minSeverity || 'low'];
-          if (severityLevels[severity] < minSeverityLevel) {
+          if (severityLevels[severity as keyof typeof severityLevels] < minSeverityLevel) {
             continue;
           }
 

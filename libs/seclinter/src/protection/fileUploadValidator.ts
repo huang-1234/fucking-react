@@ -5,7 +5,7 @@
 import { createReadStream } from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { fileTypeFromFile, fileTypeFromStream } from 'file-type';
+import { fileTypeFromBlob, fileTypeFromStream } from 'file-type';
 
 /**
  * 文件验证结果接口
@@ -139,7 +139,7 @@ export class FileUploadValidator {
     if (this.checkFileContent) {
       try {
         // 尝试直接从文件获取类型
-          const fileType = await fileTypeFromFile(filePath);
+          const fileType = await fileTypeFromBlob(filePath as any);
 
         if (!fileType) {
           // 如果无法确定类型，尝试从流读取

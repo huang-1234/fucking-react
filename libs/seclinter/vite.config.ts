@@ -10,12 +10,14 @@ export default defineConfig({
     },
     rollupOptions: {
       // 确保外部化处理那些你不想打包进库的依赖
-      external: ['commander', 'axios', 'fs', 'path', 'child_process'],
+      external: ['commander', 'axios', 'fs', 'path', 'child_process', 'express', 'express-rate-limit', 'node:crypto', 'node:buffer', 'node:net', 'file-type', 'uuid'],
       output: {
         // 提供全局变量以便在 UMD 构建模式下使用
         globals: {
           commander: 'commander',
-          axios: 'axios'
+          axios: 'axios',
+          express: 'express',
+          'express-rate-limit': 'rateLimit'
         }
       }
     },

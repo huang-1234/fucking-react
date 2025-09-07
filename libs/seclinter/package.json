@@ -10,11 +10,16 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node scripts/build.js",
+    "build:main": "node scripts/build.js main",
+    "build:plugins": "node scripts/build.js plugins",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run build && npm run test:coverage"
+    "prepublishOnly": "npm run build && npm run test:coverage",
+    "publish:npm": "node scripts/publish.js",
+    "publish:beta": "node scripts/publish.js main:beta",
+    "publish:plugins": "node scripts/publish.js plugins"
   },
   "keywords": [],
   "author": "",
