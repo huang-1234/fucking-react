@@ -105,117 +105,176 @@ function copyDir(src, dest) {
 function buildExtension() {
   log('=== Web Swiss Knife 浏览器扩展构建脚本 ===', 'magenta');
 
-  // 确保扩展目录存在
-  ensureDir(EXTENSION_DIR);
+  // 检查扩展目录是否已经存在
+  if (fs.existsSync(EXTENSION_DIR)) {
+    log('扩展目录已存在，跳过复制步骤...', 'yellow');
 
-  // 复制必要文件
-  log('复制扩展文件...', 'blue');
+    // 检查必要文件是否存在
+    const requiredFiles = [
+      'manifest.json',
+      'background.js',
+      'content.js'
+    ];
 
-  // 复制 manifest.json
-  copyFile(
-    path.join(DIST_DIR, 'manifest.json'),
-    path.join(EXTENSION_DIR, 'manifest.json')
-  );
-
-  // 复制资源文件
-  copyDir(
-    path.join(DIST_DIR, 'assets'),
-    path.join(EXTENSION_DIR, 'assets')
-  );
-
-  // 复制 HTML 和 JS 文件
-  // 检查是否存在旧的目录结构
-  if (fs.existsSync(path.join(DIST_DIR, 'popup'))) {
-    copyDir(
-      path.join(DIST_DIR, 'popup'),
-      path.join(EXTENSION_DIR, 'popup')
-    );
-  }
-
-  if (fs.existsSync(path.join(DIST_DIR, 'options'))) {
-    copyDir(
-      path.join(DIST_DIR, 'options'),
-      path.join(EXTENSION_DIR, 'options')
-    );
-  }
-
-  if (fs.existsSync(path.join(DIST_DIR, 'devtools'))) {
-    copyDir(
-      path.join(DIST_DIR, 'devtools'),
-      path.join(EXTENSION_DIR, 'devtools')
-    );
-  }
-
-  // 检查是否存在新的目录结构
-  if (fs.existsSync(path.join(DIST_DIR, 'assets', 'popup.js'))) {
-    ensureDir(path.join(EXTENSION_DIR, 'popup'));
-    copyFile(
-      path.join(DIST_DIR, 'assets', 'popup.js'),
-      path.join(EXTENSION_DIR, 'popup', 'index.js')
+    const missingFiles = requiredFiles.filter(file =>
+      !fs.existsSync(path.join(EXTENSION_DIR, file))
     );
 
-    if (fs.existsSync(path.join(DIST_DIR, 'popup', 'index.html'))) {
+    if (missingFiles.length > 0) {
+      log(`警告: 扩展目录缺少必要文件: ${missingFiles.join(', ')}`, 'yellow');
+      log('将尝试复制这些文件...', 'blue');
+
+      // 尝试复制缺失的文件
+      for (const file of missingFiles) {
+        if (file === 'manifest.json' && fs.existsSync(path.join(DIST_DIR, 'manifest.json'))) {
+          copyFile(
+            path.join(DIST_DIR, 'manifest.json'),
+            path.join(EXTENSION_DIR, 'manifest.json')
+          );
+        } else if (file === 'background.js') {
+          if (fs.existsSync(path.join(DIST_DIR, 'background.js'))) {
+            copyFile(
+              path.join(DIST_DIR, 'background.js'),
+              path.join(EXTENSION_DIR, 'background.js')
+            );
+          } else if (fs.existsSync(path.join(DIST_DIR, 'assets', 'background.js'))) {
+            copyFile(
+              path.join(DIST_DIR, 'assets', 'background.js'),
+              path.join(EXTENSION_DIR, 'background.js')
+            );
+          }
+        } else if (file === 'content.js') {
+          if (fs.existsSync(path.join(DIST_DIR, 'content.js'))) {
+            copyFile(
+              path.join(DIST_DIR, 'content.js'),
+              path.join(EXTENSION_DIR, 'content.js')
+            );
+          } else if (fs.existsSync(path.join(DIST_DIR, 'assets', 'content.js'))) {
+            copyFile(
+              path.join(DIST_DIR, 'assets', 'content.js'),
+              path.join(EXTENSION_DIR, 'content.js')
+            );
+          }
+        }
+      }
+    }
+  } else {
+    // 确保扩展目录存在
+    ensureDir(EXTENSION_DIR);
+
+    // 复制必要文件
+    log('复制扩展文件...', 'blue');
+
+    // 复制 manifest.json (如果在 dist 目录中存在)
+    if (fs.existsSync(path.join(DIST_DIR, 'manifest.json'))) {
       copyFile(
-        path.join(DIST_DIR, 'popup', 'index.html'),
-        path.join(EXTENSION_DIR, 'popup', 'index.html')
+        path.join(DIST_DIR, 'manifest.json'),
+        path.join(EXTENSION_DIR, 'manifest.json')
       );
     }
-  }
 
-  if (fs.existsSync(path.join(DIST_DIR, 'assets', 'options.js'))) {
-    ensureDir(path.join(EXTENSION_DIR, 'options'));
-    copyFile(
-      path.join(DIST_DIR, 'assets', 'options.js'),
-      path.join(EXTENSION_DIR, 'options', 'index.js')
-    );
-
-    if (fs.existsSync(path.join(DIST_DIR, 'options', 'index.html'))) {
-      copyFile(
-        path.join(DIST_DIR, 'options', 'index.html'),
-        path.join(EXTENSION_DIR, 'options', 'index.html')
+    // 复制资源文件 (如果在 dist 目录中存在)
+    if (fs.existsSync(path.join(DIST_DIR, 'assets'))) {
+      copyDir(
+        path.join(DIST_DIR, 'assets'),
+        path.join(EXTENSION_DIR, 'assets')
       );
     }
-  }
 
-  if (fs.existsSync(path.join(DIST_DIR, 'assets', 'devtools.js'))) {
-    ensureDir(path.join(EXTENSION_DIR, 'devtools'));
-    copyFile(
-      path.join(DIST_DIR, 'assets', 'devtools.js'),
-      path.join(EXTENSION_DIR, 'devtools', 'index.js')
-    );
-
-    if (fs.existsSync(path.join(DIST_DIR, 'devtools', 'index.html'))) {
-      copyFile(
-        path.join(DIST_DIR, 'devtools', 'index.html'),
-        path.join(EXTENSION_DIR, 'devtools', 'index.html')
+    // 复制 HTML 和 JS 文件
+    // 检查是否存在旧的目录结构
+    if (fs.existsSync(path.join(DIST_DIR, 'popup'))) {
+      copyDir(
+        path.join(DIST_DIR, 'popup'),
+        path.join(EXTENSION_DIR, 'popup')
       );
     }
-  }
 
-  // 复制 JS 文件
-  // 检查 JS 文件是否在根目录或 assets 目录
-  if (fs.existsSync(path.join(DIST_DIR, 'background.js'))) {
-    copyFile(
-      path.join(DIST_DIR, 'background.js'),
-      path.join(EXTENSION_DIR, 'background.js')
-    );
-  } else if (fs.existsSync(path.join(DIST_DIR, 'assets', 'background.js'))) {
-    copyFile(
-      path.join(DIST_DIR, 'assets', 'background.js'),
-      path.join(EXTENSION_DIR, 'background.js')
-    );
-  }
+    if (fs.existsSync(path.join(DIST_DIR, 'options'))) {
+      copyDir(
+        path.join(DIST_DIR, 'options'),
+        path.join(EXTENSION_DIR, 'options')
+      );
+    }
 
-  if (fs.existsSync(path.join(DIST_DIR, 'content.js'))) {
-    copyFile(
-      path.join(DIST_DIR, 'content.js'),
-      path.join(EXTENSION_DIR, 'content.js')
-    );
-  } else if (fs.existsSync(path.join(DIST_DIR, 'assets', 'content.js'))) {
-    copyFile(
-      path.join(DIST_DIR, 'assets', 'content.js'),
-      path.join(EXTENSION_DIR, 'content.js')
-    );
+    if (fs.existsSync(path.join(DIST_DIR, 'devtools'))) {
+      copyDir(
+        path.join(DIST_DIR, 'devtools'),
+        path.join(EXTENSION_DIR, 'devtools')
+      );
+    }
+
+    // 检查是否存在新的目录结构
+    if (fs.existsSync(path.join(DIST_DIR, 'assets', 'popup.js'))) {
+      ensureDir(path.join(EXTENSION_DIR, 'popup'));
+      copyFile(
+        path.join(DIST_DIR, 'assets', 'popup.js'),
+        path.join(EXTENSION_DIR, 'popup', 'index.js')
+      );
+
+      if (fs.existsSync(path.join(DIST_DIR, 'popup', 'index.html'))) {
+        copyFile(
+          path.join(DIST_DIR, 'popup', 'index.html'),
+          path.join(EXTENSION_DIR, 'popup', 'index.html')
+        );
+      }
+    }
+
+    if (fs.existsSync(path.join(DIST_DIR, 'assets', 'options.js'))) {
+      ensureDir(path.join(EXTENSION_DIR, 'options'));
+      copyFile(
+        path.join(DIST_DIR, 'assets', 'options.js'),
+        path.join(EXTENSION_DIR, 'options', 'index.js')
+      );
+
+      if (fs.existsSync(path.join(DIST_DIR, 'options', 'index.html'))) {
+        copyFile(
+          path.join(DIST_DIR, 'options', 'index.html'),
+          path.join(EXTENSION_DIR, 'options', 'index.html')
+        );
+      }
+    }
+
+    if (fs.existsSync(path.join(DIST_DIR, 'assets', 'devtools.js'))) {
+      ensureDir(path.join(EXTENSION_DIR, 'devtools'));
+      copyFile(
+        path.join(DIST_DIR, 'assets', 'devtools.js'),
+        path.join(EXTENSION_DIR, 'devtools', 'index.js')
+      );
+
+      if (fs.existsSync(path.join(DIST_DIR, 'devtools', 'index.html'))) {
+        copyFile(
+          path.join(DIST_DIR, 'devtools', 'index.html'),
+          path.join(EXTENSION_DIR, 'devtools', 'index.html')
+        );
+      }
+    }
+
+    // 复制 JS 文件
+    // 检查 JS 文件是否在根目录或 assets 目录
+    if (fs.existsSync(path.join(DIST_DIR, 'background.js'))) {
+      copyFile(
+        path.join(DIST_DIR, 'background.js'),
+        path.join(EXTENSION_DIR, 'background.js')
+      );
+    } else if (fs.existsSync(path.join(DIST_DIR, 'assets', 'background.js'))) {
+      copyFile(
+        path.join(DIST_DIR, 'assets', 'background.js'),
+        path.join(EXTENSION_DIR, 'background.js')
+      );
+    }
+
+    if (fs.existsSync(path.join(DIST_DIR, 'content.js'))) {
+      copyFile(
+        path.join(DIST_DIR, 'content.js'),
+        path.join(EXTENSION_DIR, 'content.js')
+      );
+    } else if (fs.existsSync(path.join(DIST_DIR, 'assets', 'content.js'))) {
+      copyFile(
+        path.join(DIST_DIR, 'assets', 'content.js'),
+        path.join(EXTENSION_DIR, 'content.js')
+      );
+    }
   }
 
   // 打包扩展

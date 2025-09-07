@@ -1098,6 +1098,7 @@ const App: React.FC = () => {
 
   // 检查是否在扩展环境中运行
   const isExtensionEnvironment = typeof chrome !== 'undefined' && chrome.extension !== undefined;
+  console.log('isExtensionEnvironment', isExtensionEnvironment)
 
   // 如果不在扩展环境中，显示提示信息
   if (!isExtensionEnvironment) {

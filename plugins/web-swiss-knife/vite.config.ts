@@ -13,11 +13,11 @@ export default defineConfig({
     }),
     copy({
       targets: [
-        { src: 'src/manifest.json', dest: 'dist' },
-        { src: 'src/assets', dest: 'dist' },
-        { src: 'src/pages/popup/index.html', dest: 'dist/popup' },
-        { src: 'src/pages/options/index.html', dest: 'dist/options' },
-        { src: 'src/pages/devtools/index.html', dest: 'dist/devtools' }
+        { src: 'src/manifest.json', dest: 'dist/extension' },
+        { src: 'src/assets', dest: 'dist/extension' },
+        { src: 'src/pages/popup/index.html', dest: 'dist/extension/popup' },
+        { src: 'src/pages/options/index.html', dest: 'dist/extension/options' },
+        { src: 'src/pages/devtools/index.html', dest: 'dist/extension/devtools' }
       ],
       hook: 'writeBundle'
     })
@@ -39,8 +39,10 @@ export default defineConfig({
         content: resolve(__dirname, 'src/content/index.ts')
       },
       output: {
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
+        // 为浏览器插件调整输出路径
+        dir: 'dist/extension',
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].chunk.js',
         assetFileNames: 'assets/[name].[ext]'
       }
     }
