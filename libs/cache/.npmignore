@@ -1,0 +1,41 @@
+# 源代码
+src/
+!src/service-work/README.md
+
+# 测试文件
+**/__test__/
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+coverage/
+.nyc_output/
+
+# 配置文件
+.github/
+.vscode/
+.editorconfig
+.eslintrc
+.eslintignore
+.prettierrc
+.prettierignore
+tsconfig.json
+tsconfig.build.json
+vite.config.ts
+vitest.config.ts
+
+# 构建工具
+scripts/
+rollup.config.js
+webpack.config.js
+babel.config.js
+
+# 其他
+node_modules/
+.DS_Store
+.env
+.env.*
+*.log
+.idea/
+.git/
+.gitignore

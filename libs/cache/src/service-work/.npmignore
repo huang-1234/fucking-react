@@ -1,0 +1,28 @@
+# 测试文件
+**/__test__/
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# 源代码（除了README.md）
+*.ts
+*.tsx
+!*.d.ts
+!README.md
+
+# 配置文件
+tsconfig.json
+tsconfig.build.json
+vite.config.ts
+vitest.config.ts
+
+# 其他
+node_modules/
+.DS_Store
+.env
+.env.*
+*.log
+.idea/
+.git/
+.gitignore
