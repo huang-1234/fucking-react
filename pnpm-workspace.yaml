@@ -3,7 +3,7 @@ packages:
   - 'libs/*'
   # - 'apps/*'
   # - 'servers/*'
-  - 'plugins'
+  - 'plugins/*'
   - 'website'
   # exclude packages that are inside test directories
   - "!**/test/**"
