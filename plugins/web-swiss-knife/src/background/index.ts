@@ -9,12 +9,12 @@
 import { MessageType, ModuleId } from '../types';
 import { SecurityScanner } from './modules/security-scanner';
 import { getStorage, setStorage } from '../utils/storage';
+import { VisPerformanceMonitor } from './modules/VisPerformanceMonitor';
 
 // 初始化模块
 const securityScanner = new SecurityScanner();
-// 以下模块暂未实现，先注释掉
-// const cacheVisualizer = new CacheVisualizer();
-// const performanceMonitor = new PerformanceMonitor();
+// 初始化性能监控模块
+const performanceMonitor = new VisPerformanceMonitor();
 
 // 默认配置
 const defaultConfig = {
@@ -66,8 +66,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: 'error', message: '缓存模块尚未实现。' });
       break;
     case ModuleId.PERFORMANCE:
-      // performanceMonitor.handleMessage(type, payload, sender, sendResponse);
-      // sendResponse({ status: 'error', message: '性能模块尚未实现。' });
+      performanceMonitor.handleMessage(type, payload, sender, sendResponse);
       break;
     default:
       // 处理一般消息
