@@ -1,0 +1,112 @@
+/* 设置页面样式 */
+.ant-layout {
+  transition: all 0.2s;
+}
+
+.ant-layout-sider {
+  max-width: 250px !important;
+  min-width: 250px !important;
+  width: 250px !important;
+}
+
+.ant-layout-sider-collapsed {
+  max-width: 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+}
+
+.ant-layout-header {
+  height: 64px;
+  line-height: 64px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .ant-layout-content {
+    margin: 8px !important;
+    padding: 8px !important;
+  }
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-card-head-title {
+    font-size: 16px;
+  }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 表单样式 */
+.ant-form-item-label {
+  font-weight: 500;
+}
+
+.ant-collapse-ghost > .ant-collapse-item {
+  border-bottom: none;
+}
+
+.ant-collapse-ghost > .ant-collapse-item > .ant-collapse-content {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+/* 卡片样式 */
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.ant-card-bordered {
+  border: 1px solid #f0f0f0;
+}
+
+/* 分割线样式 */
+.ant-divider-horizontal.ant-divider-with-text {
+  margin: 16px 0;
+}
+
+.ant-divider-horizontal.ant-divider-with-text::before,
+.ant-divider-horizontal.ant-divider-with-text::after {
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 左右伸缩布局 */
+.ant-layout-sider {
+  transition: all 0.3s !important;
+}
+
+.ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-menu {
+  flex: 1;
+  border-right: none !important;
+}
+
+.ant-layout-sider-trigger {
+  border-right: 1px solid #f0f0f0;
+}

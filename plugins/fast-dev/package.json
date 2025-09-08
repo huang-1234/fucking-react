@@ -1,0 +1,196 @@
+{
+  "name": "universal-dev-platform",
+  "displayName": "通用开发平台",
+  "version": "0.1.0",
+  "description": "集成前后端逻辑开发、组件物料、页面搭建、D2C和自动化测试的通用开发平台",
+  "main": "./extension.js",
+  "publisher": "universal-dev",
+  "engines": {
+    "vscode": "^1.103.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Snippets",
+    "Testing"
+  ],
+  "activationEvents": [
+    "onCommand:universal-dev-platform.showPanel",
+    "onView:component-material-view"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "universal-dev-platform.showPanel",
+        "title": "显示开发平台面板",
+        "category": "通用开发平台"
+      },
+      {
+        "command": "universal-dev-platform.reloadExtensions",
+        "title": "重新加载扩展",
+        "category": "通用开发平台"
+      },
+      {
+        "command": "universal-dev-platform.openSettings",
+        "title": "打开设置",
+        "category": "通用开发平台"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "universal-dev-platform",
+          "title": "通用开发平台",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "universal-dev-platform": [
+        {
+          "id": "component-material-view",
+          "name": "组件物料"
+        },
+        {
+          "id": "page-builder-view",
+          "name": "页面搭建"
+        },
+        {
+          "id": "d2c-view",
+          "name": "设计转代码"
+        },
+        {
+          "id": "test-view",
+          "name": "自动化测试"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "universal-dev-platform.showPanel",
+          "when": "view == component-material-view",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "universal-dev-platform.showPanel",
+          "when": "editorFocus"
+        },
+        {
+          "command": "universal-dev-platform.reloadExtensions",
+          "when": "editorFocus"
+        },
+        {
+          "command": "universal-dev-platform.openSettings",
+          "when": "editorFocus"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "通用开发平台",
+      "properties": {
+        "universal-dev-platform.ai.defaultProvider": {
+          "type": "string",
+          "default": "openai",
+          "description": "默认AI提供者"
+        },
+        "universal-dev-platform.ai.openai.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API密钥"
+        },
+        "universal-dev-platform.ai.openai.model": {
+          "type": "string",
+          "default": "gpt-4",
+          "enum": ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo"],
+          "description": "OpenAI模型"
+        },
+        "universal-dev-platform.vscode.theme": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "light", "dark"],
+          "description": "VSCode主题"
+        },
+        "universal-dev-platform.cursor.theme": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "light", "dark"],
+          "description": "Cursor主题"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/build-extension.js",
+    "build:watch": "vite build --watch",
+    "test": "node ./out/test/runTest.js",
+    "pretest": "tsc -p ./tsconfig.build.json",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "vscode:prepublish": "echo 'Skipping prepublish script'",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "keywords": [
+    "vscode-extension",
+    "development-platform",
+    "component-library",
+    "page-builder",
+    "design-to-code",
+    "automated-testing",
+    "ai-assisted"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@types/vscode": "1.103.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.19.0",
+    "antd": "^5.12.2",
+    "axios": "^1.6.2",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "prettier": "^3.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-visualizer": "^6.0.3",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.35.1",
+    "uuid": "^9.0.1",
+    "vite": "5.4.19",
+    "vite-plugin-dts": "^3.9.1",
+    "vite-plugin-html": "^3.2.2",
+    "vite-plugin-node-polyfills": "^0.24.0",
+    "vscode-test": "1.6.1",
+    "vitest": "2.1.5",
+    "zustand": "^4.4.7"
+  },
+  "dependencies": {},
+  "extensionDependencies": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/universal-dev-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/username/universal-dev-platform/issues"
+  },
+  "homepage": "https://github.com/username/universal-dev-platform#readme"
+}

@@ -1,0 +1,49 @@
+{
+  "id": "component-material",
+  "name": "组件物料库",
+  "description": "提供组件创建、管理、预览和复用功能",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "contributes": {
+    "commands": [
+      {
+        "command": "component-material.createComponent",
+        "title": "创建新组件",
+        "category": "组件物料库"
+      },
+      {
+        "command": "component-material.previewComponent",
+        "title": "预览组件",
+        "category": "组件物料库"
+      },
+      {
+        "command": "component-material.insertComponent",
+        "title": "插入组件",
+        "category": "组件物料库"
+      }
+    ],
+    "views": {
+      "universal-dev-platform": [
+        {
+          "id": "component-material-explorer",
+          "name": "组件浏览器"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "组件物料库",
+      "properties": {
+        "component-material.templatePath": {
+          "type": "string",
+          "default": "",
+          "description": "组件模板路径"
+        },
+        "component-material.outputPath": {
+          "type": "string",
+          "default": "",
+          "description": "组件输出路径"
+        }
+      }
+    }
+  }
+}
