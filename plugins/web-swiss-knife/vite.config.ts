@@ -41,7 +41,14 @@ export default defineConfig({
       output: {
         // 为浏览器插件调整输出路径
         dir: 'dist/extension',
-        entryFileNames: '[name].js',
+        entryFileNames: (chunkInfo) => {
+          // 根据不同的入口文件生成不同的输出路径
+          const name = chunkInfo.name;
+          if (['popup', 'options', 'devtools'].includes(name)) {
+            return `${name}/${name}.js`;
+          }
+          return '[name].js';
+        },
         chunkFileNames: '[name].chunk.js',
         assetFileNames: 'assets/[name].[ext]'
       }

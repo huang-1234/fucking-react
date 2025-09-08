@@ -5,8 +5,7 @@
  *
  * 该脚本用于启动 Playwright 调试模式，方便本地开发和调试
  */
-const { execSync } = require('child_process');
-const path = require('path');
+import { execSync } from 'child_process';
 
 // 颜色输出函数
 const colors = {

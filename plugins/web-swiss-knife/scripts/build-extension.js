@@ -3,9 +3,10 @@
 /**
  * Web Swiss Knife 浏览器扩展构建脚本
  */
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
 
 // 颜色输出函数
 const colors = {
@@ -46,6 +47,8 @@ function exec(command, silent = false) {
 }
 
 // 项目根目录
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const EXTENSION_DIR = path.join(DIST_DIR, 'extension');
@@ -181,37 +184,14 @@ function buildExtension() {
       );
     }
 
-    // 复制 HTML 和 JS 文件
-    // 检查是否存在旧的目录结构
+    // 复制 HTML 文件到对应目录
+    // 检查 popup 目录
     if (fs.existsSync(path.join(DIST_DIR, 'popup'))) {
-      copyDir(
-        path.join(DIST_DIR, 'popup'),
-        path.join(EXTENSION_DIR, 'popup')
-      );
-    }
+      if (!fs.existsSync(path.join(EXTENSION_DIR, 'popup'))) {
+        ensureDir(path.join(EXTENSION_DIR, 'popup'));
+      }
 
-    if (fs.existsSync(path.join(DIST_DIR, 'options'))) {
-      copyDir(
-        path.join(DIST_DIR, 'options'),
-        path.join(EXTENSION_DIR, 'options')
-      );
-    }
-
-    if (fs.existsSync(path.join(DIST_DIR, 'devtools'))) {
-      copyDir(
-        path.join(DIST_DIR, 'devtools'),
-        path.join(EXTENSION_DIR, 'devtools')
-      );
-    }
-
-    // 检查是否存在新的目录结构
-    if (fs.existsSync(path.join(DIST_DIR, 'assets', 'popup.js'))) {
-      ensureDir(path.join(EXTENSION_DIR, 'popup'));
-      copyFile(
-        path.join(DIST_DIR, 'assets', 'popup.js'),
-        path.join(EXTENSION_DIR, 'popup', 'index.js')
-      );
-
+      // 复制 HTML 文件
       if (fs.existsSync(path.join(DIST_DIR, 'popup', 'index.html'))) {
         copyFile(
           path.join(DIST_DIR, 'popup', 'index.html'),
@@ -220,13 +200,13 @@ function buildExtension() {
       }
     }
 
-    if (fs.existsSync(path.join(DIST_DIR, 'assets', 'options.js'))) {
-      ensureDir(path.join(EXTENSION_DIR, 'options'));
-      copyFile(
-        path.join(DIST_DIR, 'assets', 'options.js'),
-        path.join(EXTENSION_DIR, 'options', 'index.js')
-      );
+    // 检查 options 目录
+    if (fs.existsSync(path.join(DIST_DIR, 'options'))) {
+      if (!fs.existsSync(path.join(EXTENSION_DIR, 'options'))) {
+        ensureDir(path.join(EXTENSION_DIR, 'options'));
+      }
 
+      // 复制 HTML 文件
       if (fs.existsSync(path.join(DIST_DIR, 'options', 'index.html'))) {
         copyFile(
           path.join(DIST_DIR, 'options', 'index.html'),
@@ -235,13 +215,13 @@ function buildExtension() {
       }
     }
 
-    if (fs.existsSync(path.join(DIST_DIR, 'assets', 'devtools.js'))) {
-      ensureDir(path.join(EXTENSION_DIR, 'devtools'));
-      copyFile(
-        path.join(DIST_DIR, 'assets', 'devtools.js'),
-        path.join(EXTENSION_DIR, 'devtools', 'index.js')
-      );
+    // 检查 devtools 目录
+    if (fs.existsSync(path.join(DIST_DIR, 'devtools'))) {
+      if (!fs.existsSync(path.join(EXTENSION_DIR, 'devtools'))) {
+        ensureDir(path.join(EXTENSION_DIR, 'devtools'));
+      }
 
+      // 复制 HTML 文件
       if (fs.existsSync(path.join(DIST_DIR, 'devtools', 'index.html'))) {
         copyFile(
           path.join(DIST_DIR, 'devtools', 'index.html'),

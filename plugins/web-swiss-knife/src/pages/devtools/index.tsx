@@ -329,6 +329,7 @@ const App: React.FC = () => {
       );
     }
 
+    // 计算过滤后的条目
     const filteredEntries = searchText
       ? cacheEntries.filter(entry => entry.url.toLowerCase().includes(searchText.toLowerCase()))
       : cacheEntries;

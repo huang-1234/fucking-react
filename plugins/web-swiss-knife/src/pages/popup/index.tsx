@@ -6,6 +6,7 @@ import zhCN from 'antd/locale/zh_CN';
 import { MessageType, ModuleId, ScanResult } from '../../types';
 
 import './style.css';
+import { menuItems, tabItems, TabKey } from './tabs';
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -26,7 +27,7 @@ const App: React.FC = () => {
     total: 0, critical: 0, high: 0, medium: 0, low: 0, info: 0
   });
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('security');
+  const [activeTab, setActiveTab] = useState(TabKey.security);
   const [collapsed, setCollapsed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = theme.useToken();
@@ -142,20 +143,271 @@ const App: React.FC = () => {
   }, []);
 
   // 处理标签页切换
-  const handleTabChange = (key: string) => {
+  const handleTabChange = (key: TabKey) => {
     setActiveTab(key);
 
     switch (key) {
-      case 'security':
+      case TabKey.security:
         loadSecurityIssues();
         break;
-      case 'cache':
-        // TODO: 加载缓存数据
+      case TabKey.cache:
+        loadCacheData();
         break;
-      case 'performance':
-        // TODO: 加载性能数据
+      case TabKey.performance:
+        loadPerformanceData();
+        break;
+      case TabKey.settings:
+        loadSettings();
         break;
     }
+  };
+
+  // 加载缓存数据
+  const loadCacheData = (forceRefresh = false) => {
+    setCacheLoading(true);
+    setCacheError(null);
+
+    // 检查 chrome API 是否可用
+    if (!chrome || !chrome.runtime) {
+      setCacheError('Chrome API 不可用，请确保您在 Chrome 浏览器扩展中运行此页面');
+      setCacheLoading(false);
+      return;
+    }
+
+    // 获取当前标签页
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length === 0) {
+        setCacheError('无法获取当前标签页');
+        setCacheLoading(false);
+        return;
+      }
+
+      const currentTab = tabs[0];
+      const tabId = currentTab.id;
+
+      // 如果强制刷新，先请求扫描
+      if (forceRefresh) {
+        requestCacheScan(tabId);
+        return;
+      }
+
+      // 获取缓存数据
+      chrome.runtime.sendMessage({
+        type: MessageType.GET_CACHE_INFO,
+        module: ModuleId.CACHE,
+        payload: { tabId }
+      }, (response) => {
+        setCacheLoading(false);
+
+        if (response && response.status === 'success') {
+          const fetchedCache = response.data || [];
+          setCacheData(fetchedCache);
+
+          // 计算统计信息
+          const stats = {
+            total: fetchedCache.length,
+            size: fetchedCache.reduce((sum: number, item: any) => sum + (item.size || 0), 0),
+            jsSize: fetchedCache.filter((item: any) => item.type === 'javascript').reduce((sum: number, item: any) => sum + (item.size || 0), 0),
+            cssSize: fetchedCache.filter((item: any) => item.type === 'stylesheet').reduce((sum: number, item: any) => sum + (item.size || 0), 0),
+            imageSize: fetchedCache.filter((item: any) => item.type === 'image').reduce((sum: number, item: any) => sum + (item.size || 0), 0),
+            otherSize: fetchedCache.filter((item: any) => !['javascript', 'stylesheet', 'image'].includes(item.type)).reduce((sum: number, item: any) => sum + (item.size || 0), 0)
+          };
+          setCacheStats(stats);
+        } else {
+          setCacheError('获取缓存数据失败: ' + (response?.message || '未知错误'));
+        }
+      });
+    });
+  };
+
+  // 请求缓存扫描
+  const requestCacheScan = (tabId?: number) => {
+    setCacheLoading(true);
+    setCacheError(null);
+
+    const scanTab = (id: number) => {
+      chrome.tabs.sendMessage(id, {
+        type: MessageType.SCAN_PAGE,
+        module: ModuleId.CACHE
+      }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('[Popup] 发送消息失败:', chrome.runtime.lastError);
+
+          // 如果内容脚本未响应，尝试直接通过后台脚本扫描
+          chrome.runtime.sendMessage({
+            type: MessageType.SCAN_PAGE,
+            module: ModuleId.CACHE,
+            payload: { tabId: id }
+          }, () => {
+            // 扫描完成后重新加载缓存数据
+            setTimeout(() => loadCacheData(), 500);
+          });
+        } else {
+          // 扫描完成后重新加载缓存数据
+          setTimeout(() => loadCacheData(), 500);
+        }
+      });
+    };
+
+    if (tabId) {
+      scanTab(tabId);
+    } else {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length === 0) {
+          setCacheError('无法获取当前标签页');
+          setCacheLoading(false);
+          return;
+        }
+
+        scanTab(tabs[0].id!);
+      });
+    }
+  };
+
+  // 加载性能数据
+  const loadPerformanceData = (forceRefresh = false) => {
+    setPerfLoading(true);
+    setPerfError(null);
+
+    // 检查 chrome API 是否可用
+    if (!chrome || !chrome.runtime) {
+      setPerfError('Chrome API 不可用，请确保您在 Chrome 浏览器扩展中运行此页面');
+      setPerfLoading(false);
+      return;
+    }
+
+    // 获取当前标签页
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length === 0) {
+        setPerfError('无法获取当前标签页');
+        setPerfLoading(false);
+        return;
+      }
+
+      const currentTab = tabs[0];
+      const tabId = currentTab.id;
+
+      // 如果强制刷新，先请求扫描
+      if (forceRefresh) {
+        requestPerfScan(tabId);
+        return;
+      }
+
+      // 获取性能数据
+      chrome.runtime.sendMessage({
+        type: MessageType.GET_PERFORMANCE_DATA,
+        module: ModuleId.PERFORMANCE,
+        payload: { tabId }
+      }, (response) => {
+        setPerfLoading(false);
+
+        if (response && response.status === 'success') {
+          setPerformanceData(response.data || {});
+        } else {
+          setPerfError('获取性能数据失败: ' + (response?.message || '未知错误'));
+        }
+      });
+    });
+  };
+
+  // 请求性能扫描
+  const requestPerfScan = (tabId?: number) => {
+    setPerfLoading(true);
+    setPerfError(null);
+
+    const scanTab = (id: number) => {
+      chrome.tabs.sendMessage(id, {
+        type: MessageType.SCAN_PAGE,
+        module: ModuleId.PERFORMANCE
+      }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('[Popup] 发送消息失败:', chrome.runtime.lastError);
+
+          // 如果内容脚本未响应，尝试直接通过后台脚本扫描
+          chrome.runtime.sendMessage({
+            type: MessageType.SCAN_PAGE,
+            module: ModuleId.PERFORMANCE,
+            payload: { tabId: id }
+          }, () => {
+            // 扫描完成后重新加载性能数据
+            setTimeout(() => loadPerformanceData(), 500);
+          });
+        } else {
+          // 扫描完成后重新加载性能数据
+          setTimeout(() => loadPerformanceData(), 500);
+        }
+      });
+    };
+
+    if (tabId) {
+      scanTab(tabId);
+    } else {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length === 0) {
+          setPerfError('无法获取当前标签页');
+          setPerfLoading(false);
+          return;
+        }
+
+        scanTab(tabs[0].id!);
+      });
+    }
+  };
+
+  // 加载设置
+  const loadSettings = () => {
+    setSettingsLoading(true);
+    setSettingsError(null);
+
+    // 检查 chrome API 是否可用
+    if (!chrome || !chrome.storage) {
+      setSettingsError('Chrome API 不可用，请确保您在 Chrome 浏览器扩展中运行此页面');
+      setSettingsLoading(false);
+      return;
+    }
+
+    // 从存储中获取设置
+    chrome.storage.sync.get('settings', (result) => {
+      setSettingsLoading(false);
+      if (chrome.runtime.lastError) {
+        setSettingsError('获取设置失败: ' + chrome.runtime.lastError.message);
+        return;
+      }
+
+      if (result.settings) {
+        setSettingsData(result.settings);
+      }
+    });
+  };
+
+  // 保存设置
+  const saveSettings = (key: string, value: any) => {
+    const newSettings = { ...settingsData };
+
+    // 根据键路径设置值
+    const keys = key.split('.');
+    let current: any = newSettings;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      current = current[keys[i]];
+    }
+
+    current[keys[keys.length - 1]] = value;
+    setSettingsData(newSettings);
+
+    // 保存到存储
+    chrome.storage.sync.set({ settings: newSettings }, () => {
+      if (chrome.runtime.lastError) {
+        console.error('保存设置失败:', chrome.runtime.lastError);
+        return;
+      }
+
+      // 通知后台脚本设置已更新
+      chrome.runtime.sendMessage({
+        type: MessageType.SET_CONFIG,
+        payload: { settings: newSettings }
+      });
+    });
   };
 
   // 渲染安全问题列表
@@ -269,127 +521,27 @@ const App: React.FC = () => {
     );
   };
 
+  // 缓存可视化状态
+  const [cacheData, setCacheData] = useState<any[]>([]);
+  const [cacheLoading, setCacheLoading] = useState(true);
+  const [cacheError, setCacheError] = useState<string | null>(null);
+  const [cacheStats, setCacheStats] = useState({
+    total: 0,
+    size: 0,
+    jsSize: 0,
+    cssSize: 0,
+    imageSize: 0,
+    otherSize: 0
+  });
+
   // 渲染缓存可视化
   const renderCacheVisualization = () => {
-    const [cacheData, setCacheData] = useState<any[]>([]);
-    const [cacheLoading, setCacheLoading] = useState(true);
-    const [cacheError, setCacheError] = useState<string | null>(null);
-    const [cacheStats, setCacheStats] = useState({
-      total: 0,
-      size: 0,
-      jsSize: 0,
-      cssSize: 0,
-      imageSize: 0,
-      otherSize: 0
-    });
 
     useEffect(() => {
       if (activeTab === 'cache') {
         loadCacheData();
       }
     }, [activeTab]);
-
-    // 加载缓存数据
-    const loadCacheData = (forceRefresh = false) => {
-      setCacheLoading(true);
-      setCacheError(null);
-
-      // 检查 chrome API 是否可用
-      if (!chrome || !chrome.runtime) {
-        setCacheError('Chrome API 不可用，请确保您在 Chrome 浏览器扩展中运行此页面');
-        setCacheLoading(false);
-        return;
-      }
-
-      // 获取当前标签页
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length === 0) {
-          setCacheError('无法获取当前标签页');
-          setCacheLoading(false);
-          return;
-        }
-
-        const currentTab = tabs[0];
-        const tabId = currentTab.id;
-
-        // 如果强制刷新，先请求扫描
-        if (forceRefresh) {
-          requestCacheScan(tabId);
-          return;
-        }
-
-        // 获取缓存数据
-        chrome.runtime.sendMessage({
-          type: MessageType.GET_CACHE_INFO,
-          module: ModuleId.CACHE,
-          payload: { tabId }
-        }, (response) => {
-          setCacheLoading(false);
-
-          if (response && response.status === 'success') {
-            const fetchedCache = response.data || [];
-            setCacheData(fetchedCache);
-
-            // 计算统计信息
-            const stats = {
-              total: fetchedCache.length,
-              size: fetchedCache.reduce((sum: number, item: any) => sum + (item.size || 0), 0),
-              jsSize: fetchedCache.filter((item: any) => item.type === 'javascript').reduce((sum: number, item: any) => sum + (item.size || 0), 0),
-              cssSize: fetchedCache.filter((item: any) => item.type === 'stylesheet').reduce((sum: number, item: any) => sum + (item.size || 0), 0),
-              imageSize: fetchedCache.filter((item: any) => item.type === 'image').reduce((sum: number, item: any) => sum + (item.size || 0), 0),
-              otherSize: fetchedCache.filter((item: any) => !['javascript', 'stylesheet', 'image'].includes(item.type)).reduce((sum: number, item: any) => sum + (item.size || 0), 0)
-            };
-            setCacheStats(stats);
-          } else {
-            setCacheError('获取缓存数据失败: ' + (response?.message || '未知错误'));
-          }
-        });
-      });
-    };
-
-    // 请求缓存扫描
-    const requestCacheScan = (tabId?: number) => {
-      setCacheLoading(true);
-      setCacheError(null);
-
-      const scanTab = (id: number) => {
-        chrome.tabs.sendMessage(id, {
-          type: MessageType.SCAN_PAGE,
-          module: ModuleId.CACHE
-        }, (response) => {
-          if (chrome.runtime.lastError) {
-            console.error('[Popup] 发送消息失败:', chrome.runtime.lastError);
-
-            // 如果内容脚本未响应，尝试直接通过后台脚本扫描
-            chrome.runtime.sendMessage({
-              type: MessageType.SCAN_PAGE,
-              module: ModuleId.CACHE,
-              payload: { tabId: id }
-            }, () => {
-              // 扫描完成后重新加载缓存数据
-              setTimeout(() => loadCacheData(), 500);
-            });
-          } else {
-            // 扫描完成后重新加载缓存数据
-            setTimeout(() => loadCacheData(), 500);
-          }
-        });
-      };
-
-      if (tabId) {
-        scanTab(tabId);
-      } else {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          if (tabs.length === 0) {
-            setCacheError('无法获取当前标签页');
-            setCacheLoading(false);
-            return;
-          }
-
-          scanTab(tabs[0].id!);
-        });
-      }
-    };
 
     // 格式化文件大小
     const formatSize = (size: number) => {
@@ -533,107 +685,19 @@ const App: React.FC = () => {
     );
   };
 
+  // 性能监控状态
+  const [performanceData, setPerformanceData] = useState<any>(null);
+  const [perfLoading, setPerfLoading] = useState(true);
+  const [perfError, setPerfError] = useState<string | null>(null);
+
   // 渲染性能监控
   const renderPerformanceMonitoring = () => {
-    const [performanceData, setPerformanceData] = useState<any>(null);
-    const [perfLoading, setPerfLoading] = useState(true);
-    const [perfError, setPerfError] = useState<string | null>(null);
 
     useEffect(() => {
       if (activeTab === 'performance') {
         loadPerformanceData();
       }
     }, [activeTab]);
-
-    // 加载性能数据
-    const loadPerformanceData = (forceRefresh = false) => {
-      setPerfLoading(true);
-      setPerfError(null);
-
-      // 检查 chrome API 是否可用
-      if (!chrome || !chrome.runtime) {
-        setPerfError('Chrome API 不可用，请确保您在 Chrome 浏览器扩展中运行此页面');
-        setPerfLoading(false);
-        return;
-      }
-
-      // 获取当前标签页
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length === 0) {
-          setPerfError('无法获取当前标签页');
-          setPerfLoading(false);
-          return;
-        }
-
-        const currentTab = tabs[0];
-        const tabId = currentTab.id;
-
-        // 如果强制刷新，先请求扫描
-        if (forceRefresh) {
-          requestPerfScan(tabId);
-          return;
-        }
-
-        // 获取性能数据
-        chrome.runtime.sendMessage({
-          type: MessageType.GET_PERFORMANCE_DATA,
-          module: ModuleId.PERFORMANCE,
-          payload: { tabId }
-        }, (response) => {
-          setPerfLoading(false);
-
-          if (response && response.status === 'success') {
-            setPerformanceData(response.data || {});
-          } else {
-            setPerfError('获取性能数据失败: ' + (response?.message || '未知错误'));
-          }
-        });
-      });
-    };
-
-    // 请求性能扫描
-    const requestPerfScan = (tabId?: number) => {
-      setPerfLoading(true);
-      setPerfError(null);
-
-      const scanTab = (id: number) => {
-        chrome.tabs.sendMessage(id, {
-          type: MessageType.SCAN_PAGE,
-          module: ModuleId.PERFORMANCE
-        }, (response) => {
-          if (chrome.runtime.lastError) {
-            console.error('[Popup] 发送消息失败:', chrome.runtime.lastError);
-
-            // 如果内容脚本未响应，尝试直接通过后台脚本扫描
-            chrome.runtime.sendMessage({
-              type: MessageType.SCAN_PAGE,
-              module: ModuleId.PERFORMANCE,
-              payload: { tabId: id }
-            }, () => {
-              // 扫描完成后重新加载性能数据
-              setTimeout(() => loadPerformanceData(), 500);
-            });
-          } else {
-            // 扫描完成后重新加载性能数据
-            setTimeout(() => loadPerformanceData(), 500);
-          }
-        });
-      };
-
-      if (tabId) {
-        scanTab(tabId);
-      } else {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          if (tabs.length === 0) {
-            setPerfError('无法获取当前标签页');
-            setPerfLoading(false);
-            return;
-          }
-
-          scanTab(tabs[0].id!);
-        });
-      }
-    };
 
     // 获取性能指标评级
     const getMetricRating = (metric: string, value: number): { color: string; rating: string } => {
@@ -795,97 +859,43 @@ const App: React.FC = () => {
     );
   };
 
+  // 设置模块状态
+  const [settingsData, setSettingsData] = useState<any>({
+    security: {
+      enabled: true,
+      autoScan: true,
+      notifyLevel: 'high'
+    },
+    cache: {
+      enabled: true,
+      refreshInterval: 30
+    },
+    performance: {
+      enabled: true,
+      metrics: {
+        fcp: true,
+        lcp: true,
+        cls: true,
+        fid: true,
+        ttfb: true
+      }
+    },
+    general: {
+      theme: 'auto',
+      language: 'zh-CN'
+    }
+  });
+  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [settingsError, setSettingsError] = useState<string | null>(null);
+
   // 渲染设置模块
   const renderSettings = () => {
-    const [settingsData, setSettingsData] = useState<any>({
-      security: {
-        enabled: true,
-        autoScan: true,
-        notifyLevel: 'high'
-      },
-      cache: {
-        enabled: true,
-        refreshInterval: 30
-      },
-      performance: {
-        enabled: true,
-        metrics: {
-          fcp: true,
-          lcp: true,
-          cls: true,
-          fid: true,
-          ttfb: true
-        }
-      },
-      general: {
-        theme: 'auto',
-        language: 'zh-CN'
-      }
-    });
-    const [settingsLoading, setSettingsLoading] = useState(true);
-    const [settingsError, setSettingsError] = useState<string | null>(null);
 
     useEffect(() => {
       if (activeTab === 'settings') {
         loadSettings();
       }
     }, [activeTab]);
-
-    // 加载设置
-    const loadSettings = () => {
-      setSettingsLoading(true);
-      setSettingsError(null);
-
-      // 检查 chrome API 是否可用
-      if (!chrome || !chrome.storage) {
-        setSettingsError('Chrome API 不可用，请确保您在 Chrome 浏览器扩展中运行此页面');
-        setSettingsLoading(false);
-        return;
-      }
-
-      // 从存储中获取设置
-      chrome.storage.sync.get('settings', (result) => {
-        setSettingsLoading(false);
-        if (chrome.runtime.lastError) {
-          setSettingsError('获取设置失败: ' + chrome.runtime.lastError.message);
-          return;
-        }
-
-        if (result.settings) {
-          setSettingsData(result.settings);
-        }
-      });
-    };
-
-    // 保存设置
-    const saveSettings = (key: string, value: any) => {
-      const newSettings = { ...settingsData };
-
-      // 根据键路径设置值
-      const keys = key.split('.');
-      let current: any = newSettings;
-
-      for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
-      }
-
-      current[keys[keys.length - 1]] = value;
-      setSettingsData(newSettings);
-
-      // 保存到存储
-      chrome.storage.sync.set({ settings: newSettings }, () => {
-        if (chrome.runtime.lastError) {
-          console.error('保存设置失败:', chrome.runtime.lastError);
-          return;
-        }
-
-        // 通知后台脚本设置已更新
-        chrome.runtime.sendMessage({
-          type: MessageType.SET_CONFIG,
-          payload: { settings: newSettings }
-        });
-      });
-    };
 
     if (settingsLoading) {
       return <div style={{ textAlign: 'center', padding: '40px 0' }}><Spin size="large" /></div>;
@@ -1147,28 +1157,7 @@ const App: React.FC = () => {
             mode="inline"
             selectedKeys={[activeTab]}
             onClick={({ key }) => handleTabChange(key)}
-            items={[
-              {
-                key: 'security',
-                icon: <SecurityScanOutlined />,
-                label: '安全检测'
-              },
-              {
-                key: 'cache',
-                icon: <DatabaseOutlined />,
-                label: '缓存可视化'
-              },
-              {
-                key: 'performance',
-                icon: <DashboardOutlined />,
-                label: '性能监控'
-              },
-              {
-                key: 'settings',
-                icon: <SettingOutlined />,
-                label: '设置'
-              }
-            ]}
+            items={menuItems}
           />
         </Sider>
         <Layout>
@@ -1183,18 +1172,14 @@ const App: React.FC = () => {
               <Tabs
                 activeKey={activeTab}
                 onChange={handleTabChange}
-                items={[
-                  { key: 'security', label: '安全检测' },
-                  { key: 'cache', label: '缓存可视化' },
-                  { key: 'performance', label: '性能监控' },
-                  { key: 'settings', label: '设置' }
-                ]}
+                items={tabItems}
                 style={{ flex: 1 }}
               />
             )}
             {activeTab !== 'settings' && (
               <Button
                 type="primary"
+                size={'small'}
                 icon={<ReloadOutlined />}
                 onClick={() => {
                   if (activeTab === 'security') {
