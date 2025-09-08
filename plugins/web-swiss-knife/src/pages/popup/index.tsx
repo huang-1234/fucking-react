@@ -534,14 +534,21 @@ const App: React.FC = () => {
     otherSize: 0
   });
 
+  // 加载缓存数据的 effect
+  useEffect(() => {
+    if (activeTab === TabKey.cache) {
+      loadCacheData();
+    } else if (activeTab === TabKey.security) {
+      loadSecurityIssues();
+    } else if (activeTab === TabKey.performance) {
+      loadPerformanceData();
+    } else if (activeTab === TabKey.settings) {
+      loadSettings();
+    }
+  }, [activeTab]);
+
   // 渲染缓存可视化
   const renderCacheVisualization = () => {
-
-    useEffect(() => {
-      if (activeTab === 'cache') {
-        loadCacheData();
-      }
-    }, [activeTab]);
 
     // 格式化文件大小
     const formatSize = (size: number) => {
@@ -689,15 +696,8 @@ const App: React.FC = () => {
   const [performanceData, setPerformanceData] = useState<any>(null);
   const [perfLoading, setPerfLoading] = useState(true);
   const [perfError, setPerfError] = useState<string | null>(null);
-
   // 渲染性能监控
   const renderPerformanceMonitoring = () => {
-
-    useEffect(() => {
-      if (activeTab === 'performance') {
-        loadPerformanceData();
-      }
-    }, [activeTab]);
 
     // 获取性能指标评级
     const getMetricRating = (metric: string, value: number): { color: string; rating: string } => {
@@ -887,15 +887,8 @@ const App: React.FC = () => {
   });
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsError, setSettingsError] = useState<string | null>(null);
-
   // 渲染设置模块
   const renderSettings = () => {
-
-    useEffect(() => {
-      if (activeTab === 'settings') {
-        loadSettings();
-      }
-    }, [activeTab]);
 
     if (settingsLoading) {
       return <div style={{ textAlign: 'center', padding: '40px 0' }}><Spin size="large" /></div>;
@@ -1108,7 +1101,6 @@ const App: React.FC = () => {
 
   // 检查是否在扩展环境中运行
   const isExtensionEnvironment = typeof chrome !== 'undefined' && chrome.extension !== undefined;
-  console.log('isExtensionEnvironment', isExtensionEnvironment)
 
   // 如果不在扩展环境中，显示提示信息
   if (!isExtensionEnvironment) {
@@ -1156,7 +1148,7 @@ const App: React.FC = () => {
           <Menu
             mode="inline"
             selectedKeys={[activeTab]}
-            onClick={({ key }) => handleTabChange(key)}
+            onClick={({ key }) => handleTabChange(key as TabKey)}
             items={menuItems}
           />
         </Sider>
@@ -1171,18 +1163,18 @@ const App: React.FC = () => {
             {window.innerWidth < 600 && (
               <Tabs
                 activeKey={activeTab}
-                onChange={handleTabChange}
+                onChange={handleTabChange as (activeKey: string) => void}
                 items={tabItems}
                 style={{ flex: 1 }}
               />
             )}
-            {activeTab !== 'settings' && (
+            {activeTab !== TabKey.settings && (
               <Button
                 type="primary"
                 size={'small'}
                 icon={<ReloadOutlined />}
                 onClick={() => {
-                  if (activeTab === 'security') {
+                  if (activeTab === TabKey.security) {
                     loadSecurityIssues(true);
                   }
                 }}
@@ -1192,10 +1184,10 @@ const App: React.FC = () => {
             )}
           </Header>
           <Content style={{ margin: '16px', padding: '16px', background: token.colorBgContainer }}>
-            {activeTab === 'security' && renderSecurityIssues()}
-            {activeTab === 'cache' && renderCacheVisualization()}
-            {activeTab === 'performance' && renderPerformanceMonitoring()}
-            {activeTab === 'settings' && renderSettings()}
+            {activeTab === TabKey.security && renderSecurityIssues()}
+            {activeTab === TabKey.cache && renderCacheVisualization()}
+            {activeTab === TabKey.performance && renderPerformanceMonitoring()}
+            {activeTab === TabKey.settings && renderSettings()}
           </Content>
         </Layout>
       </Layout>

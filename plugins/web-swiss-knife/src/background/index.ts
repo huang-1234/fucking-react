@@ -67,7 +67,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
     case ModuleId.PERFORMANCE:
       // performanceMonitor.handleMessage(type, payload, sender, sendResponse);
-      sendResponse({ status: 'error', message: '性能模块尚未实现。' });
+      // sendResponse({ status: 'error', message: '性能模块尚未实现。' });
       break;
     default:
       // 处理一般消息
