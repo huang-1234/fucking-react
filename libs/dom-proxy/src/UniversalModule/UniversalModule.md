@@ -6,7 +6,18 @@ UniversalModule 是一个多格式 JS 模块加载器，旨在安全、高效地
 
 ### 1.1 核心架构层次
 
+```mermaid
+graph TD
+    A[Global] --> B[SelfUniversalModule]
+    A --> C[Systemjs]
+    B --> D[base]
+    B --> E[fetch-js]
+    B --> F[examples]
+    C --> G[base]
+    C --> H[ModuleDashboard]
 ```
+
+```md
 UniversalModule/
 ├── Global/            # 全局基础设施
 │   └── base.ts        # 沙箱环境、模块类型检测
