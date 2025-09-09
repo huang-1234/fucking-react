@@ -53,14 +53,14 @@ const concurrentRenderingPrinciples = {
     implementation: 'scheduler包实现优先级调度',
     benefits: '保持主线程响应，避免阻塞用户交互'
   },
-  
+
   // 可中断渲染
   interruptibleRendering: {
     mechanism: '渲染过程可以被高优先级任务中断',
     resumption: '中断后可以从中断点继续渲染',
     consistency: '确保UI状态的一致性'
-  },
-  
+  }
+
   // 优先级系统
   prioritySystem: {
     immediate: '同步优先级，如用户输入',
@@ -74,12 +74,12 @@ const ConcurrentRenderingDemo = () => {
   const [count, setCount] = useState(0);
   const [items, setItems] = useState([]);
   const [isPending, startTransition] = useTransition();
-  
+
   // 高优先级更新（立即响应）
   const handleCountClick = () => {
     setCount(c => c + 1);
   };
-  
+
   // 低优先级更新（可被中断）
   const handleItemsClick = () => {
     startTransition(() => {
@@ -91,26 +91,26 @@ const ConcurrentRenderingDemo = () => {
       setItems(newItems);
     });
   };
-  
+
   return (
     <div>
       <h3>并发渲染演示</h3>
-      
+
       {/* 高优先级UI - 立即响应 */}
       <div>
         <button onClick={handleCountClick}>
           计数: {count} (高优先级)
         </button>
       </div>
-      
+
       {/* 低优先级UI - 可被中断 */}
       <div>
         <button onClick={handleItemsClick} disabled={isPending}>
           {isPending ? '生成中...' : '生成10000个项目 (低优先级)'}
         </button>
-        
+
         {isPending && <div>正在后台渲染大量数据...</div>}
-        
+
         <div style={{ maxHeight: '200px', overflow: 'auto' }}>
           {items.map(item => (
             <div key={item.id} style={{ padding: '2px' }}>
@@ -137,60 +137,60 @@ const useTransitionExamples = {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [isPending, startTransition] = useTransition();
-    
+
     const handleSearch = (value) => {
       // 立即更新输入框（高优先级）
       setQuery(value);
-      
+
       // 延迟更新搜索结果（低优先级）
       startTransition(() => {
         const searchResults = performExpensiveSearch(value);
         setResults(searchResults);
       });
     };
-    
+
     return { query, results, isPending, handleSearch };
   },
-  
+
   // 2. 标签页切换优化
   tabSwitching: () => {
     const [activeTab, setActiveTab] = useState('tab1');
     const [tabContent, setTabContent] = useState('');
     const [isPending, startTransition] = useTransition();
-    
+
     const switchTab = (tabId) => {
       // 立即更新活动标签（高优先级）
       setActiveTab(tabId);
-      
+
       // 延迟加载标签内容（低优先级）
       startTransition(() => {
         const content = loadTabContent(tabId);
         setTabContent(content);
       });
     };
-    
+
     return { activeTab, tabContent, isPending, switchTab };
   },
-  
+
   // 3. 数据过滤优化
   dataFiltering: () => {
     const [filter, setFilter] = useState('');
     const [filteredData, setFilteredData] = useState([]);
     const [isPending, startTransition] = useTransition();
-    
+
     const applyFilter = (filterValue) => {
       // 立即更新过滤器UI（高优先级）
       setFilter(filterValue);
-      
+
       // 延迟过滤大量数据（低优先级）
       startTransition(() => {
-        const filtered = largeDataSet.filter(item => 
+        const filtered = largeDataSet.filter(item =>
           item.name.toLowerCase().includes(filterValue.toLowerCase())
         );
         setFilteredData(filtered);
       });
     };
-    
+
     return { filter, filteredData, isPending, applyFilter };
   }
 };
@@ -199,24 +199,24 @@ const useTransitionExamples = {
 const TransitionDemo = () => {
   const [activeDemo, setActiveDemo] = useState('search');
   const [isPending, startTransition] = useTransition();
-  
+
   const switchDemo = (demoType) => {
     startTransition(() => {
       setActiveDemo(demoType);
     });
   };
-  
+
   return (
     <div>
       <h3>useTransition应用场景</h3>
-      
+
       <div>
         {['search', 'tabs', 'filter'].map(demo => (
-          <button 
+          <button
             key={demo}
             onClick={() => switchDemo(demo)}
             disabled={isPending}
-            style={{ 
+            style={{
               margin: '5px',
               backgroundColor: activeDemo === demo ? '#1890ff' : '#f0f0f0'
             }}
@@ -225,9 +225,9 @@ const TransitionDemo = () => {
           </button>
         ))}
       </div>
-      
+
       {isPending && <div>切换中...</div>}
-      
+
       <div style={{ marginTop: '20px' }}>
         {activeDemo === 'search' && <SearchDemo />}
         {activeDemo === 'tabs' && <TabsDemo />}
@@ -252,7 +252,7 @@ const suspenseSSRArchitecture = {
     implementation: 'renderToPipeableStream API',
     benefits: '更快的首屏时间，更好的用户体验'
   },
-  
+
   // 选择性水合
   selectiveHydration: {
     concept: '优先水合用户交互的组件',
@@ -275,24 +275,24 @@ const createStreamingSSR = (App) => {
           res.setHeader('Content-Type', 'text/html');
           pipe(res);
         },
-        
+
         // 处理Shell错误
         onShellError(error) {
           res.statusCode = 500;
           res.send('<!doctype html><p>Loading...</p><script src="clientrender.js"></script>');
         },
-        
+
         // 处理所有错误
         onAllReady() {
           // 所有内容准备好
         },
-        
+
         onError(error) {
           console.error(error);
         }
       }
     );
-    
+
     // 超时处理
     setTimeout(abort, 10000);
   };
@@ -303,15 +303,15 @@ const SuspenseSSRDemo = () => {
   return (
     <div>
       <h1>立即显示的内容</h1>
-      
+
       <Suspense fallback={<div>加载评论中...</div>}>
         <Comments />
       </Suspense>
-      
+
       <Suspense fallback={<div>加载侧边栏中...</div>}>
         <Sidebar />
       </Suspense>
-      
+
       <footer>页脚内容</footer>
     </div>
   );
@@ -321,7 +321,7 @@ const SuspenseSSRDemo = () => {
 const Comments = () => {
   // 模拟异步数据获取
   const comments = use(fetchComments());
-  
+
   return (
     <div>
       {comments.map(comment => (
@@ -344,13 +344,13 @@ const automaticBatchingDemo = {
   react17Behavior: () => {
     const [count, setCount] = useState(0);
     const [flag, setFlag] = useState(false);
-    
+
     const handleClick = () => {
       // React 17中，这会触发两次渲染
       setCount(c => c + 1);
       setFlag(f => !f);
     };
-    
+
     // 手动批处理
     const handleClickBatched = () => {
       ReactDOM.unstable_batchedUpdates(() => {
@@ -359,18 +359,18 @@ const automaticBatchingDemo = {
       });
     };
   },
-  
+
   // React 18行为（自动批处理）
   react18Behavior: () => {
     const [count, setCount] = useState(0);
     const [flag, setFlag] = useState(false);
-    
+
     const handleClick = () => {
       // React 18自动批处理，只触发一次渲染
       setCount(c => c + 1);
       setFlag(f => !f);
     };
-    
+
     const handleAsyncClick = () => {
       // 即使在异步操作中也会自动批处理
       setTimeout(() => {
@@ -378,7 +378,7 @@ const automaticBatchingDemo = {
         setFlag(f => !f);
       }, 1000);
     };
-    
+
     const handlePromiseClick = () => {
       // Promise中的更新也会被批处理
       fetch('/api/data').then(() => {
@@ -394,19 +394,19 @@ const BatchingDemo = () => {
   const [count, setCount] = useState(0);
   const [flag, setFlag] = useState(false);
   const [renderCount, setRenderCount] = useState(0);
-  
+
   // 跟踪渲染次数
   useEffect(() => {
     setRenderCount(prev => prev + 1);
   });
-  
+
   const handleSyncUpdates = () => {
     console.log('同步更新开始');
     setCount(c => c + 1);
     setFlag(f => !f);
     console.log('同步更新结束');
   };
-  
+
   const handleAsyncUpdates = () => {
     console.log('异步更新开始');
     setTimeout(() => {
@@ -415,7 +415,7 @@ const BatchingDemo = () => {
       console.log('异步更新结束');
     }, 100);
   };
-  
+
   const handleFlushSync = () => {
     console.log('强制同步更新');
     flushSync(() => {
@@ -425,22 +425,22 @@ const BatchingDemo = () => {
       setFlag(f => !f);
     });
   };
-  
+
   return (
     <div>
       <h3>React 18自动批处理演示</h3>
       <p>Count: {count}</p>
       <p>Flag: {flag.toString()}</p>
       <p>渲染次数: {renderCount}</p>
-      
+
       <button onClick={handleSyncUpdates}>
         同步更新 (自动批处理)
       </button>
-      
+
       <button onClick={handleAsyncUpdates}>
         异步更新 (自动批处理)
       </button>
-      
+
       <button onClick={handleFlushSync}>
         强制同步更新 (不批处理)
       </button>
