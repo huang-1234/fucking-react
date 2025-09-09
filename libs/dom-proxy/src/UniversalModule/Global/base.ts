@@ -284,12 +284,10 @@ export const createSandbox = () => {
           // 直接设置exports
           target.exports = value;
           target.module.exports = value; // 同步module.exports
-        } else if (key === 'module.exports') {
-          // 直接设置module.exports
-          target.module.exports = value;
-          target.exports = value; // 同步exports
+          // 注意：key === 'module.exports' 的判断无效，已移除
+          // 如需直接设置 module.exports，请通过设置 module 属性
+          return true;
         }
-        return true;
       } else if (key === 'require' || key === 'define') {
         target[key as keyof typeof target] = value;
         return true;
