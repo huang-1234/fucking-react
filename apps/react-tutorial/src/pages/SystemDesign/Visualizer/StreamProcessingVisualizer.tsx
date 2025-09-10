@@ -86,7 +86,7 @@ const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
   return (
     <div className={className} style={{ ...style, width, height, overflow: 'auto' }}>
       <div style={{
-        padding: '20px',
+        padding: '12px',
         backgroundColor: '#f5f5f5',
         borderRadius: '8px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
