@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { type StreamProcessingVisualizerProps } from './types';
 import { visualizeStreamProcessing } from '../al/streaming-processor';
-
+import './StreamProcessingVisualizer.less'
 /**
  * 流处理可视化组件 - 打字机效果
  */
@@ -11,7 +11,7 @@ const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
   pauseAt,
   resumeAt,
   width = 1200,
-  height = 900,
+  height = 600,
   className,
   style
 }) => {
@@ -84,7 +84,7 @@ const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
   const progressPercentage = currentStep / visualData.timeline.length * 100;
 
   return (
-    <div className={className} style={{ ...style, width, height, overflow: 'auto' }}>
+    <div className={`${className} container`} style={{ ...style, width, height, overflow: 'auto' }}>
       <div style={{
         padding: '12px',
         backgroundColor: '#f5f5f5',
@@ -103,13 +103,8 @@ const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
         }}>
           <button
             style={{
-              padding: '8px 16px',
-              backgroundColor: isAnimating ? '#ccc' : '#4ecdc4',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
               cursor: isAnimating ? 'default' : 'pointer',
-              fontWeight: 'bold'
+              backgroundColor: isAnimating ? '#ccc' : '#4ecdc4',
             }}
             onClick={isAnimating ? undefined : startAnimation}
             disabled={isAnimating}
@@ -119,13 +114,8 @@ const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
 
           <button
             style={{
-              padding: '8px 16px',
               backgroundColor: '#ff6b6b',
               color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
             }}
             onClick={resetAnimation}
           >
@@ -223,7 +213,7 @@ const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
           fontFamily: 'monospace',
           fontSize: '16px',
           lineHeight: '1.6',
-          height: '500px',
+          height: '800px',
           overflow: 'auto',
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',

@@ -9,8 +9,8 @@ const FlattenPromisesVisualizer: React.FC<FlattenPromisesVisualizerProps> = ({
   inputArray,
   resolveTimings,
   parallel = true,
-  width = 800,
-  height = 400,
+  width = 1200,
+  height = 600,
   className,
   style
 }) => {

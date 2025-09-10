@@ -9,8 +9,8 @@ const WorkerProcessingVisualizer: React.FC<WorkerProcessingVisualizerProps> = ({
   dataSize,
   chunkSize,
   processingTime,
-  width = 800,
-  height = 500,
+  width = 1200,
+  height = 600,
   className,
   style
 }) => {

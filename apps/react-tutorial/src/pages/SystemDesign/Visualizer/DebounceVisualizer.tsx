@@ -10,8 +10,8 @@ const DebounceVisualizer: React.FC<DebounceVisualizerProps> = ({
   delay,
   // immediate参数用于支持立即执行模式
   immediate = false,
-  width = 800,
-  height = 200,
+  width = 1200,
+  height = 600,
   className,
   style
 }) => {

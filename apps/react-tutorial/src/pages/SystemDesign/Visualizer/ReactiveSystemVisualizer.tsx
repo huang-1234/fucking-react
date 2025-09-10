@@ -9,7 +9,7 @@ const ReactiveSystemVisualizer: React.FC<ReactiveSystemVisualizerProps> = ({
   state,
   effects,
   operations,
-  width = 800,
+  width = 1400,
   height = 600,
   className,
   style
