@@ -1,17 +1,17 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { type StreamProcessingVisualizerProps } from './types';
 import { visualizeStreamProcessing } from '../al/streaming-processor';
 
 /**
- * 流处理可视化组件
+ * 流处理可视化组件 - 打字机效果
  */
 const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
   chunks,
   chunkDelayMs,
   pauseAt,
   resumeAt,
-  width = 800,
-  height = 400,
+  width = 1200,
+  height = 900,
   className,
   style
 }) => {
@@ -20,218 +20,273 @@ const StreamProcessingVisualizer: React.FC<StreamProcessingVisualizerProps> = ({
     return visualizeStreamProcessing(chunks, chunkDelayMs, pauseAt, resumeAt);
   }, [chunks, chunkDelayMs, pauseAt, resumeAt]);
 
-  // 计算布局参数
-  const layoutParams = useMemo(() => {
-    return {
-      timeToX: (time: number) => (time / visualData.totalTime) * (width - 100),
-      itemHeight: 30,
-      itemGap: 15,
-      leftPadding: 50,
-      topPadding: 100
-    };
-  }, [visualData, width]);
+  // 打字机效果状态
+  const [currentStep, setCurrentStep] = useState(0);
+  const [typingText, setTypingText] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [typingSpeed, setTypingSpeed] = useState(1); // 打字速度倍率
+
+  // 打字机效果
+  useEffect(() => {
+    if (!isAnimating || currentStep >= visualData.timeline.length) {
+      return;
+    }
+
+    // 当前步骤的数据
+    const currentItem = visualData.timeline[currentStep];
+
+    // 检查是否是暂停或恢复事件
+    if (currentItem.event === 'pause') {
+      setIsPaused(true);
+    } else if (currentItem.event === 'resume') {
+      setIsPaused(false);
+    }
+
+    // 设置当前文本
+    setTypingText(currentItem.accumulated);
+
+    // 计算下一步的延迟
+    const nextDelay = currentStep < visualData.timeline.length - 1 ?
+      (visualData.timeline[currentStep + 1].time - currentItem.time) :
+      chunkDelayMs;
+
+    // 设置定时器进入下一步
+    const timer = setTimeout(() => {
+      setCurrentStep(prev => prev + 1);
+    }, (isPaused ? nextDelay * 2 : nextDelay) / typingSpeed); // 根据速度和暂停状态调整延迟
+
+    return () => clearTimeout(timer);
+  }, [currentStep, visualData.timeline, chunkDelayMs, isPaused, isAnimating, typingSpeed]);
+
+  // 开始动画
+  const startAnimation = () => {
+    setCurrentStep(0);
+    setTypingText('');
+    setIsPaused(false);
+    setIsAnimating(true);
+  };
+
+  // 重置动画
+  const resetAnimation = () => {
+    setCurrentStep(0);
+    setTypingText('');
+    setIsPaused(false);
+    setIsAnimating(false);
+  };
+
+  // 调整速度
+  const changeSpeed = (multiplier: number) => {
+    setTypingSpeed(multiplier);
+  };
+
+  // 计算进度百分比
+  const progressPercentage = currentStep / visualData.timeline.length * 100;
 
   return (
     <div className={className} style={{ ...style, width, height, overflow: 'auto' }}>
-      <svg width={width} height={Math.max(height, visualData.timeline.length * (layoutParams.itemHeight + layoutParams.itemGap) + 200)}>
-        {/* 标题 */}
-        <text
-          x={width / 2}
-          y="30"
-          textAnchor="middle"
-          fill="#333"
-          fontSize="18"
-          fontWeight="bold"
-        >
-          流式数据处理可视化
-        </text>
+      <div style={{
+        padding: '20px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>流式数据处理 - 打字机效果</h2>
 
-        {/* 参数信息 */}
-        <text x="20" y="60" fill="#333" fontSize="14">
-          数据块数: {visualData.chunks.length}
-        </text>
-        <text x="20" y="80" fill="#333" fontSize="14">
-          块延迟: {chunkDelayMs}ms
-        </text>
-        {pauseAt !== undefined && (
-          <text x={width - 200} y="60" fill="#333" fontSize="14">
-            暂停于块: {pauseAt + 1}
-          </text>
-        )}
-        {resumeAt !== undefined && (
-          <text x={width - 200} y="80" fill="#333" fontSize="14">
-            恢复于块: {resumeAt + 1}
-          </text>
-        )}
+        {/* 控制面板 */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '15px',
+          marginBottom: '20px'
+        }}>
+          <button
+            style={{
+              padding: '8px 16px',
+              backgroundColor: isAnimating ? '#ccc' : '#4ecdc4',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: isAnimating ? 'default' : 'pointer',
+              fontWeight: 'bold'
+            }}
+            onClick={isAnimating ? undefined : startAnimation}
+            disabled={isAnimating}
+          >
+            开始
+          </button>
 
-        {/* 时间轴 */}
-        <line
-          x1={layoutParams.leftPadding}
-          y1={layoutParams.topPadding}
-          x2={layoutParams.leftPadding + layoutParams.timeToX(visualData.totalTime)}
-          y2={layoutParams.topPadding}
-          stroke="#ccc"
-          strokeWidth="2"
-        />
+          <button
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#ff6b6b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+            onClick={resetAnimation}
+          >
+            重置
+          </button>
 
-        {/* 时间刻度 */}
-        {[0, 0.25, 0.5, 0.75, 1].map((percent) => {
-          const time = visualData.totalTime * percent;
-          const x = layoutParams.leftPadding + layoutParams.timeToX(time);
-          return (
-            <g key={`time-${percent}`}>
-              <line
-                x1={x}
-                y1={layoutParams.topPadding - 5}
-                x2={x}
-                y2={layoutParams.topPadding + 5}
-                stroke="#666"
-                strokeWidth="1"
-              />
-              <text
-                x={x}
-                y={layoutParams.topPadding - 10}
-                textAnchor="middle"
-                fill="#666"
-                fontSize="12"
+          <div style={{ marginLeft: '20px', display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginRight: '10px' }}>速度:</span>
+            {[0.5, 1, 2, 5].map(speed => (
+              <button
+                key={speed}
+                style={{
+                  padding: '5px 10px',
+                  backgroundColor: typingSpeed === speed ? '#3498db' : '#ddd',
+                  color: typingSpeed === speed ? 'white' : 'black',
+                  border: 'none',
+                  borderRadius: '4px',
+                  margin: '0 5px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => changeSpeed(speed)}
               >
-                {Math.round(time)}ms
-              </text>
-            </g>
-          );
-        })}
+                {speed}x
+              </button>
+            ))}
+          </div>
+        </div>
 
-        {/* 数据块流 */}
-        {visualData.timeline.map((item, index) => {
-          const y = layoutParams.topPadding + 30 + (layoutParams.itemHeight + layoutParams.itemGap) * index;
-          const x = layoutParams.leftPadding + layoutParams.timeToX(item.time);
-
-          // 确定块的颜色
-          let blockColor = '#4ecdc4';
-          if (item.event === 'pause') {
-            blockColor = '#ff6b6b';
-          } else if (item.event === 'resume') {
-            blockColor = '#1abc9c';
-          }
-
-          return (
-            <g key={`chunk-${index}`}>
-              {/* 块标签 */}
-              <text
-                x={layoutParams.leftPadding - 10}
-                y={y + layoutParams.itemHeight / 2}
-                textAnchor="end"
-                dominantBaseline="middle"
-                fill="#333"
-                fontSize="14"
-              >
-                块 {index + 1}
-              </text>
-
-              {/* 数据块 */}
-              <rect
-                x={x}
-                y={y}
-                width={Math.max(item.chunk.length * 8, 30)}
-                height={layoutParams.itemHeight}
-                rx="5"
-                ry="5"
-                fill={blockColor}
-                fillOpacity="0.7"
-                stroke={blockColor}
-                strokeWidth="1"
-              />
-
-              {/* 块内容 */}
-              <text
-                x={x + 10}
-                y={y + layoutParams.itemHeight / 2}
-                dominantBaseline="middle"
-                fill="white"
-                fontSize="12"
-              >
-                {item.chunk.length > 10 ? item.chunk.substring(0, 10) + '...' : item.chunk}
-              </text>
-
-              {/* 事件标记 */}
-              {item.event && (
-                <g>
-                  <circle
-                    cx={x}
-                    cy={y - 10}
-                    r="8"
-                    fill={item.event === 'pause' ? '#ff6b6b' : '#1abc9c'}
-                  />
-                  <text
-                    x={x}
-                    y={y - 10}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill="white"
-                    fontSize="10"
-                    fontWeight="bold"
-                  >
-                    {item.event === 'pause' ? 'P' : 'R'}
-                  </text>
-                  <text
-                    x={x}
-                    y={y - 25}
-                    textAnchor="middle"
-                    fill="#333"
-                    fontSize="12"
-                  >
-                    {item.event === 'pause' ? '暂停' : '恢复'}
-                  </text>
-                </g>
-              )}
-            </g>
-          );
-        })}
-
-        {/* 累积结果 */}
-        <text
-          x="20"
-          y={layoutParams.topPadding + 30 + (layoutParams.itemHeight + layoutParams.itemGap) * visualData.timeline.length + 20}
-          fill="#333"
-          fontSize="16"
-          fontWeight="bold"
-        >
-          累积结果:
-        </text>
-        <foreignObject
-          x="20"
-          y={layoutParams.topPadding + 30 + (layoutParams.itemHeight + layoutParams.itemGap) * visualData.timeline.length + 40}
-          width={width - 40}
-          height="80"
-        >
+        {/* 进度条 */}
+        <div style={{
+          width: '100%',
+          height: '8px',
+          backgroundColor: '#ddd',
+          borderRadius: '4px',
+          overflow: 'hidden',
+          marginBottom: '20px'
+        }}>
           <div
             style={{
-              padding: '10px',
-              border: '1px solid #ccc',
-              borderRadius: '5px',
-              backgroundColor: '#f9f9f9',
+              width: `${progressPercentage}%`,
               height: '100%',
-              overflow: 'auto',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word'
+              backgroundColor: isPaused ? '#ff6b6b' : '#4ecdc4',
+              transition: 'width 0.3s ease'
             }}
-          >
-            {visualData.timeline[visualData.timeline.length - 1]?.accumulated || ''}
+          />
+        </div>
+
+        {/* 状态信息 */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '20px',
+          color: '#666'
+        }}>
+          <div>
+            <span style={{ fontWeight: 'bold' }}>数据块数:</span> {visualData.chunks.length}
+            <span style={{ margin: '0 15px' }}>|</span>
+            <span style={{ fontWeight: 'bold' }}>块延迟:</span> {chunkDelayMs}ms
           </div>
-        </foreignObject>
+          <div>
+            {pauseAt !== undefined && (
+              <span style={{ marginRight: '15px' }}>
+                <span style={{ fontWeight: 'bold', color: '#ff6b6b' }}>暂停于块:</span> {pauseAt + 1}
+              </span>
+            )}
+            {resumeAt !== undefined && (
+              <span>
+                <span style={{ fontWeight: 'bold', color: '#1abc9c' }}>恢复于块:</span> {resumeAt + 1}
+              </span>
+            )}
+          </div>
+          {isAnimating && (
+            <div>
+              <span style={{ fontWeight: 'bold' }}>当前块:</span> {currentStep + 1} / {visualData.timeline.length}
+              {isPaused && (
+                <span style={{
+                  marginLeft: '10px',
+                  color: '#ff6b6b',
+                  fontWeight: 'bold',
+                  animation: 'blink 1s infinite'
+                }}>
+                  已暂停
+                </span>
+              )}
+            </div>
+          )}
+        </div>
 
-        {/* 图例 */}
-        <g transform={`translate(${width - 150}, 60)`}>
-          <rect x="0" y="0" width="20" height="15" rx="3" ry="3" fill="#4ecdc4" fillOpacity="0.7" />
-          <text x="30" y="12" fontSize="12" fill="#333">普通数据块</text>
+        {/* 打字机效果区域 */}
+        <div style={{
+          padding: '20px',
+          backgroundColor: '#2c3e50',
+          color: '#ecf0f1',
+          borderRadius: '8px',
+          fontFamily: 'monospace',
+          fontSize: '16px',
+          lineHeight: '1.6',
+          height: '500px',
+          overflow: 'auto',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)'
+        }}>
+          {isAnimating ? (
+            <div className="typing-text">
+              {typingText}
+              <span
+                style={{
+                  borderRight: '2px solid #ecf0f1',
+                  animation: 'blink-caret 0.75s step-end infinite'
+                }}
+              >
+                &nbsp;
+              </span>
+              <style>
+                {`
+                  @keyframes blink-caret {
+                    from, to { border-color: transparent }
+                    50% { border-color: #ecf0f1 }
+                  }
+                  @keyframes blink {
+                    from, to { opacity: 1 }
+                    50% { opacity: 0.5 }
+                  }
+                `}
+              </style>
+            </div>
+          ) : (
+            visualData.timeline[visualData.timeline.length - 1]?.accumulated || '点击"开始"按钮启动打字机效果'
+          )}
+        </div>
 
-          <rect x="0" y="25" width="20" height="15" rx="3" ry="3" fill="#ff6b6b" fillOpacity="0.7" />
-          <text x="30" y="37" fontSize="12" fill="#333">暂停点</text>
-
-          <rect x="0" y="50" width="20" height="15" rx="3" ry="3" fill="#1abc9c" fillOpacity="0.7" />
-          <text x="30" y="62" fontSize="12" fill="#333">恢复点</text>
-        </g>
-      </svg>
+        {/* 当前块信息 */}
+        {isAnimating && currentStep < visualData.timeline.length && (
+          <div style={{
+            marginTop: '20px',
+            padding: '15px',
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            border: '1px solid #ddd'
+          }}>
+            <h3 style={{ margin: '0 0 10px 0' }}>当前块信息</h3>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <div>
+                <span style={{ fontWeight: 'bold' }}>内容:</span> "{visualData.timeline[currentStep].chunk}"
+              </div>
+              <div>
+                <span style={{ fontWeight: 'bold' }}>时间点:</span> {visualData.timeline[currentStep].time}ms
+              </div>
+              {visualData.timeline[currentStep].event && (
+                <div style={{
+                  color: visualData.timeline[currentStep].event === 'pause' ? '#ff6b6b' : '#1abc9c',
+                  fontWeight: 'bold'
+                }}>
+                  事件: {visualData.timeline[currentStep].event === 'pause' ? '暂停' : '恢复'}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
