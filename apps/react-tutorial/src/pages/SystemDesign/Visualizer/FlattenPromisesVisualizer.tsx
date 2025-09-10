@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FlattenPromisesVisualizerProps } from './types';
+import { type FlattenPromisesVisualizerProps } from './types';
 import { visualizeFlattenPromises } from '../al/flatten-promises';
 
 /**
