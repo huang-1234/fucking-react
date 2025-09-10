@@ -3,7 +3,7 @@ packages:
   - 'libs/*'
   - 'libs/dynamic/*'
   # - 'apps/*'
-  # - 'servers/*'
+  - 'servers/*'
   # - 'plugins/*'
   # - 'website'
   # exclude packages that are inside test directories

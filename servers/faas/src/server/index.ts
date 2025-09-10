@@ -4,12 +4,17 @@
 import Koa from 'koa';
 import serve from 'koa-static';
 import bodyParser from 'koa-bodyparser';
+import Router from 'koa-router';
 import path from 'path';
 
 // 中间件
 import errorMiddleware from './middleware/error';
 import cacheMiddleware from './middleware/cache';
 import renderMiddleware from './middleware/render';
+import sseMiddleware from './middleware/sse';
+
+// 路由
+import sseRoutes from './routes/sse';
 
 // 配置
 export interface ServerConfig {
@@ -123,6 +128,16 @@ export function createServer(config: Partial<ServerConfig> = {}) {
     ttl: mergedConfig.cache.ttl
   }));
 
+  // SSE中间件
+  app.use(sseMiddleware({
+    heartbeatInterval: 30000,
+    retry: 3000
+  }));
+
+  // 注册SSE路由
+  app.use(sseRoutes.routes());
+  app.use(sseRoutes.allowedMethods());
+
   // SSR渲染中间件
   app.use(renderMiddleware({
     clientEntryPath: mergedConfig.clientEntry,
@@ -146,8 +161,21 @@ if (require.main === module) {
   const app = createServer();
   const PORT = defaultConfig.port;
 
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`服务器运行在 http://${defaultConfig.host}:${PORT}`);
     console.log(`环境: ${defaultConfig.env}`);
+    console.log(`SSE 接口可用于:`);
+    console.log(`- http://${defaultConfig.host}:${PORT}/api/events`);
+    console.log(`- http://${defaultConfig.host}:${PORT}/api/system-events`);
+    console.log(`- http://${defaultConfig.host}:${PORT}/api/random-events`);
+  });
+
+  // 优雅关闭
+  process.on('SIGINT', () => {
+    console.log('正在关闭服务器...');
+    server.close(() => {
+      console.log('服务器已关闭');
+      process.exit(0);
+    });
   });
 }
