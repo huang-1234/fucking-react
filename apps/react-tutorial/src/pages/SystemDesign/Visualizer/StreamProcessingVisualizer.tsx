@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StreamProcessingVisualizerProps } from './types';
+import { type StreamProcessingVisualizerProps } from './types';
 import { visualizeStreamProcessing } from '../al/streaming-processor';
 
 /**

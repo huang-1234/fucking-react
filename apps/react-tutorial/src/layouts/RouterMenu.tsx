@@ -46,6 +46,8 @@ const RenderMDPage = loadable(() => import('@/pages/RenderMD'));
 // lodash
 const LodashPage = loadable(() => import('@/pages/lodash'));
 
+// 系统设计
+const SystemDesignPage = loadable(() => import('@/pages/SystemDesign'));
 
 export interface IMenu {
   key: string;
@@ -170,5 +172,18 @@ export const menuItems: IMenu[] = [
     label: '性能优化',
     icon: <CodeOutlined />,
     component: PerformancePage
+  },
+  {
+    key: '/system-design',
+    label: '系统设计',
+    icon: <CodeOutlined />,
+    children: [
+      {
+        key: '/index',
+        label: '系统设计',
+        icon: <CodeOutlined />,
+        component: SystemDesignPage
+      },
+    ],
   },
 ];

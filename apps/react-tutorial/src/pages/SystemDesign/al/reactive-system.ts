@@ -28,20 +28,22 @@ export function track(target: object, key: string | symbol): void {
   // 获取目标对象的依赖Map
   let depsMap = targetMap.get(target);
   if (!depsMap) {
-    targetMap.set(target, (depsMap = new Map()));
+    depsMap = Map<string | symbol, Set<() => void>>();
+    targetMap.set(target, depsMap);
   }
 
   // 获取特定属性的依赖集合
   let dep = depsMap.get(key);
   if (!dep) {
     // 使用Immutable.js的Set
-    depsMap.set(key, (dep = Set<() => void>()));
+    dep = Set<() => void>();
+    depsMap = depsMap.set(key, dep);
   }
 
   // 添加当前effect到依赖集合
   if (!dep.has(activeEffect)) {
     dep = dep.add(activeEffect);
-    depsMap.set(key, dep);
+    depsMap = depsMap.set(key, dep);
   }
 }
 
@@ -57,7 +59,7 @@ export function trigger(target: object, key: string | symbol): void {
 
   // 获取特定属性的依赖集合
   const dep = depsMap.get(key);
-  if (dep) {
+  if (dep && dep.size > 0) {
     // 执行所有依赖的effect
     dep.forEach(effect => {
       // 如果effect正在执行中，避免无限循环

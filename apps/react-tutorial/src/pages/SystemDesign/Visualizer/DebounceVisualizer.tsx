@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { DebounceVisualizerProps } from './types';
+import { type DebounceVisualizerProps } from './types';
 import { visualizeDebounce } from '../al/debounce';
 
 /**
@@ -8,6 +8,7 @@ import { visualizeDebounce } from '../al/debounce';
 const DebounceVisualizer: React.FC<DebounceVisualizerProps> = ({
   callTimestamps,
   delay,
+  // immediate参数用于支持立即执行模式
   immediate = false,
   width = 800,
   height = 200,
