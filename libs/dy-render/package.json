@@ -1,0 +1,55 @@
+{
+  "name": "dy-render",
+  "version": "0.0.1",
+  "description": "前端动态渲染组件",
+  "main": "dist/dy-render.umd.js",
+  "module": "dist/dy-render.es.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "dy-render": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/build.js",
+    "build:main": "node scripts/build.js main",
+    "test": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build",
+    "prepublishOnly:test": "npm run build && npm run test:coverage && npm run test",
+    "publish:npm": "node ../../scripts/publish.js",
+    "publish:beta": "node ../../scripts/publish.js main:beta"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "resolutions": {
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.9",
+    "antd": "5.26.7"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "4.17.12",
+    "@types/node": "22.13.10",
+    "@types/react": "18.3.1",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "axios": "1.7.9",
+    "eslint": "9.30.1",
+    "lodash-es": "4.17.21",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "ts-node": "10.9.2",
+    "typescript": "5.8.3",
+    "vite": "6.0.0",
+    "vitest": "2.1.5"
+  },
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "axios": "1.7.9",
+    "chalk": "5.3.0",
+    "immer": "10.1.1"
+  }
+}
