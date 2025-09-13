@@ -1,29 +1,29 @@
 
-export interface styleMargin {
+export interface IStyleMargin {
   marginTop: string;
   marginBottom: string;
   marginLeft: string;
   marginRight: string;
 }
-export interface stylePadding {
+export interface IStylePadding {
   paddingTop: string;
   paddingBottom: string;
   paddingLeft: string;
   paddingRight: string;
 }
-export interface styleBorder {
+export interface IStyleBorder {
   borderTop: string;
   borderBottom: string;
   borderLeft: string;
   borderRight: string;
 }
-export interface styleBorderRadius {
+export interface IStyleBorderRadius {
   borderRadiusTopLeft: string;
   borderRadiusTopRight: string;
   borderRadiusBottomLeft: string;
   borderRadiusBottomRight: string;
 }
-export interface styleBackground {
+export interface IStyleBackground {
   backgroundColor: string;
   backgroundImage: string;
   backgroundSize: string;
@@ -31,17 +31,22 @@ export interface styleBackground {
   backgroundRepeat: string;
 }
 
-export interface styleBasic extends styleMargin, stylePadding, styleBorder, styleBorderRadius, styleBackground {
+export interface IStyleBasic
+  extends Partial<IStyleMargin>,
+  Partial<IStylePadding>,
+  Partial<IStyleBorder>,
+  Partial<IStyleBorderRadius>,
+  Partial<IStyleBackground> {
 
 }
-export interface styleFont {
+export interface IStyleFont {
   color: string;
   fontSize: string;
-  fontWeight: string;
-  fontStyle: string;
-  fontFamily: string;
+  fontWeight?: string;
+  fontStyle?: string;
+  fontFamily?: string;
 }
-export interface styleText {
+export interface IStyleText {
   textAlign: string;
   textDecoration: string;
   textTransform: string;
@@ -50,7 +55,7 @@ export interface styleText {
   wordSpacing: string;
   textShadow: string;
 }
-export interface DyStyleView extends styleBasic, styleFont {
+export interface DyStyleView extends IStyleBasic, IStyleFont {
   width: string;
   height: string;
   display: string;
@@ -60,34 +65,34 @@ export interface DyStyleView extends styleBasic, styleFont {
   flexWrap: string;
 }
 
-export interface DyStyleText extends styleBasic, styleFont, styleText {
+export interface DyStyleText extends IStyleBasic, IStyleFont, IStyleText {
 
 }
 
-export interface DyStyleButton extends styleBasic, styleFont, styleText {
+export interface DyStyleButton extends IStyleBasic, IStyleFont, IStyleText {
 
 }
 
-export interface DyStyleInput extends styleBasic, styleFont, styleText {
+export interface DyStyleInput extends IStyleBasic, IStyleFont, IStyleText {
 
 }
 
-export interface DyStyleImage extends styleBasic, styleFont, styleText {
+export interface DyStyleImage extends IStyleBasic, IStyleFont, IStyleText {
 
 }
 
-export interface DyStyleVideo extends styleBasic, styleFont, styleText {
+export interface DyStyleVideo extends IStyleBasic, IStyleFont, IStyleText {
 
 }
 
-export interface DyStyleAudio extends styleBasic, styleFont, styleText {
+export interface DyStyleAudio extends IStyleBasic, IStyleFont, IStyleText {
 
 }
 
-export interface DyStyleIframe extends styleBasic, styleFont, styleText {
+export interface DyStyleIframe extends IStyleBasic, IStyleFont, IStyleText {
 
 }
 
-export interface DyStyleEmbed extends styleBasic, styleFont, styleText {
+export interface DyStyleEmbed extends IStyleBasic, IStyleFont, IStyleText {
 
 }

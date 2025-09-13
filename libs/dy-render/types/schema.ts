@@ -1,5 +1,5 @@
 import { IDyDeps } from "./deps";
-import { styleBasic } from "./style";
+import { IStyleBasic } from "./style";
 
 
 export interface DyMaterial {
@@ -9,7 +9,7 @@ export interface DyMaterial {
   __version: string;
   __deps: IDyDeps[];
 }
-export type IBasicType = "string" | "number" | "boolean" | "null" | "undefined"
+export type IBasicType = string | number | boolean | null | undefined
 
 export type IArrayType = "array";
 export type IObjectType = "object";
@@ -40,22 +40,22 @@ export type DyMaterialPropsSchema = {
 } | {
   type: IRefType;
   value: DyMaterialPropsSchema;
-}
+} | IBasicType | IArrayType | IObjectType | IUnionType | IIntersectionType | IEnumType | IRefType;
 
 export interface DyMaterialProps {
+  /** 组件名称 */
+  __name: string;
   /** 组件封面 */
   __cover?: string;
   /** 组件标题 */
   __title?: string;
   /** 组件描述 */
   __description?: string;
-  /** 组件名称 */
-  __name: string;
   /** 组件名称中文 */
   __nameChn?: string;
   /** 组件属性 */
   __props?: DyMaterialPropsSchema;
-  __style?: styleBasic;
+  __style?: IStyleBasic;
   [key: string]: any;
 }
 /**
@@ -65,10 +65,16 @@ export interface DyMaterialProps {
 type DySchemaType = `${string}::${string}`;
 
 export interface DySchema<P extends DyMaterialProps = DyMaterialProps> {
+  /** 物料id */
   __id?: string;
+  /** 物料类型 */
   __type?: DySchemaType;
+  /** 物料名称 */
   __name: string;
+  /** 物料是否是容器 */
   __isContainer?: boolean;
+  /** 物料属性 */
   __props?: P;
+  /** 物料子组件 */
   __children?: DySchema<P>[];
 }
