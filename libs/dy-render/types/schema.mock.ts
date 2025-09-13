@@ -27,10 +27,24 @@ export const dy_view_schema: DySchema = {
   __children: [
     {
       __id: "1_1_1",
-      __name: "dy_text",
-      __type: "dycomponents::text",
+      __name: "header",
+      __type: "dycomponents::view",
       __props: {
-        __name: "dy_text",
+        __name: "header",
+        tabs: [
+          {
+            label: "Home",
+            value: "home",
+          },
+          {
+            label: "Profile",
+            value: "profile",
+          },
+          {
+            label: "Settings",
+            value: "settings",
+          },
+        ],
         __style: {
           paddingTop: "10px",
           paddingBottom: "10px",
@@ -40,8 +54,60 @@ export const dy_view_schema: DySchema = {
           borderBottom: "1px solid #000",
           borderLeft: "1px solid #000",
         },
-        __text: "Hello, world!",
+        __text: "Header",
       },
+    },
+    {
+      __id: "1_1_2",
+      __name: "content",
+      __type: "dycomponents::view",
+      __props: {
+        __name: "content",
+        __style: {
+        paddingTop: "10px",
+        paddingBottom: "10px",
+        paddingLeft: "10px",
+        paddingRight: "10px",
+      } as IStyleBasic,
+      },
+      __children: [
+        {
+          __id: "1_1_2_1",
+          __name: "list",
+          __type: "dycomponents::view",
+          __props: {
+            __name: "list",
+            __style: {
+              paddingTop: "10px",
+              paddingBottom: "10px",
+              paddingLeft: "10px",
+              paddingRight: "10px",
+            } as IStyleBasic,
+          },
+          __children: [
+            {
+              __id: "1_1_2_1_1",
+              __name: "list_item",
+              __type: "dycomponents::view",
+            },
+            {
+              __id: "1_1_2_1_2",
+              __name: "list_item",
+              __type: "dycomponents::view",
+            },
+            {
+              __id: "1_1_2_1_3",
+              __name: "list_item",
+              __type: "dycomponents::view",
+            },
+            {
+              __id: "1_1_2_1_4",
+              __name: "list_item",
+              __type: "dycomponents::view",
+            },
+          ],
+        },
+      ],
     }
   ],
 };
