@@ -1,0 +1,192 @@
+# 基础用法示例
+
+本示例展示了低代码渲染引擎的基础用法。
+
+## 示例代码
+
+```typescript
+import { createRenderer } from 'dy-render';
+import { dy_view_schema } from './schema.mock';
+
+async function basicUsageExample() {
+  // 创建容器
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+
+  // 创建渲染器
+  const renderer = await createRenderer({
+    enablePerformanceMonitor: true
+  });
+
+  // 渲染Schema
+  const renderInstance = await renderer.render(dy_view_schema, container);
+
+  // 获取上下文
+  const context = renderer.getContext();
+
+  // 设置数据
+  context.setData('user', { name: 'John', age: 30 });
+
+  // 注册事件处理器
+  context.registerEventHandler('onTabClick', (tab) => {
+    console.log('Tab clicked:', tab);
+  });
+
+  // 5秒后更新渲染
+  setTimeout(async () => {
+    // 修改Schema
+    const updatedSchema = {
+      ...dy_view_schema,
+      __props: {
+        ...dy_view_schema.__props,
+        __style: {
+          ...dy_view_schema.__props?.__style,
+          backgroundColor: '#ff0000'
+        }
+      }
+    };
+
+    // 更新渲染
+    await renderInstance.update(updatedSchema);
+
+    // 显示性能数据
+    const perfSvg = renderer.visualizePerformance();
+    const perfDiv = document.createElement('div');
+    perfDiv.innerHTML = perfSvg;
+    document.body.appendChild(perfDiv);
+  }, 5000);
+}
+```
+
+## 在线演示
+import { DemoBlock } from '../components';
+<DemoBlock>
+  <BasicUsageDemo />
+</DemoBlock>
+
+## Schema 示例
+
+以下是示例中使用的 Schema：
+
+```json
+{
+  "__id": "1_1",
+  "__name": "dy_view",
+  "__type": "dycomponents::view",
+  "__isContainer": true,
+  "__props": {
+    "__name": "dy_view",
+    "__style": {
+      "paddingTop": "10px",
+      "paddingBottom": "10px",
+      "paddingLeft": "10px",
+      "paddingRight": "10px",
+      "borderTop": "1px solid #000",
+      "borderBottom": "1px solid #000",
+      "borderLeft": "1px solid #000",
+      "borderRight": "1px solid #000",
+      "borderRadiusTopLeft": "10px",
+      "borderRadiusTopRight": "10px",
+      "borderRadiusBottomLeft": "10px",
+      "borderRadiusBottomRight": "10px",
+      "backgroundColor": "#000"
+    }
+  },
+  "__children": [
+    {
+      "__id": "1_1_1",
+      "__name": "header",
+      "__type": "dycomponents::view",
+      "__props": {
+        "__name": "header",
+        "tabs": [
+          {
+            "label": "Home",
+            "value": "home"
+          },
+          {
+            "label": "Profile",
+            "value": "profile"
+          },
+          {
+            "label": "Settings",
+            "value": "settings"
+          }
+        ],
+        "__style": {
+          "paddingTop": "10px",
+          "paddingBottom": "10px",
+          "paddingLeft": "10px",
+          "paddingRight": "10px",
+          "borderTop": "1px solid #000",
+          "borderBottom": "1px solid #000",
+          "borderLeft": "1px solid #000"
+        },
+        "__text": "Header"
+      }
+    },
+    {
+      "__id": "1_1_2",
+      "__name": "content",
+      "__type": "dycomponents::view",
+      "__props": {
+        "__name": "content",
+        "__style": {
+          "paddingTop": "10px",
+          "paddingBottom": "10px",
+          "paddingLeft": "10px",
+          "paddingRight": "10px"
+        }
+      },
+      "__children": [
+        {
+          "__id": "1_1_2_1",
+          "__name": "list",
+          "__type": "dycomponents::view",
+          "__props": {
+            "__name": "list",
+            "__style": {
+              "paddingTop": "10px",
+              "paddingBottom": "10px",
+              "paddingLeft": "10px",
+              "paddingRight": "10px"
+            }
+          },
+          "__children": [
+            {
+              "__id": "1_1_2_1_1",
+              "__name": "list_item",
+              "__type": "dycomponents::view"
+            },
+            {
+              "__id": "1_1_2_1_2",
+              "__name": "list_item",
+              "__type": "dycomponents::view"
+            },
+            {
+              "__id": "1_1_2_1_3",
+              "__name": "list_item",
+              "__type": "dycomponents::view"
+            },
+            {
+              "__id": "1_1_2_1_4",
+              "__name": "list_item",
+              "__type": "dycomponents::view"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## 核心步骤
+
+1. **创建渲染器**：使用 `createRenderer` 创建渲染器实例
+2. **渲染 Schema**：调用 `renderer.render` 方法渲染 Schema
+3. **获取上下文**：通过 `renderer.getContext()` 获取渲染上下文
+4. **设置数据**：使用 `context.setData` 设置数据
+5. **注册事件处理器**：使用 `context.registerEventHandler` 注册事件处理器
+6. **更新渲染**：调用 `renderInstance.update` 更新渲染
+7. **可视化性能数据**：使用 `renderer.visualizePerformance()` 获取性能数据可视化

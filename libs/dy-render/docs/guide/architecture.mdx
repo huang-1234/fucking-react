@@ -1,0 +1,207 @@
+# 架构设计
+
+低代码渲染引擎采用分层架构设计，实现渲染逻辑与业务逻辑的彻底分离。
+
+## 分层架构
+
+```
+┌──────────────────────────────┐
+│       可视化交互层           │  # 拖拽设计/实时预览
+├─────────────┬────────────────┤
+│  用户界面层 │   应用逻辑层    │  # 组件库/规则引擎
+├─────────────┼────────────────┤
+│  数据管理层 │   集成适配层    │  # 多源数据/API网关
+├─────────────┴────────────────┤
+│      云原生基础设施层        │  # 容器化/DevOps
+└──────────────────────────────┘
+```
+
+## 核心模块
+
+### 渲染核心引擎（RendererCore）
+
+负责协调组件映射、Schema解析和样式应用，提供渲染、更新和销毁等主要功能。
+
+```typescript
+class RendererCore {
+  private componentMapper: ComponentMapper;
+  private schemaParser: SchemaParser;
+  private styleApplier: StyleApplier;
+
+  async render(schema: DySchema, container: HTMLElement): Promise<IRenderInstance> {
+    // 解析Schema为渲染节点
+    const renderTree = this.schemaParser.parse(schema);
+
+    // 渲染节点树
+    const rootElement = await this.renderNode(renderTree, container);
+
+    // 返回渲染实例
+    return {
+      container,
+      update: async (newSchema) => { /* ... */ },
+      destroy: () => { /* ... */ }
+    };
+  }
+}
+```
+
+### 组件映射器（ComponentMapper）
+
+管理组件的注册、获取和动态加载，支持命名空间格式的组件名称。
+
+```typescript
+class ComponentMapper {
+  private componentMap = new Map<string, any>();
+
+  registerComponent(name: string, component: any): void {
+    this.componentMap.set(name, component);
+  }
+
+  getComponent(name: string): any {
+    return this.componentMap.get(name);
+  }
+
+  async loadComponent(name: string): Promise<any> {
+    // 动态加载组件
+    const module = await import(`./components/${name}`);
+    return module.default;
+  }
+}
+```
+
+### Schema解析器（SchemaParser）
+
+将Schema协议转换为渲染节点，处理组件属性和子节点。
+
+```typescript
+class SchemaParser {
+  parse(schema: DySchema): IRenderNode {
+    return this.parseNode(schema);
+  }
+
+  private parseNode(schema: DySchema): IRenderNode {
+    // 提取组件名称
+    const componentName = this.extractComponentName(schema.__type || '');
+
+    // 构建渲染节点
+    return {
+      componentName: componentName || schema.__name,
+      props: this.parseProps(schema.__props || {}),
+      children: this.parseChildren(schema.__children || [])
+    };
+  }
+}
+```
+
+### 样式应用工具（StyleApplier）
+
+处理和应用组件样式，支持基础样式、字体样式和文本样式。
+
+```typescript
+class StyleApplier {
+  applyStyles(element: HTMLElement, style?: IStyleBasic): void {
+    if (!style) return;
+
+    // 应用基础样式
+    this.applyBasicStyles(element, style);
+
+    // 应用字体样式
+    if (this.hasStyleFont(style)) {
+      this.applyFontStyles(element, style);
+    }
+
+    // 应用文本样式
+    if (this.hasStyleText(style)) {
+      this.applyTextStyles(element, style);
+    }
+  }
+}
+```
+
+### 渲染上下文（RenderContext）
+
+管理渲染过程中的状态和环境，提供数据模型、工具函数和事件处理。
+
+```typescript
+class RenderContext {
+  private dataModel: Record<string, any> = {};
+  private eventHandlers: Map<string, Function> = new Map();
+
+  getData(path: string, defaultValue?: any): any {
+    // 获取数据
+    return this.getNestedValue(this.dataModel, path) ?? defaultValue;
+  }
+
+  setData(path: string, value: any): void {
+    // 设置数据
+    this.dataModel = produce(this.dataModel, (draft) => {
+      this.setNestedValue(draft, path, value);
+    });
+  }
+
+  registerEventHandler(eventName: string, handler: Function): void {
+    this.eventHandlers.set(eventName, handler);
+  }
+
+  triggerEvent(eventName: string, ...args: any[]): any {
+    const handler = this.eventHandlers.get(eventName);
+    if (handler) {
+      return handler(...args);
+    }
+  }
+}
+```
+
+### 沙箱渲染器（SandboxRenderer）
+
+提供隔离的渲染环境，防止恶意代码执行。
+
+```typescript
+class SandboxRenderer {
+  private iframe: HTMLIFrameElement;
+
+  constructor() {
+    // 创建隐藏的iframe
+    this.iframe = document.createElement('iframe');
+    this.iframe.style.display = 'none';
+    this.iframe.sandbox.add('allow-scripts');
+    document.body.appendChild(this.iframe);
+  }
+
+  async render(schema: DySchema, container: HTMLElement): Promise<IRenderInstance> {
+    // 在iframe中渲染Schema
+    const doc = this.iframe.contentDocument!;
+    const rootElement = this.renderNode(schema, doc.body);
+
+    // 克隆节点到主文档
+    container.innerHTML = '';
+    const clonedNode = document.importNode(rootElement, true);
+    container.appendChild(clonedNode);
+
+    // 返回渲染实例
+    return { /* ... */ };
+  }
+}
+```
+
+## 数据流
+
+低代码渲染引擎采用单向数据流模式，数据流向如下：
+
+1. Schema协议定义UI结构和初始状态
+2. 渲染引擎解析Schema并创建渲染节点树
+3. 渲染节点树转换为DOM元素
+4. 用户交互触发事件
+5. 事件处理器更新数据模型
+6. 数据模型变化触发UI更新
+7. 渲染引擎重新渲染变化的部分
+
+## 扩展机制
+
+低代码渲染引擎提供多种扩展机制：
+
+1. **自定义组件**：通过组件映射器注册自定义组件
+2. **自定义工具函数**：在渲染上下文中注册自定义工具函数
+3. **自定义事件处理**：注册自定义事件处理器
+4. **自定义样式处理**：扩展样式应用工具
+5. **自定义渲染策略**：实现自定义渲染策略

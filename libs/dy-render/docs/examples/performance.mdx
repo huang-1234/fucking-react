@@ -1,0 +1,276 @@
+# 性能监控可视化演示
+
+本示例展示了如何使用性能监控工具跟踪和可视化渲染性能。
+
+## 性能监控简介
+
+低代码渲染引擎内置了性能监控工具，可以跟踪渲染过程中的性能指标，包括渲染时间、渲染次数、慢渲染等，并提供可视化展示。
+
+## 示例代码
+
+import { DemoBlock } from '../components';
+```typescript
+import { createRenderer } from 'dy-render';
+import { dy_view_schema } from './schema.mock';
+
+async function performanceMonitorExample() {
+  // 创建容器
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+
+  // 创建渲染器（启用性能监控）
+  const renderer = await createRenderer({
+    enablePerformanceMonitor: true
+  });
+
+  // 渲染Schema
+  const renderInstance = await renderer.render(dy_view_schema, container);
+
+  // 获取性能监控器
+  const performanceMonitor = renderer.getPerformanceMonitor();
+
+  // 进行多次渲染
+  for (let i = 0; i < 10; i++) {
+    // 修改Schema
+    const updatedSchema = {
+      ...dy_view_schema,
+      __props: {
+        ...dy_view_schema.__props,
+        __style: {
+          ...dy_view_schema.__props?.__style,
+          backgroundColor: `hsl(${i * 36}, 100%, 50%)`
+        }
+      }
+    };
+
+    // 更新渲染
+    await renderInstance.update(updatedSchema);
+
+    // 等待一段时间
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+
+  // 显示性能数据
+  if (performanceMonitor) {
+    // 获取性能指标
+    const metrics = performanceMonitor.getMetrics();
+    console.log('Performance metrics:', metrics);
+
+    // 获取慢渲染
+    const slowRenders = performanceMonitor.getSlowRenders(100);
+    console.log('Slow renders:', slowRenders);
+
+    // 获取平均渲染时间
+    const avgTime = performanceMonitor.getAverageRenderTime();
+    console.log('Average render time:', avgTime, 'ms');
+
+    // 获取最慢渲染
+    const slowest = performanceMonitor.getSlowestRender();
+    console.log('Slowest render:', slowest);
+
+    // 生成性能报告
+    const report = performanceMonitor.generateReport();
+    console.log(report);
+
+    // 可视化性能数据
+    const perfSvg = performanceMonitor.visualize();
+    const perfDiv = document.createElement('div');
+    perfDiv.innerHTML = perfSvg;
+    document.body.appendChild(perfDiv);
+  }
+}
+```
+
+## 在线演示
+
+<DemoBlock>
+  <PerformanceDemo />
+</DemoBlock>
+
+## 性能监控器实现
+
+```typescript
+class RenderPerformanceMonitor {
+  private metrics: IRenderMetric[] = [];
+  private maxMetricsCount = 100; // 最大记录数量
+
+  /**
+   * 跟踪渲染开始
+   * @param schemaId Schema ID
+   */
+  trackRenderStart(schemaId: string): void {
+    if (typeof performance === 'undefined') return;
+
+    performance.mark(`${schemaId}-start`);
+  }
+
+  /**
+   * 跟踪渲染结束
+   * @param schemaId Schema ID
+   */
+  trackRenderEnd(schemaId: string): void {
+    if (typeof performance === 'undefined') return;
+
+    performance.mark(`${schemaId}-end`);
+
+    try {
+      // 创建性能测量
+      performance.measure(schemaId, `${schemaId}-start`, `${schemaId}-end`);
+
+      // 获取测量结果
+      const measures = performance.getEntriesByName(schemaId, 'measure');
+
+      if (measures.length > 0) {
+        const measure = measures[0];
+
+        // 记录指标
+        this.metrics.push({
+          schemaId,
+          duration: measure.duration,
+          timestamp: Date.now()
+        });
+
+        // 限制指标数量
+        if (this.metrics.length > this.maxMetricsCount) {
+          this.metrics.shift();
+        }
+
+        // 清理标记和测量
+        performance.clearMarks(`${schemaId}-start`);
+        performance.clearMarks(`${schemaId}-end`);
+        performance.clearMeasures(schemaId);
+      }
+    } catch (error) {
+      console.error('Failed to measure render performance', error);
+    }
+  }
+
+  /**
+   * 获取所有渲染指标
+   * @returns 渲染指标数组
+   */
+  getMetrics(): IRenderMetric[] {
+    return [...this.metrics];
+  }
+
+  /**
+   * 获取慢渲染指标
+   * @param threshold 阈值（毫秒）
+   * @returns 慢渲染指标数组
+   */
+  getSlowRenders(threshold = 100): IRenderMetric[] {
+    return this.metrics.filter(m => m.duration > threshold);
+  }
+
+  /**
+   * 获取平均渲染时间
+   * @returns 平均渲染时间（毫秒）
+   */
+  getAverageRenderTime(): number {
+    if (this.metrics.length === 0) return 0;
+
+    const sum = this.metrics.reduce((acc, m) => acc + m.duration, 0);
+    return sum / this.metrics.length;
+  }
+
+  /**
+   * 获取最慢渲染
+   * @returns 最慢渲染指标
+   */
+  getSlowestRender(): IRenderMetric | null {
+    if (this.metrics.length === 0) return null;
+
+    return this.metrics.reduce((slowest, current) => {
+      return current.duration > slowest.duration ? current : slowest;
+    }, this.metrics[0]);
+  }
+
+  /**
+   * 生成性能可视化数据
+   * @returns SVG字符串
+   */
+  visualize(): string {
+    if (this.metrics.length === 0) {
+      return '<svg width="400" height="100" xmlns="http://www.w3.org/2000/svg"><text x="10" y="50" fill="gray">No performance data available</text></svg>';
+    }
+
+    // 图表尺寸
+    const width = 400;
+    const height = 200;
+    const padding = 40;
+
+    // 数据范围
+    const maxDuration = Math.max(...this.metrics.map(m => m.duration));
+    const chartWidth = width - padding * 2;
+    const chartHeight = height - padding * 2;
+
+    // 生成柱状图数据
+    const barWidth = Math.max(2, chartWidth / this.metrics.length - 2);
+    const bars = this.metrics.map((metric, index) => {
+      const x = padding + index * (chartWidth / this.metrics.length);
+      const barHeight = (metric.duration / maxDuration) * chartHeight;
+      const y = height - padding - barHeight;
+
+      return `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${metric.duration > 100 ? '#ff6b6b' : '#4dabf7'}" />`;
+    }).join('');
+
+    // 坐标轴
+    const xAxis = `<line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="black" />`;
+    const yAxis = `<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="black" />`;
+
+    // 标签
+    const xLabel = `<text x="${width / 2}" y="${height - 10}" text-anchor="middle">Render Index</text>`;
+    const yLabel = `<text x="10" y="${height / 2}" text-anchor="middle" transform="rotate(-90, 10, ${height / 2})">Duration (ms)</text>`;
+
+    // 标题
+    const title = `<text x="${width / 2}" y="20" text-anchor="middle" font-weight="bold">Render Performance</text>`;
+
+    // 组合SVG
+    return `
+<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+  ${title}
+  ${bars}
+  ${xAxis}
+  ${yAxis}
+  ${xLabel}
+  ${yLabel}
+</svg>
+    `;
+  }
+}
+```
+
+## 性能指标
+
+性能监控工具跟踪以下指标：
+
+1. **渲染时间**：每次渲染的耗时（毫秒）
+2. **渲染次数**：总共进行了多少次渲染
+3. **慢渲染**：超过阈值（默认100ms）的渲染
+4. **平均渲染时间**：所有渲染的平均耗时
+5. **最慢渲染**：耗时最长的一次渲染
+
+## 可视化图表
+
+性能监控工具提供了可视化图表，以柱状图的形式展示渲染时间：
+
+- **蓝色柱**：正常渲染（<100ms）
+- **红色柱**：慢渲染（>100ms）
+- **X轴**：渲染索引
+- **Y轴**：渲染时间（毫秒）
+
+## 使用场景
+
+1. **性能优化**：识别和优化慢渲染
+2. **性能监控**：监控渲染性能变化趋势
+3. **性能测试**：测试不同Schema的渲染性能
+4. **性能报告**：生成性能报告
+5. **性能可视化**：可视化展示性能数据
+
+## 最佳实践
+
+1. **设置合理的阈值**：根据应用需求设置慢渲染阈值
+2. **定期清理指标**：避免存储过多历史数据
+3. **关注趋势变化**：关注性能随时间的变化趋势
+4. **识别性能瓶颈**：分析慢渲染的原因
+5. **持续优化**：根据性能数据持续优化渲染性能

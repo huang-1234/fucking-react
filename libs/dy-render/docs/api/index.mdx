@@ -1,0 +1,210 @@
+# 核心 API
+
+本文档提供低代码渲染引擎的核心 API 参考。
+
+## createRenderer
+
+创建渲染器实例。
+
+```typescript
+async function createRenderer(options?: IRenderOptions): Promise<{
+  render: (schema: DySchema, container: HTMLElement) => Promise<IRenderInstance>;
+  loadAssets: (assets: IAssetsPackage) => Promise<void>;
+  getContext: () => RenderContext;
+  getPerformanceMonitor: () => RenderPerformanceMonitor | undefined;
+  visualizePerformance: () => string;
+}>
+```
+
+### 参数
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| options | IRenderOptions | 否 | 渲染选项 |
+
+### 返回值
+
+返回一个包含以下方法的对象：
+
+- **render**：渲染 Schema
+- **loadAssets**：加载资源
+- **getContext**：获取渲染上下文
+- **getPerformanceMonitor**：获取性能监控器
+- **visualizePerformance**：可视化性能数据
+
+### 示例
+
+```typescript
+import { createRenderer } from 'dy-render';
+
+// 创建渲染器
+const renderer = await createRenderer({
+  enablePerformanceMonitor: true,
+  enableSandbox: false,
+  customComponentMap: {
+    'custom:button': CustomButton
+  }
+});
+
+// 渲染Schema
+const container = document.getElementById('app');
+const instance = await renderer.render(schema, container);
+```
+
+## IRenderOptions
+
+渲染选项接口。
+
+```typescript
+interface IRenderOptions {
+  /** 是否启用沙箱模式 */
+  enableSandbox?: boolean;
+  /** 是否启用性能监控 */
+  enablePerformanceMonitor?: boolean;
+  /** 自定义组件映射 */
+  customComponentMap?: Record<string, any>;
+  /** 自定义工具函数 */
+  customUtils?: Record<string, Function>;
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| enableSandbox | boolean | 否 | 是否启用沙箱模式 |
+| enablePerformanceMonitor | boolean | 否 | 是否启用性能监控 |
+| customComponentMap | Record<string, any> | 否 | 自定义组件映射 |
+| customUtils | Record<string, Function> | 否 | 自定义工具函数 |
+
+## IRenderInstance
+
+渲染实例接口。
+
+```typescript
+interface IRenderInstance {
+  /** 容器元素 */
+  container: HTMLElement;
+  /** 更新渲染 */
+  update: (schema: DySchema) => Promise<void>;
+  /** 销毁渲染 */
+  destroy: () => void;
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 描述 |
+| --- | --- | --- |
+| container | HTMLElement | 容器元素 |
+| update | (schema: DySchema) => Promise<void> | 更新渲染方法 |
+| destroy | () => void | 销毁渲染方法 |
+
+### 示例
+
+```typescript
+// 更新渲染
+await instance.update(newSchema);
+
+// 销毁渲染
+instance.destroy();
+```
+
+## IAssetsPackage
+
+资源包接口。
+
+```typescript
+interface IAssetsPackage {
+  /** 组件映射 */
+  components: Record<string, any>;
+  /** 工具函数 */
+  utils?: Record<string, Function>;
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| components | Record<string, any> | 是 | 组件映射 |
+| utils | Record<string, Function> | 否 | 工具函数 |
+
+### 示例
+
+```typescript
+// 加载资源
+await renderer.loadAssets({
+  components: {
+    'view': ViewComponent,
+    'text': TextComponent,
+    'button': ButtonComponent
+  },
+  utils: {
+    formatDate: (date) => {
+      return new Date(date).toLocaleDateString();
+    },
+    formatNumber: (num) => {
+      return num.toLocaleString();
+    }
+  }
+});
+```
+
+## DySchema
+
+Schema 协议接口。
+
+```typescript
+interface DySchema<P extends DyMaterialProps = DyMaterialProps> {
+  /** 物料id */
+  __id?: string;
+  /** 物料类型 */
+  __type?: DySchemaType;
+  /** 物料名称 */
+  __name: string;
+  /** 物料是否是容器 */
+  __isContainer?: boolean;
+  /** 物料属性 */
+  __props?: P;
+  /** 物料子组件 */
+  __children?: DySchema<P>[];
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| __id | string | 否 | 物料ID |
+| __type | DySchemaType | 否 | 物料类型 |
+| __name | string | 是 | 物料名称 |
+| __isContainer | boolean | 否 | 物料是否是容器 |
+| __props | P | 否 | 物料属性 |
+| __children | DySchema<P>[] | 否 | 物料子组件 |
+
+### 示例
+
+```typescript
+const schema: DySchema = {
+  __id: "root",
+  __name: "page",
+  __type: "dycomponents::view",
+  __props: {
+    __style: {
+      backgroundColor: "#ffffff",
+      padding: "20px"
+    }
+  },
+  __children: [
+    {
+      __id: "title",
+      __name: "title",
+      __type: "dycomponents::text",
+      __props: {
+        __text: "Hello, DyRender!"
+      }
+    }
+  ]
+};
+```

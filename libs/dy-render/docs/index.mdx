@@ -1,0 +1,38 @@
+# 低代码渲染引擎
+
+基于协议驱动的低代码渲染引擎，提供高性能、可扩展的渲染能力。
+
+## 特性
+
+- **协议驱动**：基于标准化Schema协议定义应用的结构、行为和数据流
+- **组件动态加载**：支持组件的按需加载和注册
+- **样式隔离**：提供样式隔离机制，避免样式冲突
+- **沙箱环境**：安全的沙箱渲染环境，防止恶意代码执行
+- **性能监控**：内置性能监控工具，支持可视化性能数据
+- **React集成**：提供React组件封装，方便在React应用中使用
+
+## 快速开始
+
+```bash
+# 安装依赖
+npm install dy-render
+
+# 使用渲染引擎
+import { createRenderer } from 'dy-render';
+import schema from './schema.json';
+
+// 创建渲染器
+const renderer = await createRenderer();
+
+// 渲染Schema
+const container = document.getElementById('app');
+const instance = await renderer.render(schema, container);
+```
+
+## 示例
+
+查看[示例](/examples/)了解更多用法。
+
+## API参考
+
+查看[API参考](/api/)了解详细的API文档。

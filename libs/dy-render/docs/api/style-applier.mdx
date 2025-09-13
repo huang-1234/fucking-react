@@ -1,0 +1,291 @@
+# 样式应用 API
+
+本文档提供样式应用相关的 API 参考。
+
+## StyleApplier
+
+样式应用工具类，负责处理和应用组件样式。
+
+```typescript
+class StyleApplier {
+  constructor(options?: IStyleProcessOptions);
+
+  applyStyles(element: HTMLElement, style?: IStyleBasic): void;
+}
+```
+
+### 构造函数
+
+```typescript
+constructor(options?: IStyleProcessOptions)
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| options | IStyleProcessOptions | 否 | 样式处理选项 |
+
+### 方法
+
+#### applyStyles
+
+应用样式到DOM元素。
+
+```typescript
+applyStyles(element: HTMLElement, style?: IStyleBasic): void
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| element | HTMLElement | 是 | 目标DOM元素 |
+| style | IStyleBasic | 否 | 样式对象 |
+
+### 示例
+
+```typescript
+import { StyleApplier } from 'dy-render/core';
+
+// 创建样式应用工具
+const styleApplier = new StyleApplier({
+  applyDefaultStyles: true,
+  convertUnits: true,
+  handlePrefixes: true
+});
+
+// 应用样式
+const element = document.createElement('div');
+styleApplier.applyStyles(element, {
+  backgroundColor: '#ffffff',
+  paddingTop: '10px',
+  paddingBottom: '10px',
+  paddingLeft: '10px',
+  paddingRight: '10px',
+  borderTop: '1px solid #000',
+  borderBottom: '1px solid #000',
+  borderLeft: '1px solid #000',
+  borderRight: '1px solid #000',
+  borderRadiusTopLeft: '10px',
+  borderRadiusTopRight: '10px',
+  borderRadiusBottomLeft: '10px',
+  borderRadiusBottomRight: '10px'
+});
+```
+
+## IStyleProcessOptions
+
+样式处理选项接口。
+
+```typescript
+interface IStyleProcessOptions {
+  /** 是否应用默认样式 */
+  applyDefaultStyles?: boolean;
+  /** 是否转换样式单位 */
+  convertUnits?: boolean;
+  /** 是否处理样式前缀 */
+  handlePrefixes?: boolean;
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| applyDefaultStyles | boolean | 否 | 是否应用默认样式 |
+| convertUnits | boolean | 否 | 是否转换样式单位 |
+| handlePrefixes | boolean | 否 | 是否处理样式前缀 |
+
+## IStyleBasic
+
+基础样式接口。
+
+```typescript
+interface IStyleBasic
+  extends Partial<IStyleMargin>,
+  Partial<IStylePadding>,
+  Partial<IStyleBorder>,
+  Partial<IStyleBorderRadius>,
+  Partial<IStyleBackground> {
+}
+```
+
+### 扩展接口
+
+#### IStyleMargin
+
+边距样式接口。
+
+```typescript
+interface IStyleMargin {
+  marginTop: string;
+  marginBottom: string;
+  marginLeft: string;
+  marginRight: string;
+}
+```
+
+#### IStylePadding
+
+内边距样式接口。
+
+```typescript
+interface IStylePadding {
+  paddingTop: string;
+  paddingBottom: string;
+  paddingLeft: string;
+  paddingRight: string;
+}
+```
+
+#### IStyleBorder
+
+边框样式接口。
+
+```typescript
+interface IStyleBorder {
+  borderTop: string;
+  borderBottom: string;
+  borderLeft: string;
+  borderRight: string;
+}
+```
+
+#### IStyleBorderRadius
+
+圆角样式接口。
+
+```typescript
+interface IStyleBorderRadius {
+  borderRadiusTopLeft: string;
+  borderRadiusTopRight: string;
+  borderRadiusBottomLeft: string;
+  borderRadiusBottomRight: string;
+}
+```
+
+#### IStyleBackground
+
+背景样式接口。
+
+```typescript
+interface IStyleBackground {
+  backgroundColor: string;
+  backgroundImage: string;
+  backgroundSize: string;
+  backgroundPosition: string;
+  backgroundRepeat: string;
+}
+```
+
+## IStyleFont
+
+字体样式接口。
+
+```typescript
+interface IStyleFont {
+  color: string;
+  fontSize: string;
+  fontWeight?: string;
+  fontStyle?: string;
+  fontFamily?: string;
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| color | string | 是 | 文本颜色 |
+| fontSize | string | 是 | 字体大小 |
+| fontWeight | string | 否 | 字体粗细 |
+| fontStyle | string | 否 | 字体样式 |
+| fontFamily | string | 否 | 字体系列 |
+
+## IStyleText
+
+文本样式接口。
+
+```typescript
+interface IStyleText {
+  textAlign: string;
+  textDecoration: string;
+  textTransform: string;
+  lineHeight: string;
+  letterSpacing: string;
+  wordSpacing: string;
+  textShadow: string;
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| textAlign | string | 是 | 文本对齐方式 |
+| textDecoration | string | 是 | 文本装饰 |
+| textTransform | string | 是 | 文本转换 |
+| lineHeight | string | 是 | 行高 |
+| letterSpacing | string | 是 | 字母间距 |
+| wordSpacing | string | 是 | 单词间距 |
+| textShadow | string | 是 | 文本阴影 |
+
+## 组件特定样式
+
+针对不同组件的特定样式接口。
+
+### DyStyleView
+
+视图组件样式接口。
+
+```typescript
+interface DyStyleView extends IStyleBasic, IStyleFont {
+  width: string;
+  height: string;
+  display: string;
+  flexDirection: string;
+  justifyContent: string;
+  alignItems: string;
+  flexWrap: string;
+}
+```
+
+### DyStyleText
+
+文本组件样式接口。
+
+```typescript
+interface DyStyleText extends IStyleBasic, IStyleFont, IStyleText {
+}
+```
+
+### DyStyleButton
+
+按钮组件样式接口。
+
+```typescript
+interface DyStyleButton extends IStyleBasic, IStyleFont, IStyleText {
+}
+```
+
+### DyStyleImage
+
+图片组件样式接口。
+
+```typescript
+interface DyStyleImage extends IStyleBasic, IStyleFont, IStyleText {
+}
+```
+
+## 样式处理机制
+
+StyleApplier 内部实现了以下样式处理机制：
+
+1. **样式分类处理**：将样式分为基础样式、字体样式和文本样式分别处理
+2. **单位转换**：自动为纯数字值添加 `px` 单位
+3. **样式检测**：通过类型守卫检测样式类型
+4. **默认样式**：可选择是否应用默认样式
+
+样式应用过程如下：
+
+1. 检查样式是否存在
+2. 应用基础样式（边距、内边距、边框、圆角、背景）
+3. 检查并应用字体样式（颜色、大小、粗细、样式、字体系列）
+4. 检查并应用文本样式（对齐、装饰、转换、行高、间距、阴影）

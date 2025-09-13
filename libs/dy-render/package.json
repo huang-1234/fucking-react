@@ -18,7 +18,10 @@
     "prepublishOnly": "npm run build",
     "prepublishOnly:test": "npm run build && npm run test:coverage && npm run test",
     "publish:npm": "node ../../scripts/publish.js",
-    "publish:beta": "node ../../scripts/publish.js main:beta"
+    "publish:beta": "node ../../scripts/publish.js main:beta",
+    "docs:dev": "rspress dev",
+    "docs:build": "rspress build",
+    "docs:preview": "rspress preview"
   },
   "keywords": [],
   "author": "",
@@ -41,7 +44,8 @@
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
     "vite": "6.0.0",
-    "vitest": "2.1.5"
+    "vitest": "2.1.5",
+    "rspress": "^1.45.5"
   },
   "peerDependencies": {
     "axios": "1.7.9"

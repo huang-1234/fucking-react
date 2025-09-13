@@ -1,0 +1,310 @@
+# 渲染器 API
+
+本文档提供渲染器相关的 API 参考。
+
+## RendererCore
+
+渲染引擎核心类，负责协调组件映射、Schema解析和样式应用。
+
+```typescript
+class RendererCore {
+  constructor(options?: IRenderOptions);
+
+  async init(assets: IAssetsPackage): Promise<void>;
+  async render(schema: DySchema, container: HTMLElement): Promise<IRenderInstance>;
+  getContext(): RenderContext;
+  getPerformanceMonitor(): RenderPerformanceMonitor | undefined;
+}
+```
+
+### 构造函数
+
+```typescript
+constructor(options?: IRenderOptions)
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| options | IRenderOptions | 否 | 渲染选项 |
+
+### 方法
+
+#### init
+
+初始化渲染引擎。
+
+```typescript
+async init(assets: IAssetsPackage): Promise<void>
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| assets | IAssetsPackage | 是 | 资源包 |
+
+#### render
+
+渲染Schema。
+
+```typescript
+async render(schema: DySchema, container: HTMLElement): Promise<IRenderInstance>
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| schema | DySchema | 是 | Schema协议 |
+| container | HTMLElement | 是 | 容器元素 |
+
+**返回值**：渲染实例
+
+#### getContext
+
+获取渲染上下文。
+
+```typescript
+getContext(): RenderContext
+```
+
+**返回值**：渲染上下文
+
+#### getPerformanceMonitor
+
+获取性能监控器。
+
+```typescript
+getPerformanceMonitor(): RenderPerformanceMonitor | undefined
+```
+
+**返回值**：性能监控器（如果启用）
+
+### 示例
+
+```typescript
+import { RendererCore } from 'dy-render/core';
+
+// 创建渲染器
+const renderer = new RendererCore({
+  enablePerformanceMonitor: true
+});
+
+// 初始化渲染器
+await renderer.init({
+  components: {
+    'view': ViewComponent,
+    'text': TextComponent
+  }
+});
+
+// 渲染Schema
+const container = document.getElementById('app');
+const instance = await renderer.render(schema, container);
+
+// 获取上下文
+const context = renderer.getContext();
+
+// 获取性能监控器
+const monitor = renderer.getPerformanceMonitor();
+```
+
+## SandboxRenderer
+
+沙箱渲染器，提供隔离的渲染环境。
+
+```typescript
+class SandboxRenderer {
+  constructor();
+
+  async render(schema: DySchema, container: HTMLElement): Promise<IRenderInstance>;
+  destroy(): void;
+}
+```
+
+### 构造函数
+
+```typescript
+constructor()
+```
+
+### 方法
+
+#### render
+
+在沙箱中渲染Schema。
+
+```typescript
+async render(schema: DySchema, container: HTMLElement): Promise<IRenderInstance>
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| schema | DySchema | 是 | Schema协议 |
+| container | HTMLElement | 是 | 容器元素 |
+
+**返回值**：渲染实例
+
+#### destroy
+
+销毁沙箱。
+
+```typescript
+destroy(): void
+```
+
+### 示例
+
+```typescript
+import { SandboxRenderer } from 'dy-render/core';
+
+// 创建沙箱渲染器
+const sandboxRenderer = new SandboxRenderer();
+
+// 渲染Schema
+const container = document.getElementById('app');
+const instance = await sandboxRenderer.render(schema, container);
+
+// 销毁沙箱
+sandboxRenderer.destroy();
+```
+
+## RenderPerformanceMonitor
+
+渲染性能监控器，用于跟踪和记录渲染性能指标。
+
+```typescript
+class RenderPerformanceMonitor {
+  trackRenderStart(schemaId: string): void;
+  trackRenderEnd(schemaId: string): void;
+  getMetrics(): IRenderMetric[];
+  getSlowRenders(threshold?: number): IRenderMetric[];
+  getAverageRenderTime(): number;
+  getSlowestRender(): IRenderMetric | null;
+  clearMetrics(): void;
+  generateReport(): string;
+  visualize(): string;
+}
+```
+
+### 方法
+
+#### trackRenderStart
+
+跟踪渲染开始。
+
+```typescript
+trackRenderStart(schemaId: string): void
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| schemaId | string | 是 | Schema ID |
+
+#### trackRenderEnd
+
+跟踪渲染结束。
+
+```typescript
+trackRenderEnd(schemaId: string): void
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| schemaId | string | 是 | Schema ID |
+
+#### getMetrics
+
+获取所有渲染指标。
+
+```typescript
+getMetrics(): IRenderMetric[]
+```
+
+**返回值**：渲染指标数组
+
+#### getSlowRenders
+
+获取慢渲染指标。
+
+```typescript
+getSlowRenders(threshold?: number): IRenderMetric[]
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| threshold | number | 否 | 阈值（毫秒），默认100ms |
+
+**返回值**：慢渲染指标数组
+
+#### getAverageRenderTime
+
+获取平均渲染时间。
+
+```typescript
+getAverageRenderTime(): number
+```
+
+**返回值**：平均渲染时间（毫秒）
+
+#### getSlowestRender
+
+获取最慢渲染。
+
+```typescript
+getSlowestRender(): IRenderMetric | null
+```
+
+**返回值**：最慢渲染指标
+
+#### clearMetrics
+
+清空指标。
+
+```typescript
+clearMetrics(): void
+```
+
+#### generateReport
+
+生成性能报告。
+
+```typescript
+generateReport(): string
+```
+
+**返回值**：性能报告字符串
+
+#### visualize
+
+生成性能可视化数据。
+
+```typescript
+visualize(): string
+```
+
+**返回值**：SVG字符串
+
+### 示例
+
+```typescript
+import { RenderPerformanceMonitor } from 'dy-render/utils';
+
+// 创建性能监控器
+const monitor = new RenderPerformanceMonitor();
+
+// 跟踪渲染
+monitor.trackRenderStart('schema-1');
+// 渲染操作
+monitor.trackRenderEnd('schema-1');
+
+// 获取指标
+const metrics = monitor.getMetrics();
+const slowRenders = monitor.getSlowRenders(100);
+const avgTime = monitor.getAverageRenderTime();
+const slowest = monitor.getSlowestRender();
+
+// 生成报告
+const report = monitor.generateReport();
+console.log(report);
+
+// 可视化数据
+const svg = monitor.visualize();
+document.getElementById('chart').innerHTML = svg;
+```

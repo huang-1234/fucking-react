@@ -1,0 +1,71 @@
+# 介绍
+
+低代码渲染引擎是一个基于协议驱动的渲染框架，旨在提供高性能、可扩展的渲染能力，支持动态加载组件、样式隔离、沙箱环境等特性。
+
+## 什么是低代码渲染引擎？
+
+低代码渲染引擎是一种将UI描述（通常以JSON格式的Schema表示）转换为实际UI界面的工具。它允许开发者通过配置而非编码的方式构建用户界面，从而提高开发效率、降低开发门槛。
+
+## 核心概念
+
+### Schema协议
+
+Schema协议是描述UI结构、样式、行为的JSON格式数据，例如：
+
+```json
+{
+  "__id": "root",
+  "__name": "page",
+  "__type": "dycomponents::view",
+  "__props": {
+    "__style": {
+      "backgroundColor": "#ffffff"
+    }
+  },
+  "__children": [
+    {
+      "__id": "header",
+      "__name": "header",
+      "__type": "dycomponents::view",
+      "__props": {
+        "__text": "页面标题"
+      }
+    }
+  ]
+}
+```
+
+### 组件映射
+
+组件映射负责将Schema中的组件类型映射到实际的组件实现：
+
+```typescript
+// 注册组件
+componentMapper.registerComponent('dycomponents::view', ViewComponent);
+componentMapper.registerComponent('dycomponents::text', TextComponent);
+```
+
+### 渲染上下文
+
+渲染上下文管理渲染过程中的状态和环境，包括数据模型、工具函数、事件处理等：
+
+```typescript
+// 获取上下文
+const context = renderer.getContext();
+
+// 设置数据
+context.setData('user', { name: 'John', age: 30 });
+
+// 注册事件处理器
+context.registerEventHandler('onButtonClick', () => {
+  console.log('Button clicked');
+});
+```
+
+## 为什么选择低代码渲染引擎？
+
+- **提高开发效率**：通过配置而非编码构建UI，减少重复工作
+- **降低开发门槛**：非专业开发者也可以通过配置创建应用
+- **统一技术栈**：提供一致的渲染能力，支持多种前端框架
+- **动态更新**：支持运行时动态更新UI，无需重新构建
+- **性能优化**：内置性能优化策略，提供更好的用户体验

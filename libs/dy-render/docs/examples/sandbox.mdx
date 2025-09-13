@@ -1,0 +1,188 @@
+# 沙箱渲染器演示
+
+本示例展示了如何使用沙箱渲染器提供安全的渲染环境。
+
+## 沙箱渲染器简介
+
+沙箱渲染器使用 iframe 隔离技术，将渲染过程放在独立的 iframe 中执行，从而防止恶意代码执行，提供更安全的渲染环境。
+
+## 示例代码
+
+
+import { DemoBlock, SandboxDemo } from '../components';
+
+```typescript
+import { SandboxRenderer } from 'dy-render/core';
+import { dy_view_schema } from './schema.mock';
+
+async function sandboxRenderExample() {
+  // 创建容器
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+
+  // 创建沙箱渲染器
+  const sandboxRenderer = new SandboxRenderer();
+
+  // 渲染Schema
+  const instance = await sandboxRenderer.render(dy_view_schema, container);
+
+  // 5秒后更新渲染
+  setTimeout(async () => {
+    // 修改Schema
+    const updatedSchema = {
+      ...dy_view_schema,
+      __props: {
+        ...dy_view_schema.__props,
+        __style: {
+          ...dy_view_schema.__props?.__style,
+          backgroundColor: '#ff0000'
+        }
+      }
+    };
+
+    // 更新渲染
+    await instance.update(updatedSchema);
+  }, 5000);
+
+  // 在页面关闭时销毁沙箱
+  window.addEventListener('beforeunload', () => {
+    sandboxRenderer.destroy();
+  });
+}
+```
+
+## 在线演示
+
+<DemoBlock>
+  <SandboxDemo />
+</DemoBlock>
+
+## 沙箱渲染器实现
+
+```typescript
+class SandboxRenderer {
+  private iframe: HTMLIFrameElement;
+  private iframeLoaded: boolean = false;
+  private renderQueue: Array<() => void> = [];
+
+  /**
+   * 构造函数
+   */
+  constructor() {
+    // 创建隐藏的iframe
+    this.iframe = document.createElement('iframe');
+    this.iframe.style.display = 'none';
+    this.iframe.sandbox.add('allow-scripts');
+    this.iframe.sandbox.add('allow-same-origin');
+
+    // 监听iframe加载完成
+    this.iframe.addEventListener('load', () => {
+      this.iframeLoaded = true;
+      this.processRenderQueue();
+    });
+
+    // 添加到文档
+    if (typeof document !== 'undefined') {
+      document.body.appendChild(this.iframe);
+    }
+  }
+
+  /**
+   * 渲染Schema
+   * @param schema Schema协议
+   * @param container 容器元素
+   * @returns 渲染实例
+   */
+  async render(schema: DySchema, container: HTMLElement): Promise<IRenderInstance> {
+    return new Promise((resolve) => {
+      const renderFn = () => {
+        try {
+          // 获取iframe文档
+          const doc = this.iframe.contentDocument!;
+
+          // 创建样式
+          this.injectStyles(doc);
+
+          // 创建渲染容器
+          const sandboxContainer = doc.createElement('div');
+          doc.body.appendChild(sandboxContainer);
+
+          // 渲染Schema
+          const rootElement = this.renderNode(schema, sandboxContainer);
+
+          // 清空容器
+          container.innerHTML = '';
+
+          // 克隆节点到主文档
+          const clonedNode = document.importNode(rootElement, true);
+          container.appendChild(clonedNode);
+
+          // 创建渲染实例
+          const instance: IRenderInstance = {
+            container,
+            update: async (newSchema: DySchema) => {
+              await this.render(newSchema, container);
+            },
+            destroy: () => {
+              container.innerHTML = '';
+            }
+          };
+
+          resolve(instance);
+        } catch (error) {
+          console.error('Sandbox render error', error);
+          container.innerHTML = '<div style="color: red;">Sandbox rendering failed</div>';
+
+          // 返回空实例
+          resolve({
+            container,
+            update: async () => {},
+            destroy: () => {}
+          });
+        }
+      };
+
+      // 如果iframe已加载，直接渲染
+      if (this.iframeLoaded) {
+        renderFn();
+      } else {
+        // 否则加入队列
+        this.renderQueue.push(renderFn);
+      }
+    });
+  }
+
+  /**
+   * 销毁沙箱
+   */
+  destroy(): void {
+    if (this.iframe && this.iframe.parentNode) {
+      this.iframe.parentNode.removeChild(this.iframe);
+    }
+  }
+}
+```
+
+## 沙箱渲染器特性
+
+1. **隔离环境**：使用 iframe 创建隔离的渲染环境
+2. **安全限制**：通过 sandbox 属性限制 iframe 的权限
+3. **样式隔离**：避免主文档样式影响渲染结果
+4. **脚本隔离**：防止恶意脚本访问主文档
+5. **DOM 隔离**：渲染结果通过 `document.importNode` 安全地复制到主文档
+
+## 使用场景
+
+1. **第三方内容渲染**：渲染不可信的第三方内容
+2. **用户生成内容**：渲染用户上传或创建的内容
+3. **插件系统**：安全地渲染第三方插件
+4. **多租户应用**：隔离不同租户的渲染环境
+5. **预览环境**：提供安全的内容预览功能
+
+## 注意事项
+
+1. **性能开销**：沙箱渲染相比直接渲染有额外的性能开销
+2. **事件处理**：iframe 中的事件需要特殊处理才能与主文档交互
+3. **资源加载**：iframe 中加载的资源需要考虑跨域问题
+4. **内存管理**：需要及时销毁不再使用的沙箱，避免内存泄漏
+5. **兼容性**：部分浏览器对 iframe sandbox 属性的支持有差异

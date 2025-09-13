@@ -1,0 +1,148 @@
+# 快速开始
+
+本指南将帮助你快速上手低代码渲染引擎。
+
+## 安装
+
+使用 npm、yarn 或 pnpm 安装：
+
+```bash
+# npm
+npm install dy-render
+
+# yarn
+yarn add dy-render
+
+# pnpm
+pnpm add dy-render
+```
+
+## 基础用法
+
+### 1. 创建渲染器
+
+```typescript
+import { createRenderer } from 'dy-render';
+
+// 创建渲染器
+const renderer = await createRenderer({
+  enablePerformanceMonitor: true, // 启用性能监控
+  enableSandbox: false, // 是否启用沙箱模式
+});
+```
+
+### 2. 准备 Schema
+
+```typescript
+const schema = {
+  __id: "root",
+  __name: "page",
+  __type: "dycomponents::view",
+  __props: {
+    __style: {
+      backgroundColor: "#ffffff",
+      padding: "20px"
+    }
+  },
+  __children: [
+    {
+      __id: "title",
+      __name: "title",
+      __type: "dycomponents::text",
+      __props: {
+        __text: "Hello, DyRender!",
+        __style: {
+          fontSize: "24px",
+          fontWeight: "bold",
+          color: "#333333"
+        }
+      }
+    }
+  ]
+};
+```
+
+### 3. 渲染 Schema
+
+```typescript
+// 获取容器元素
+const container = document.getElementById('app');
+
+// 渲染 Schema
+const instance = await renderer.render(schema, container);
+```
+
+### 4. 更新渲染
+
+```typescript
+// 修改 Schema
+const updatedSchema = {
+  ...schema,
+  __props: {
+    ...schema.__props,
+    __style: {
+      ...schema.__props.__style,
+      backgroundColor: "#f0f0f0"
+    }
+  }
+};
+
+// 更新渲染
+await instance.update(updatedSchema);
+```
+
+### 5. 使用渲染上下文
+
+```typescript
+// 获取上下文
+const context = renderer.getContext();
+
+// 设置数据
+context.setData('user', { name: 'John', age: 30 });
+
+// 获取数据
+const user = context.getData('user');
+console.log(user); // { name: 'John', age: 30 }
+
+// 注册事件处理器
+context.registerEventHandler('onButtonClick', () => {
+  console.log('Button clicked');
+});
+
+// 触发事件
+context.triggerEvent('onButtonClick');
+```
+
+## 在 React 中使用
+
+低代码渲染引擎提供了 React 组件封装，方便在 React 应用中使用：
+
+```tsx
+import React, { useState } from 'react';
+import { DyRenderer } from 'dy-render/react';
+
+const App = () => {
+  const [schema, setSchema] = useState(initialSchema);
+
+  const handleReady = (instance) => {
+    console.log('DyRenderer ready', instance);
+  };
+
+  return (
+    <div>
+      <h1>DyRenderer React 示例</h1>
+      <DyRenderer
+        schema={schema}
+        onReady={handleReady}
+        style={{ border: '1px solid #eee', padding: '16px' }}
+      />
+    </div>
+  );
+};
+```
+
+## 下一步
+
+- 了解[架构设计](/guide/architecture)
+- 查看[示例](/examples/)
+- 阅读[API参考](/api/)

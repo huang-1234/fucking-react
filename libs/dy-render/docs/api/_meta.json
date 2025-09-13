@@ -1,0 +1,6 @@
+{
+  "index": "核心 API",
+  "renderer": "渲染器",
+  "component-mapper": "组件映射器",
+  "style-applier": "样式应用"
+}

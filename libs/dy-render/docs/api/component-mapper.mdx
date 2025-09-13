@@ -1,0 +1,214 @@
+# 组件映射器 API
+
+本文档提供组件映射器相关的 API 参考。
+
+## ComponentMapper
+
+组件映射器类，负责管理组件的注册、获取和动态加载。
+
+```typescript
+class ComponentMapper {
+  registerComponent(name: string, component: any, meta?: Partial<IComponentMeta>): void;
+  registerComponents(components: Record<string, any>): void;
+  getComponent(name: string): any;
+  getComponentMeta(name: string): IComponentMeta | undefined;
+  async loadComponent(name: string): Promise<any>;
+  clear(): void;
+}
+```
+
+### 方法
+
+#### registerComponent
+
+注册组件。
+
+```typescript
+registerComponent(name: string, component: any, meta?: Partial<IComponentMeta>): void
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| name | string | 是 | 组件名称 |
+| component | any | 是 | 组件实现 |
+| meta | Partial<IComponentMeta> | 否 | 组件元数据 |
+
+#### registerComponents
+
+批量注册组件。
+
+```typescript
+registerComponents(components: Record<string, any>): void
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| components | Record<string, any> | 是 | 组件映射表 |
+
+#### getComponent
+
+获取组件。
+
+```typescript
+getComponent(name: string): any
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| name | string | 是 | 组件名称 |
+
+**返回值**：组件实现
+
+#### getComponentMeta
+
+获取组件元数据。
+
+```typescript
+getComponentMeta(name: string): IComponentMeta | undefined
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| name | string | 是 | 组件名称 |
+
+**返回值**：组件元数据
+
+#### loadComponent
+
+动态加载组件。
+
+```typescript
+async loadComponent(name: string): Promise<any>
+```
+
+| 参数名 | 类型 | 必填 | 描述 |
+| --- | --- | --- | --- |
+| name | string | 是 | 组件名称 |
+
+**返回值**：Promise<组件实现>
+
+#### clear
+
+清空组件映射。
+
+```typescript
+clear(): void
+```
+
+### 示例
+
+```typescript
+import { ComponentMapper } from 'dy-render/core';
+
+// 创建组件映射器
+const mapper = new ComponentMapper();
+
+// 注册单个组件
+mapper.registerComponent('view', ViewComponent, {
+  props: {
+    title: 'View Component',
+    description: 'A container component'
+  }
+});
+
+// 批量注册组件
+mapper.registerComponents({
+  'text': TextComponent,
+  'button': ButtonComponent,
+  'image': ImageComponent
+});
+
+// 获取组件
+const ViewComponent = mapper.getComponent('view');
+
+// 获取组件元数据
+const viewMeta = mapper.getComponentMeta('view');
+console.log(viewMeta?.props.title); // 'View Component'
+
+// 动态加载组件
+const DynamicComponent = await mapper.loadComponent('dycomponents::dynamic');
+
+// 清空组件映射
+mapper.clear();
+```
+
+## IComponentMeta
+
+组件元数据接口。
+
+```typescript
+interface IComponentMeta {
+  name: string;
+  component: any;
+  props: Record<string, any>;
+}
+```
+
+### 属性
+
+| 属性名 | 类型 | 描述 |
+| --- | --- | --- |
+| name | string | 组件名称 |
+| component | any | 组件实现 |
+| props | Record<string, any> | 组件属性 |
+
+## 组件命名规范
+
+组件名称支持两种格式：
+
+1. **简单名称**：如 `'view'`、`'text'`、`'button'`
+2. **命名空间格式**：如 `'dycomponents::view'`、`'antd::button'`
+
+命名空间格式的组件名称会被解析为：
+
+```typescript
+const [namespace, componentName] = fullName.split('::');
+```
+
+组件名称在内部会被转换为首字母大写的格式，例如：
+
+- `'view'` -> `'View'`
+- `'dycomponents::view'` -> `'View'`
+
+## 动态加载机制
+
+组件映射器支持动态加载组件，通过以下步骤：
+
+1. 检查组件是否已加载
+2. 检查组件是否正在加载
+3. 解析组件名称
+4. 动态导入组件
+5. 缓存组件实现
+
+动态加载使用 `import()` 语法，默认从 `../../components/${componentName}` 路径加载组件。
+
+## 组件元数据
+
+组件元数据用于存储组件的附加信息，如：
+
+- 组件名称
+- 组件描述
+- 组件属性
+- 组件文档
+- 组件示例
+
+通过 `registerComponent` 方法的第三个参数提供组件元数据：
+
+```typescript
+mapper.registerComponent('button', ButtonComponent, {
+  props: {
+    title: 'Button Component',
+    description: 'A clickable button component',
+    examples: [
+      {
+        name: 'Primary Button',
+        props: { type: 'primary', text: 'Click me' }
+      },
+      {
+        name: 'Secondary Button',
+        props: { type: 'secondary', text: 'Cancel' }
+      }
+    ]
+  }
+});
+```

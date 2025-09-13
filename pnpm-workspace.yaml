@@ -1,6 +1,6 @@
 packages:
   # - 'packages/*'
-  # - 'libs/*'
+  - 'libs/*'
   - 'libs/dy-render'
   # - 'libs/dynamic/*'
   # - 'apps/*'
