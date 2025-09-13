@@ -34,16 +34,13 @@ export type DyMaterialPropsSchema = {
 } | {
   type: IIntersectionType;
   value: DyMaterialPropsSchema[];
-}
-  | {
+} | {
   type: IEnumType;
   value: DyMaterialPropsSchema[];
 } | {
   type: IRefType;
   value: DyMaterialPropsSchema;
 }
-
-
 
 export interface DyMaterialProps {
   /** 组件封面 */
@@ -55,10 +52,10 @@ export interface DyMaterialProps {
   /** 组件名称 */
   __name: string;
   /** 组件名称中文 */
-  __nameChn: string;
+  __nameChn?: string;
   /** 组件属性 */
-  __props: DyMaterialPropsSchema;
-  __style: styleBasic;
+  __props?: DyMaterialPropsSchema;
+  __style?: styleBasic;
   [key: string]: any;
 }
 /**
@@ -68,10 +65,10 @@ export interface DyMaterialProps {
 type DySchemaType = `${string}::${string}`;
 
 export interface DySchema<P extends DyMaterialProps = DyMaterialProps> {
-  __id: string;
-  __type: DySchemaType;
+  __id?: string;
+  __type?: DySchemaType;
   __name: string;
   __isContainer?: boolean;
-  __props: P;
-  __children: DySchema<P>[];
+  __props?: P;
+  __children?: DySchema<P>[];
 }
