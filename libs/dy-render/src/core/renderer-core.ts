@@ -21,6 +21,12 @@ export class RendererCore {
   private renderInstances: Map<HTMLElement, IRenderInstance> = new Map();
 
   /**
+   * 是否启用安全模式
+   * @private
+   */
+  private safeMode: boolean = false;
+
+  /**
    * 构造函数
    * @param options 渲染选项
    */
@@ -29,6 +35,9 @@ export class RendererCore {
     this.schemaParser = new SchemaParser();
     this.styleApplier = new StyleApplier();
     this.context = new RenderContext({}, options.customUtils);
+
+    // 设置安全模式
+    this.safeMode = !!options.safeMode;
 
     if (options.enablePerformanceMonitor) {
       this.performanceMonitor = new RenderPerformanceMonitor();
@@ -69,37 +78,121 @@ export class RendererCore {
 
       // 安全地清空容器
       try {
-        // 检查容器是否在文档中
-        const isInDocument = document.body.contains(container);
+        if (this.safeMode) {
+          // 在安全模式下，使用更严格的检查
+          if (container && container.isConnected && document.contains(container)) {
+            // 使用更安全的方式清空容器
+            const fragment = document.createDocumentFragment();
+            const tempContainer = document.createElement('div');
 
-        if (isInDocument) {
-          // 逐个移除子节点，而不是使用innerHTML
-          while (container.firstChild) {
-            container.removeChild(container.firstChild);
+            // 先渲染到临时容器
+            const rootElement = await this.renderNode(renderTree, tempContainer);
+
+            // 清空原容器
+            while (container.firstChild) {
+              try {
+                container.removeChild(container.firstChild);
+              } catch (removeError) {
+                console.warn('Failed to remove child in safe mode:', removeError);
+                // 如果移除失败，尝试清空innerHTML
+                try {
+                  container.innerHTML = '';
+                  break;
+                } catch (innerError) {
+                  console.error('Failed to clear container in safe mode:', innerError);
+                }
+              }
+            }
+
+            // 将临时容器的内容移动到原容器
+            while (tempContainer.firstChild) {
+              fragment.appendChild(tempContainer.firstChild);
+            }
+
+            container.appendChild(fragment);
+
+            // 创建渲染实例
+            const instance: IRenderInstance = {
+              container,
+              update: async (newSchema: DySchema) => {
+                // 在安全模式下，使用setTimeout确保React完成DOM更新
+                return new Promise((resolve) => {
+                  setTimeout(async () => {
+                    try {
+                      await this.updateRender(newSchema, container);
+                      resolve();
+                    } catch (err) {
+                      console.error('Update render error in safe mode:', err);
+                      resolve();
+                    }
+                  }, 0);
+                });
+              },
+              destroy: () => {
+                // 在安全模式下，使用setTimeout确保React完成DOM更新
+                setTimeout(() => {
+                  try {
+                    this.destroyRender(container);
+                  } catch (err) {
+                    console.error('Destroy render error in safe mode:', err);
+                  }
+                }, 0);
+              }
+            };
+
+            // 保存渲染实例
+            this.renderInstances.set(container, instance);
+
+            return instance;
+          } else {
+            console.warn('Container is not connected to document in safe mode');
+            // 返回空实例避免崩溃
+            return {
+              container,
+              update: async () => {},
+              destroy: () => {}
+            };
           }
+        } else {
+          // 标准模式下的处理
+          // 检查容器是否在文档中
+          const isInDocument = document.body.contains(container);
+
+          if (isInDocument) {
+            // 逐个移除子节点，而不是使用innerHTML
+            while (container.firstChild) {
+              container.removeChild(container.firstChild);
+            }
+          }
+
+          // 渲染节点树
+          const rootElement = await this.renderNode(renderTree, container);
+
+          // 创建渲染实例
+          const instance: IRenderInstance = {
+            container,
+            update: async (newSchema: DySchema) => {
+              await this.updateRender(newSchema, container);
+            },
+            destroy: () => {
+              this.destroyRender(container);
+            }
+          };
+
+          // 保存渲染实例
+          this.renderInstances.set(container, instance);
+
+          return instance;
         }
       } catch (error) {
-        console.error('Error cleaning container before render:', error);
+        console.error('Error during render:', error);
+        // 返回空实例避免崩溃
+        return {
+          container,
+          update: async () => {},
+          destroy: () => {}
+        };
       }
-
-      // 渲染节点树
-      const rootElement = await this.renderNode(renderTree, container);
-
-      // 创建渲染实例
-      const instance: IRenderInstance = {
-        container,
-        update: async (newSchema: DySchema) => {
-          await this.updateRender(newSchema, container);
-        },
-        destroy: () => {
-          this.destroyRender(container);
-        }
-      };
-
-      // 保存渲染实例
-      this.renderInstances.set(container, instance);
-
-      return instance;
     } finally {
       // 性能监控结束
       this.trackRenderEnd(schemaId);
@@ -174,7 +267,17 @@ export class RendererCore {
 
           // 安全地添加子元素
           try {
-            element.appendChild(childElement);
+            // 在安全模式下检查DOM节点状态
+            if (this.safeMode) {
+              // 确保元素仍然有效且未被移除
+              if (element.isConnected && document.contains(element)) {
+                element.appendChild(childElement);
+              } else {
+                console.warn('Skipping appendChild: parent element is not connected to document');
+              }
+            } else {
+              element.appendChild(childElement);
+            }
           } catch (error) {
             console.error('Error appending child element:', error);
           }
@@ -183,9 +286,16 @@ export class RendererCore {
         }
       }
     } else if (children && typeof children === 'string') {
-      // 文本内容
+      // 文本内容 - 在React环境中，将文本内容包装在span中以避免文本节点问题
       try {
-        element.textContent = children;
+        if (this.safeMode && typeof children === 'string') {
+          // 创建span元素包裹文本，避免直接使用文本节点
+          const textSpan = document.createElement('span');
+          textSpan.textContent = children;
+          element.appendChild(textSpan);
+        } else {
+          element.textContent = children;
+        }
       } catch (error) {
         console.error('Error setting text content:', error);
       }
@@ -193,11 +303,25 @@ export class RendererCore {
 
     // 安全地挂载到父容器
     try {
-      // 检查父容器是否在文档中
-      const isInDocument = document.body.contains(parent);
-
-      if (isInDocument) {
-        parent.appendChild(element);
+      // 在安全模式下使用更严格的检查
+      if (this.safeMode) {
+        // 检查父容器和元素是否仍然有效
+        if (parent && parent.isConnected && document.contains(parent)) {
+          // 使用try-catch包装DOM操作
+          try {
+            parent.appendChild(element);
+          } catch (appendError) {
+            console.warn('Failed to append child in safe mode:', appendError);
+          }
+        } else {
+          console.warn('Skipping appendChild: parent is not connected to document');
+        }
+      } else {
+        // 标准模式下的检查
+        const isInDocument = document.body.contains(parent);
+        if (isInDocument) {
+          parent.appendChild(element);
+        }
       }
     } catch (error) {
       console.error('Error appending child to parent:', error);

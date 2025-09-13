@@ -94,6 +94,8 @@ export interface IRenderOptions {
   customComponentMap?: Record<string, any>;
   /** 自定义工具函数 */
   customUtils?: Record<string, Function>;
+  /** 是否启用安全模式（避免DOM操作冲突） */
+  safeMode?: boolean;
 }
 
 /**

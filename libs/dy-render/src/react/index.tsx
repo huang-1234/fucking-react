@@ -32,9 +32,10 @@ export const DyRenderer: React.FC<DyRendererProps> = ({
 
     async function initRenderer() {
       try {
-        // 创建渲染器
+        // 创建渲染器（启用安全模式）
         const renderer = await createRenderer({
-          enablePerformanceMonitor: true
+          enablePerformanceMonitor: true,
+          safeMode: true // 在React环境中启用安全模式
         });
         rendererRef.current = renderer;
       } catch (err) {

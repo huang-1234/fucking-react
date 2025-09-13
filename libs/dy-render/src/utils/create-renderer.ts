@@ -9,7 +9,13 @@ import { DySchema } from '../../types/schema';
  */
 export async function createRenderer(options: IRenderOptions = {}) {
   // 创建渲染引擎实例
-  const renderer = new RendererCore(options);
+  const renderer = new RendererCore({
+    // 默认在React环境中启用安全模式
+    safeMode: typeof window !== 'undefined' &&
+              typeof (window as any).React !== 'undefined' ||
+              options.safeMode,
+    ...options
+  });
 
   // 预加载内置组件
   await loadBuiltinComponents(renderer);
@@ -22,7 +28,27 @@ export async function createRenderer(options: IRenderOptions = {}) {
      * @returns 渲染实例
      */
     render: async (schema: DySchema, container: HTMLElement) => {
-      return renderer.render(schema, container);
+      // 在React环境中，使用setTimeout确保React完成DOM更新
+      if (options.safeMode || typeof (window as any).React !== 'undefined') {
+        return new Promise((resolve) => {
+          setTimeout(async () => {
+            try {
+              const instance = await renderer.render(schema, container);
+              resolve(instance);
+            } catch (err) {
+              console.error('Safe render error:', err);
+              // 返回空实例避免崩溃
+              resolve({
+                container,
+                update: async () => {},
+                destroy: () => {}
+              });
+            }
+          }, 0);
+        });
+      } else {
+        return renderer.render(schema, container);
+      }
     },
 
     /**
@@ -50,6 +76,13 @@ export async function createRenderer(options: IRenderOptions = {}) {
     visualizePerformance: () => {
       const monitor = renderer.getPerformanceMonitor();
       return monitor ? monitor.visualize() : '';
+    },
+
+    /**
+     * 检测是否在React环境中
+     */
+    isReactEnvironment: () => {
+      return typeof (window as any).React !== 'undefined';
     }
   };
 }
