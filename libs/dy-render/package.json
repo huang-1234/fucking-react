@@ -31,14 +31,11 @@
     "antd": "5.26.7"
   },
   "devDependencies": {
-    "@types/lodash-es": "4.17.12",
+    "antd": "5.26.7",
     "@types/node": "22.13.10",
     "@types/react": "18.3.1",
     "@types/react-dom": "18.3.1",
     "@vitejs/plugin-react": "4.3.4",
-    "axios": "1.7.9",
-    "eslint": "9.30.1",
-    "lodash-es": "4.17.21",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "ts-node": "10.9.2",
@@ -46,10 +43,11 @@
     "vite": "6.0.0",
     "vitest": "2.1.5"
   },
+  "peerDependencies": {
+    "axios": "1.7.9"
+  },
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
-    "axios": "1.7.9",
-    "chalk": "5.3.0",
     "immer": "10.1.1"
   }
 }

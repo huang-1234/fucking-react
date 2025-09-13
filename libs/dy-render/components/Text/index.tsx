@@ -2,18 +2,16 @@ import React from 'react'
 import  './index.less';
 
 interface TextProps {
-  children: React.ReactNode;
   className?: string;
   text: string;
 }
 
-export const Text: React.FC<TextProps> = (props: TextProps) => {
-  const { className, text, children } = props;
+export const Text: React.FC<React.PropsWithChildren<TextProps>> = (props: TextProps) => {
+  const { className, text } = props;
   return (
-    <div className={className}>
-      <span>{text}</span>
-      {children}
-    </div>
+    <span className={className}>
+      {text}
+    </span>
   )
 }
 
