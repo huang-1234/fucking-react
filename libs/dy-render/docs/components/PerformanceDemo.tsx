@@ -1,76 +1,127 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createRenderer } from '../../src/utils/create-renderer';
+import { dy_view_schema } from '../../types/schema.mock';
+import { DySchema } from '../../types/schema';
+import { IRenderMetric } from '../../src/types';
+import { RenderPerformanceMonitor } from '../../src/utils/performance-monitor';
 
 const PerformanceDemo = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const rendererRef = useRef<any>(null);
+  const instanceRef = useRef<any>(null);
   const [renderCount, setRenderCount] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('#000000');
-  const [metrics, setMetrics] = useState<Array<{ duration: number; timestamp: number }>>([]);
+  const [metrics, setMetrics] = useState<IRenderMetric[]>([]);
+  const [reportText, setReportText] = useState<string>('');
+  const [perfSvg, setPerfSvg] = useState<string>('');
+
+  // 初始化渲染器
+  useEffect(() => {
+    let isMounted = true;
+
+    async function initRenderer() {
+      try {
+        // 创建渲染器
+        const renderer = await createRenderer({
+          enablePerformanceMonitor: true
+        });
+        if (isMounted) {
+          rendererRef.current = renderer;
+        }
+      } catch (err) {
+        console.error('Failed to create renderer', err);
+      }
+    }
+
+    initRenderer();
+
+    // 清理函数
+    return () => {
+      isMounted = false;
+      // 清理实例引用
+      instanceRef.current = null;
+      rendererRef.current = null;
+    };
+  }, []);
 
   // 开始渲染测试
-  const startRenderTest = () => {
-    if (isRunning) return;
+  const startRenderTest = async () => {
+    if (isRunning || !containerRef.current || !rendererRef.current) return;
 
     setIsRunning(true);
     setRenderCount(0);
     setMetrics([]);
+    setReportText('');
+    setPerfSvg('');
 
-    // 模拟10次渲染
-    let count = 0;
-    const maxCount = 10;
-    const newMetrics: Array<{ duration: number; timestamp: number }> = [];
-
-    const runRender = () => {
-      if (count >= maxCount) {
-        setIsRunning(false);
-        return;
+    try {
+      // 清空容器（在React环境中，避免直接操作DOM）
+      // 如果已有实例，先清理引用
+      if (instanceRef.current) {
+        instanceRef.current = null;
       }
 
+      // 渲染初始Schema
+      const instance = await rendererRef.current.render(dy_view_schema, containerRef.current);
+      instanceRef.current = instance;
+
+      // 执行10次渲染
+      await runRenderTests(10);
+
+      // 获取性能监控器
+      const performanceMonitor = rendererRef.current.getPerformanceMonitor();
+      if (performanceMonitor) {
+        // 获取性能指标
+        const metricsData = performanceMonitor.getMetrics();
+        setMetrics(metricsData);
+
+        // 生成性能报告
+        const report = performanceMonitor.generateReport();
+        setReportText(report);
+
+        // 可视化性能数据
+        const svg = rendererRef.current.visualizePerformance();
+        setPerfSvg(svg);
+      }
+    } catch (err) {
+      console.error('Render test error', err);
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  // 执行多次渲染测试
+  const runRenderTests = async (count: number) => {
+    if (!instanceRef.current) return;
+
+    for (let i = 0; i < count; i++) {
+      if (!instanceRef.current) break;
+
       // 生成随机颜色
-      const hue = count * 36;
+      const hue = i * 36;
       const color = `hsl(${hue}, 100%, 50%)`;
       setBackgroundColor(color);
 
-      // 模拟随机渲染时间
-      const duration = Math.floor(Math.random() * 150) + 50; // 50-200ms
+      // 修改Schema
+      const updatedSchema = {
+        ...dy_view_schema,
+        __props: {
+          ...dy_view_schema.__props,
+          __style: {
+            ...dy_view_schema.__props?.__style,
+            backgroundColor: color
+          }
+        }
+      };
 
-      // 添加性能指标
-      newMetrics.push({
-        duration,
-        timestamp: Date.now()
-      });
+      // 更新渲染
+      await instanceRef.current.update(updatedSchema);
+      setRenderCount(i + 1);
 
-      setMetrics([...newMetrics]);
-      setRenderCount(count + 1);
-
-      count++;
-
-      // 延迟执行下一次渲染
-      setTimeout(runRender, 500);
-    };
-
-    runRender();
-  };
-
-  // 计算平均渲染时间
-  const getAverageRenderTime = () => {
-    if (metrics.length === 0) return 0;
-
-    const sum = metrics.reduce((acc, m) => acc + m.duration, 0);
-    return Math.round(sum / metrics.length);
-  };
-
-  // 获取最慢渲染
-  const getSlowestRender = () => {
-    if (metrics.length === 0) return null;
-
-    return metrics.reduce((slowest, current) => {
-      return current.duration > slowest.duration ? current : slowest;
-    }, metrics[0]);
-  };
-
-  // 获取慢渲染数量
-  const getSlowRendersCount = () => {
-    return metrics.filter(m => m.duration > 100).length;
+      // 等待一段时间
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
   };
 
   return (
@@ -103,68 +154,19 @@ const PerformanceDemo = () => {
         }}
       >
         <div
+          ref={containerRef}
           style={{
-            padding: '10px',
-            borderTop: '1px solid #fff',
-            borderBottom: '1px solid #fff',
-            borderLeft: '1px solid #fff',
-            marginBottom: '10px'
+            minHeight: '118px'
           }}
-        >
-          Header
-        </div>
-        <div
-          style={{
-            padding: '10px'
-          }}
-        >
-          <div
-            style={{
-              padding: '10px'
-            }}
-          >
-            <div style={{ marginBottom: '5px' }}>List Item 1</div>
-            <div style={{ marginBottom: '5px' }}>List Item 2</div>
-            <div style={{ marginBottom: '5px' }}>List Item 3</div>
-            <div style={{ marginBottom: '5px' }}>List Item 4</div>
-          </div>
-        </div>
+        />
       </div>
 
-      {metrics.length > 0 && (
+      {perfSvg && (
         <div>
           <h4>性能监控</h4>
 
           <div style={{ marginBottom: '20px' }}>
-            <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
-              <text x="200" y="20" textAnchor="middle" fontWeight="bold">Render Performance</text>
-
-              {/* 绘制柱状图 */}
-              {metrics.map((metric, index) => {
-                const x = 40 + index * (320 / Math.max(9, metrics.length - 1));
-                const barHeight = (metric.duration / 200) * 110;
-                const y = 150 - barHeight;
-
-                return (
-                  <rect
-                    key={index}
-                    x={x - 10}
-                    y={y}
-                    width={20}
-                    height={barHeight}
-                    fill={metric.duration > 100 ? '#ff6b6b' : '#4dabf7'}
-                  />
-                );
-              })}
-
-              {/* 坐标轴 */}
-              <line x1="40" y1="150" x2="360" y2="150" stroke="black" />
-              <line x1="40" y1="40" x2="40" y2="150" stroke="black" />
-
-              {/* 标签 */}
-              <text x="200" y="190" textAnchor="middle">Render Index</text>
-              <text x="10" y="100" textAnchor="middle" transform="rotate(-90, 10, 100)">Duration (ms)</text>
-            </svg>
+            <div dangerouslySetInnerHTML={{ __html: perfSvg }} />
           </div>
 
           <div
@@ -176,11 +178,7 @@ const PerformanceDemo = () => {
               whiteSpace: 'pre-wrap'
             }}
           >
-{`渲染性能报告:
-- 总渲染次数: ${metrics.length}
-- 平均渲染时间: ${getAverageRenderTime()}ms
-- 最慢渲染: ${getSlowestRender() ? `Render ${metrics.indexOf(getSlowestRender()!) + 1} (${getSlowestRender()!.duration}ms)` : 'N/A'}
-- 慢渲染次数: ${getSlowRendersCount()} (>100ms)`}
+            {reportText}
           </div>
         </div>
       )}

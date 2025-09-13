@@ -2,13 +2,66 @@
 
 本示例展示了如何在 React 应用中集成低代码渲染引擎。
 
+
+## 在线演示
+
+import { DemoBlock, ReactIntegrationDemo } from '../components';
+
+<DemoBlock>
+  <ReactIntegrationDemo />
+</DemoBlock>
+
+
+## 使用示例
+
+```tsx
+import React, { useState } from 'react';
+import { DyRenderer } from 'dy-render/react';
+import { DySchema } from 'dy-render/types';
+import { dy_view_schema } from 'dy-render/mock';
+
+export const DyRendererExample: React.FC = () => {
+  const [currentSchema, setCurrentSchema] = useState<DySchema>(dy_view_schema);
+
+  const handleReady = (instance: any) => {
+    console.log('DyRenderer ready', instance);
+  };
+
+  const handleUpdateSchema = () => {
+    setCurrentSchema({
+      ...currentSchema,
+      __props: {
+        ...currentSchema.__props,
+        __style: {
+          ...currentSchema.__props?.__style,
+          backgroundColor: '#' + Math.floor(Math.random() * 16777215).toString(16)
+        }
+      }
+    });
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>DyRenderer React 集成示例</h1>
+      <button onClick={handleUpdateSchema} style={{ marginBottom: '16px' }}>
+        更新背景颜色
+      </button>
+      <DyRenderer
+        schema={currentSchema}
+        onReady={handleReady}
+        style={{ border: '1px solid #eee', borderRadius: '4px', padding: '16px' }}
+      />
+    </div>
+  );
+};
+```
+
 ## 组件定义
 
-import { DemoBlock } from '../components';
 ```tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { createRenderer } from 'dy-render';
-import { DySchema } from 'dy-render/types';
+import { createRenderer } from '../../../src/utils/create-renderer';
+import { DySchema } from '../../../types/schema';
 
 interface DyRendererProps {
   schema: DySchema;
@@ -124,55 +177,7 @@ export const DyRenderer: React.FC<DyRendererProps> = ({
 };
 ```
 
-## 使用示例
-
-```tsx
-import React, { useState } from 'react';
-import { DyRenderer } from 'dy-render/react';
-import { DySchema } from 'dy-render/types';
-import { dy_view_schema } from 'dy-render/mock';
-
-export const DyRendererExample: React.FC = () => {
-  const [currentSchema, setCurrentSchema] = useState<DySchema>(dy_view_schema);
-
-  const handleReady = (instance: any) => {
-    console.log('DyRenderer ready', instance);
-  };
-
-  const handleUpdateSchema = () => {
-    setCurrentSchema({
-      ...currentSchema,
-      __props: {
-        ...currentSchema.__props,
-        __style: {
-          ...currentSchema.__props?.__style,
-          backgroundColor: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        }
-      }
-    });
-  };
-
-  return (
-    <div style={{ padding: '20px' }}>
-      <h1>DyRenderer React 集成示例</h1>
-      <button onClick={handleUpdateSchema} style={{ marginBottom: '16px' }}>
-        更新背景颜色
-      </button>
-      <DyRenderer
-        schema={currentSchema}
-        onReady={handleReady}
-        style={{ border: '1px solid #eee', borderRadius: '4px', padding: '16px' }}
-      />
-    </div>
-  );
-};
-```
-
-## 在线演示
-
-<DemoBlock>
-  <ReactIntegrationDemo />
-</DemoBlock>
+> 完整代码可在 [react-integration.tsx](./code/react-integration.tsx) 中查看
 
 ## 组件属性
 

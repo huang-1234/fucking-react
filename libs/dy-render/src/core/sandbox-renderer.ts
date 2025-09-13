@@ -189,8 +189,23 @@ export class SandboxRenderer {
    * 销毁沙箱
    */
   destroy(): void {
-    if (this.iframe && this.iframe.parentNode) {
-      this.iframe.parentNode.removeChild(this.iframe);
+    try {
+      // 安全地移除iframe
+      if (this.iframe) {
+        // 检查iframe是否仍在文档中
+        const isInDocument = document.body.contains(this.iframe);
+
+        if (isInDocument && this.iframe.parentNode) {
+          this.iframe.parentNode.removeChild(this.iframe);
+        }
+
+        // 清除引用
+        this.iframe = null as any;
+        this.iframeLoaded = false;
+        this.renderQueue = [];
+      }
+    } catch (error) {
+      console.error('Error destroying sandbox:', error);
     }
   }
 }

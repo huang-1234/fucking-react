@@ -5,9 +5,12 @@
 ## 示例代码
 
 ```typescript
-import { createRenderer } from 'dy-render';
-import { dy_view_schema } from './schema.mock';
+import { createRenderer } from '../../../src/utils/create-renderer';
+import { dy_view_schema } from '../../../types/schema.mock';
 
+/**
+ * 基本用法示例
+ */
 async function basicUsageExample() {
   // 创建容器
   const container = document.createElement('div');
@@ -28,7 +31,7 @@ async function basicUsageExample() {
   context.setData('user', { name: 'John', age: 30 });
 
   // 注册事件处理器
-  context.registerEventHandler('onTabClick', (tab) => {
+  context.registerEventHandler('onTabClick', (tab: string) => {
     console.log('Tab clicked:', tab);
   });
 
@@ -58,8 +61,11 @@ async function basicUsageExample() {
 }
 ```
 
+> 完整代码可在 [basic-usage.ts](./code/basic-usage.ts) 中查看
+
 ## 在线演示
-import { DemoBlock } from '../components';
+import { DemoBlock, BasicUsageDemo } from '../components';
+
 <DemoBlock>
   <BasicUsageDemo />
 </DemoBlock>

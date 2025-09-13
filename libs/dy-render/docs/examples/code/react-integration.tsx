@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createRenderer } from '../utils/create-renderer';
-import { DySchema } from '../../types/schema';
-import { dy_view_schema } from '../../types/schema.mock';
+import { createRenderer } from '../../../src/utils/create-renderer';
+import { DySchema } from '../../../types/schema';
+import { dy_view_schema } from '../../../types/schema.mock';
 
 interface DyRendererProps {
   schema: DySchema;
@@ -64,14 +64,9 @@ export const DyRenderer: React.FC<DyRendererProps> = ({
 
     return () => {
       isMounted = false;
-      // 销毁渲染实例，但不清空容器（React会处理DOM清理）
+      // 销毁渲染实例
       if (instanceRef.current) {
-        try {
-          // 只移除实例引用，不执行DOM操作
-          instanceRef.current = null;
-        } catch (err) {
-          console.error('Error during cleanup:', err);
-        }
+        instanceRef.current.destroy();
       }
     };
   }, [schema, onReady]);
@@ -148,7 +143,7 @@ export const DyRendererExample: React.FC = () => {
     <div style={{ padding: '20px' }}>
       <h1>DyRenderer React 集成示例</h1>
       <button onClick={handleUpdateSchema} style={{ marginBottom: '16px' }}>
-        更新背景颜色11
+        更新背景颜色
       </button>
       <DyRenderer
         schema={currentSchema}

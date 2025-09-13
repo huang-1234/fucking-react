@@ -9,10 +9,9 @@
 ## 示例代码
 
 import { DemoBlock } from '../components';
-```typescript
-import { createRenderer } from 'dy-render';
-import { dy_view_schema } from './schema.mock';
-
+import { createRenderer } from '../../../src/utils/create-renderer';
+import { dy_view_schema } from '../../../types/schema.mock';
+```ts
 async function performanceMonitorExample() {
   // 创建容器
   const container = document.createElement('div');
@@ -38,7 +37,7 @@ async function performanceMonitorExample() {
         ...dy_view_schema.__props,
         __style: {
           ...dy_view_schema.__props?.__style,
-          backgroundColor: `hsl(${i * 36}, 100%, 50%)`
+          backgroundColor: "hsl(" + (i * 36) + ", 100%, 50%)"
         }
       }
     };
@@ -80,6 +79,7 @@ async function performanceMonitorExample() {
   }
 }
 ```
+完整代码可在 [performance-monitor.ts](./code/performance-monitor.ts) 中查看
 
 ## 在线演示
 
@@ -254,8 +254,8 @@ class RenderPerformanceMonitor {
 
 性能监控工具提供了可视化图表，以柱状图的形式展示渲染时间：
 
-- **蓝色柱**：正常渲染（<100ms）
-- **红色柱**：慢渲染（>100ms）
+- **蓝色柱**：正常渲染（小于100ms）
+- **红色柱**：慢渲染（大于100ms）
 - **X轴**：渲染索引
 - **Y轴**：渲染时间（毫秒）
 

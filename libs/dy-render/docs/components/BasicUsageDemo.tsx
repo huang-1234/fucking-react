@@ -1,97 +1,128 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createRenderer } from '../../src/utils/create-renderer';
+import { dy_view_schema } from '../../types/schema.mock';
+import { DyMaterialProps, DySchema } from '../../types/schema';
 
 const BasicUsageDemo = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const rendererRef = useRef<any>(null);
+  const instanceRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isPerformanceVisible, setIsPerformanceVisible] = useState(false);
+  const [perfSvg, setPerfSvg] = useState<string>('');
+  const [currentSchema, setCurrentSchema] = useState<DySchema>(dy_view_schema);
 
   useEffect(() => {
-    // 模拟加载渲染器
-    setTimeout(() => {
-      setIsLoaded(true);
+    let isMounted = true;
 
-      // 模拟更新渲染
-      setTimeout(() => {
-        setIsUpdated(true);
+    async function initRenderer() {
+      try {
+        if (!containerRef.current) return;
 
-        // 模拟显示性能数据
-        setTimeout(() => {
-          setIsPerformanceVisible(true);
-        }, 1000);
-      }, 2000);
-    }, 1000);
+        // 创建渲染器
+        const renderer = await createRenderer({
+          enablePerformanceMonitor: true
+        });
+        rendererRef.current = renderer;
+
+        // 渲染Schema
+        const instance = await renderer.render(currentSchema, containerRef.current);
+        instanceRef.current = instance;
+
+        if (isMounted) {
+          setIsLoaded(true);
+
+          // 获取上下文
+          const context = renderer.getContext();
+
+          // 设置数据
+          context.setData('user', { name: 'John', age: 30 });
+
+          // 注册事件处理器
+          context.registerEventHandler('onTabClick', (tab: string) => {
+            console.log('Tab clicked:', tab);
+          });
+
+          // 5秒后更新渲染
+          setTimeout(async () => {
+            if (!isMounted) return;
+
+            // 修改Schema
+            const updatedSchema = {
+              ...currentSchema,
+              __props: {
+                ...currentSchema.__props,
+                __style: {
+                  ...currentSchema.__props?.__style,
+                  backgroundColor: '#ff0000'
+                }
+              }
+            } as DySchema<DyMaterialProps>;
+
+            setCurrentSchema(updatedSchema);
+
+            // 更新渲染
+            await instance.update(updatedSchema);
+            setIsUpdated(true);
+
+            // 显示性能数据
+            setTimeout(() => {
+              if (!isMounted) return;
+              const svg = renderer.visualizePerformance();
+              setPerfSvg(svg);
+              setIsPerformanceVisible(true);
+            }, 1000);
+          }, 2000);
+        }
+      } catch (err) {
+        console.error('Failed to render', err);
+      }
+    }
+
+    initRenderer();
+
+    return () => {
+      isMounted = false;
+      // 销毁渲染实例，但不清空容器（React会处理DOM清理）
+      if (instanceRef.current) {
+        try {
+          // 只移除实例引用，不执行DOM操作
+          instanceRef.current = null;
+        } catch (err) {
+          console.error('Error during cleanup:', err);
+        }
+      }
+    };
   }, []);
 
   return (
     <div>
       <div
-        ref={containerRef}
         style={{
           border: '1px solid #ccc',
           borderRadius: '4px',
           padding: '16px',
           minHeight: '200px',
-          position: 'relative',
-          backgroundColor: isUpdated ? '#ff0000' : '#000000',
-          color: '#ffffff'
+          position: 'relative'
         }}
       >
-        {!isLoaded ? (
-          <div style={{ textAlign: 'center', padding: '80px 0' }}>加载中...</div>
-        ) : (
-          <>
-            <div
-              style={{
-                padding: '10px',
-                borderTop: '1px solid #000',
-                borderBottom: '1px solid #000',
-                borderLeft: '1px solid #000',
-                marginBottom: '10px'
-              }}
-            >
-              Header
-            </div>
-            <div
-              style={{
-                padding: '10px'
-              }}
-            >
-              <div
-                style={{
-                  padding: '10px'
-                }}
-              >
-                <div style={{ marginBottom: '5px' }}>List Item 1</div>
-                <div style={{ marginBottom: '5px' }}>List Item 2</div>
-                <div style={{ marginBottom: '5px' }}>List Item 3</div>
-                <div style={{ marginBottom: '5px' }}>List Item 4</div>
-              </div>
-            </div>
-          </>
-        )}
+        <div
+          ref={containerRef}
+          style={{
+            minHeight: '168px'
+          }}
+        >
+          {!isLoaded && (
+            <div style={{ textAlign: 'center', padding: '80px 0' }}>加载中...</div>
+          )}
+        </div>
       </div>
 
       {isPerformanceVisible && (
         <div style={{ marginTop: '20px' }}>
           <h4>性能监控</h4>
-          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
-            <text x="200" y="20" textAnchor="middle" fontWeight="bold">Render Performance</text>
-            <rect x="50" y="50" width="20" height="100" fill="#4dabf7" />
-            <rect x="80" y="80" width="20" height="70" fill="#4dabf7" />
-            <rect x="110" y="40" width="20" height="110" fill="#ff6b6b" />
-            <rect x="140" y="60" width="20" height="90" fill="#4dabf7" />
-            <rect x="170" y="70" width="20" height="80" fill="#4dabf7" />
-            <rect x="200" y="30" width="20" height="120" fill="#ff6b6b" />
-            <rect x="230" y="50" width="20" height="100" fill="#4dabf7" />
-            <rect x="260" y="60" width="20" height="90" fill="#4dabf7" />
-            <rect x="290" y="50" width="20" height="100" fill="#4dabf7" />
-            <rect x="320" y="70" width="20" height="80" fill="#4dabf7" />
-            <line x1="40" y1="150" x2="360" y2="150" stroke="black" />
-            <line x1="40" y1="40" x2="40" y2="150" stroke="black" />
-            <text x="200" y="190" textAnchor="middle">Render Index</text>
-            <text x="10" y="100" textAnchor="middle" transform="rotate(-90, 10, 100)">Duration (ms)</text>
-          </svg>
+          <div dangerouslySetInnerHTML={{ __html: perfSvg }} />
         </div>
       )}
 

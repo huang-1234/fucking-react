@@ -8,13 +8,15 @@
 
 ## 示例代码
 
-
 import { DemoBlock, SandboxDemo } from '../components';
 
 ```typescript
-import { SandboxRenderer } from 'dy-render/core';
-import { dy_view_schema } from './schema.mock';
+import { SandboxRenderer } from '../../../src/core/sandbox-renderer';
+import { dy_view_schema } from '../../../types/schema.mock';
 
+/**
+ * 沙箱渲染示例
+ */
 async function sandboxRenderExample() {
   // 创建容器
   const container = document.createElement('div');
@@ -50,6 +52,8 @@ async function sandboxRenderExample() {
   });
 }
 ```
+
+> 完整代码可在 [sandbox-renderer.ts](./code/sandbox-renderer.ts) 中查看
 
 ## 在线演示
 

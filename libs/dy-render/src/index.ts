@@ -13,6 +13,9 @@ export * from './types';
 import { createRenderer } from './utils/create-renderer';
 export { createRenderer };
 
+// 导出React集成组件
+export { DyRenderer } from './react';
+
 /**
  * 默认导出创建渲染器函数
  */

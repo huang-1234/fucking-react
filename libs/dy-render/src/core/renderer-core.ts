@@ -67,8 +67,20 @@ export class RendererCore {
       // 解析Schema为渲染节点
       const renderTree = this.schemaParser.parse(schema);
 
-      // 清空容器
-      container.innerHTML = '';
+      // 安全地清空容器
+      try {
+        // 检查容器是否在文档中
+        const isInDocument = document.body.contains(container);
+
+        if (isInDocument) {
+          // 逐个移除子节点，而不是使用innerHTML
+          while (container.firstChild) {
+            container.removeChild(container.firstChild);
+          }
+        }
+      } catch (error) {
+        console.error('Error cleaning container before render:', error);
+      }
 
       // 渲染节点树
       const rootElement = await this.renderNode(renderTree, container);
@@ -109,11 +121,23 @@ export class RendererCore {
    * @param container 容器元素
    */
   private destroyRender(container: HTMLElement): void {
-    // 清空容器
-    container.innerHTML = '';
+    try {
+      // 检查容器是否仍在文档中
+      const isInDocument = document.body.contains(container);
 
-    // 移除渲染实例
-    this.renderInstances.delete(container);
+      // 只有当容器仍在文档中时才清空它
+      if (isInDocument) {
+        // 安全地清空容器
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning container:', error);
+    } finally {
+      // 移除渲染实例（无论如何都要执行）
+      this.renderInstances.delete(container);
+    }
   }
 
   /**
@@ -145,16 +169,39 @@ export class RendererCore {
     // 渲染子节点
     if (children && Array.isArray(children)) {
       for (const child of children) {
-        const childElement = await this.renderNode(child, element);
-        element.appendChild(childElement);
+        try {
+          const childElement = await this.renderNode(child, element);
+
+          // 安全地添加子元素
+          try {
+            element.appendChild(childElement);
+          } catch (error) {
+            console.error('Error appending child element:', error);
+          }
+        } catch (error) {
+          console.error('Error rendering child node:', error);
+        }
       }
     } else if (children && typeof children === 'string') {
       // 文本内容
-      element.textContent = children;
+      try {
+        element.textContent = children;
+      } catch (error) {
+        console.error('Error setting text content:', error);
+      }
     }
 
-    // 挂载到父容器
-    parent.appendChild(element);
+    // 安全地挂载到父容器
+    try {
+      // 检查父容器是否在文档中
+      const isInDocument = document.body.contains(parent);
+
+      if (isInDocument) {
+        parent.appendChild(element);
+      }
+    } catch (error) {
+      console.error('Error appending child to parent:', error);
+    }
 
     return element;
   }

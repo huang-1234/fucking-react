@@ -31,7 +31,7 @@ registerComponent(name: string, component: any, meta?: Partial<IComponentMeta>):
 | --- | --- | --- | --- |
 | name | string | 是 | 组件名称 |
 | component | any | 是 | 组件实现 |
-| meta | Partial<IComponentMeta> | 否 | 组件元数据 |
+| meta | Partial\<IComponentMeta\> | 否 | 组件元数据 |
 
 #### registerComponents
 
@@ -43,7 +43,7 @@ registerComponents(components: Record<string, any>): void
 
 | 参数名 | 类型 | 必填 | 描述 |
 | --- | --- | --- | --- |
-| components | Record<string, any> | 是 | 组件映射表 |
+| components | Record\<string, any\> | 是 | 组件映射表 |
 
 #### getComponent
 
@@ -150,7 +150,7 @@ interface IComponentMeta {
 | --- | --- | --- |
 | name | string | 组件名称 |
 | component | any | 组件实现 |
-| props | Record<string, any> | 组件属性 |
+| props | Record\<string, any\> | 组件属性 |
 
 ## 组件命名规范
 

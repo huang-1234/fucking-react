@@ -1,0 +1,44 @@
+# 示例代码
+
+这里提供了低代码渲染引擎的所有示例代码，您可以直接查看和下载。
+
+## 基础用法
+
+- [basic-usage.ts](./basic-usage.ts) - 展示低代码渲染引擎的基础用法
+
+## React 集成
+
+- [react-integration.tsx](./react-integration.tsx) - 展示如何在 React 应用中集成低代码渲染引擎
+
+## 沙箱渲染
+
+- [sandbox-renderer.ts](./sandbox-renderer.ts) - 展示如何使用沙箱渲染器提供安全的渲染环境
+
+## 性能监控
+
+- [performance-monitor.ts](./performance-monitor.ts) - 展示如何使用性能监控工具跟踪和可视化渲染性能
+
+## 如何运行示例
+
+1. 克隆代码仓库
+2. 安装依赖：`pnpm install`
+3. 构建项目：`pnpm build`
+4. 运行示例：`pnpm examples`
+
+## 在自己的项目中使用
+
+```bash
+# 安装依赖
+npm install dy-render
+
+# 使用渲染引擎
+import { createRenderer } from 'dy-render';
+import schema from './schema.json';
+
+// 创建渲染器
+const renderer = await createRenderer();
+
+// 渲染Schema
+const container = document.getElementById('app');
+const instance = await renderer.render(schema, container);
+```

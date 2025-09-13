@@ -74,8 +74,8 @@ interface IRenderOptions {
 | --- | --- | --- | --- |
 | enableSandbox | boolean | 否 | 是否启用沙箱模式 |
 | enablePerformanceMonitor | boolean | 否 | 是否启用性能监控 |
-| customComponentMap | Record<string, any> | 否 | 自定义组件映射 |
-| customUtils | Record<string, Function> | 否 | 自定义工具函数 |
+| customComponentMap | Record\<string, any\> | 否 | 自定义组件映射 |
+| customUtils | Record\<string, Function\> | 否 | 自定义工具函数 |
 
 ## IRenderInstance
 
@@ -97,7 +97,7 @@ interface IRenderInstance {
 | 属性名 | 类型 | 描述 |
 | --- | --- | --- |
 | container | HTMLElement | 容器元素 |
-| update | (schema: DySchema) => Promise<void> | 更新渲染方法 |
+| update | (schema: DySchema) => Promise\<void\> | 更新渲染方法 |
 | destroy | () => void | 销毁渲染方法 |
 
 ### 示例
@@ -127,8 +127,8 @@ interface IAssetsPackage {
 
 | 属性名 | 类型 | 必填 | 描述 |
 | --- | --- | --- | --- |
-| components | Record<string, any> | 是 | 组件映射 |
-| utils | Record<string, Function> | 否 | 工具函数 |
+| components | Record\<string, any\> | 是 | 组件映射 |
+| utils | Record\<string, Function\> | 否 | 工具函数 |
 
 ### 示例
 
