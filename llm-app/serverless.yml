@@ -1,44 +1,79 @@
-service: nestjs-llm-app
-
-plugins:
-  - serverless-webpack
-  - serverless-offline
-  - serverless-dotenv-plugin
-  - serverless-prune-plugin
+service: llm-app-service
 
 provider:
   name: aws
   runtime: nodejs18.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
-  memorySize: 512
+  memorySize: 1024
   timeout: 30
   environment:
     NODE_ENV: ${opt:stage, 'dev'}
-    OPENAI_API_KEY: ${env:OPENAI_API_KEY}
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY, ''}
     OPENAI_BASE_URL: ${env:OPENAI_BASE_URL, ''}
     OPENAI_DEFAULT_MODEL: ${env:OPENAI_DEFAULT_MODEL, 'gpt-3.5-turbo'}
+    SPARK_API_KEY: ${env:SPARK_API_KEY, ''}
+    SPARK_API_SECRET: ${env:SPARK_API_SECRET, ''}
+    SPARK_APP_ID: ${env:SPARK_APP_ID, ''}
+    DATABASE_HOST: ${env:DATABASE_HOST, ''}
+    DATABASE_PORT: ${env:DATABASE_PORT, '5432'}
+    DATABASE_USERNAME: ${env:DATABASE_USERNAME, ''}
+    DATABASE_PASSWORD: ${env:DATABASE_PASSWORD, ''}
+    DATABASE_NAME: ${env:DATABASE_NAME, ''}
+    REDIS_HOST: ${env:REDIS_HOST, ''}
+    REDIS_PORT: ${env:REDIS_PORT, '6379'}
+    REDIS_PASSWORD: ${env:REDIS_PASSWORD, ''}
+    JWT_SECRET: ${env:JWT_SECRET, 'your-secret-key'}
+    CORS_ORIGIN: ${env:CORS_ORIGIN, '*'}
+    AI_DEFAULT_PROVIDER: ${env:AI_DEFAULT_PROVIDER, 'openai'}
   apiGateway:
     binaryMediaTypes:
+      - 'multipart/form-data'
       - 'application/octet-stream'
       - 'image/*'
 
-functions:
-  api:
-    handler: src/serverless.handler
-    events:
-      - http:
-          method: any
-          path: /{proxy+}
-          cors: true
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-plugin-warmup
 
 custom:
   webpack:
-    webpackConfig: 'webpack.config.js'
+    webpackConfig: ./webpack.config.js
     includeModules: true
     packager: 'npm'
-  serverless-offline:
-    httpPort: 3000
-  prune:
-    automatic: true
-    number: 3
+  warmup:
+    default:
+      enabled: true
+      concurrency: 5
+      events:
+        - schedule: rate(5 minutes)
+      prewarm: true
+
+functions:
+  api:
+    handler: src/serverless.optimized.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+          cors: true
+    warmup:
+      default:
+        enabled: true
+
+package:
+  individually: true
+  exclude:
+    - .git/**
+    - node_modules/**
+    - test/**
+    - src/**/*.spec.ts
+    - src/**/*.test.ts
+    - coverage/**
+    - .vscode/**
+    - .idea/**
+    - .github/**
+    - docs/**
+    - uploads/**

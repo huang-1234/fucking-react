@@ -1,57 +1,62 @@
 const path = require('path');
+const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
-const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
-module.exports = function (options, webpack) {
-  const lazyImports = [
-    '@nestjs/microservices/microservices-module',
-    '@nestjs/websockets/socket-module',
-    '@nestjs/platform-express',
-    'class-validator',
-    'class-transformer',
-    '@codegenie/serverless-express',
-  ];
-
-  return {
-    entry: ['./src/main.ts'],
-    externals: [
-      nodeExternals({
-        allowlist: ['webpack/hot/poll?100'],
-      }),
-    ],
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          use: 'ts-loader',
-          exclude: /node_modules/,
+module.exports = {
+  context: __dirname,
+  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
+  entry: slsw.lib.entries,
+  devtool: slsw.lib.webpack.isLocal ? 'eval-cheap-module-source-map' : 'source-map',
+  resolve: {
+    extensions: ['.mjs', '.json', '.ts', '.js'],
+    symlinks: false,
+    cacheWithContext: false,
+  },
+  output: {
+    libraryTarget: 'commonjs',
+    path: path.join(__dirname, '.webpack'),
+    filename: '[name].js',
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+          keep_fnames: true,
         },
-      ],
-    },
-    output: {
-      path: path.join(__dirname, 'dist'),
-      filename: 'main.js',
-    },
-    plugins: [
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.WatchIgnorePlugin({
-        paths: [/\.js$/, /\.d\.ts$/],
       }),
-      new RunScriptWebpackPlugin({ name: 'main.js', autoRestart: false }),
     ],
-    resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
-      symlinks: false,
-      cacheWithContext: false,
-    },
-    optimization: {
-      minimize: false,
-    },
-    target: 'node',
-    ignoreWarnings: [
+  },
+  target: 'node',
+  externals: [
+    nodeExternals({
+      modulesFromFile: {
+        include: ['dependencies'],
+        exclude: ['devDependencies'],
+      },
+    }),
+  ],
+  module: {
+    rules: [
       {
-        module: new RegExp(lazyImports.join('|')),
+        test: /\.(tsx?)$/,
+        loader: 'ts-loader',
+        exclude: [
+          [
+            path.resolve(__dirname, 'node_modules'),
+            path.resolve(__dirname, '.serverless'),
+            path.resolve(__dirname, '.webpack'),
+          ],
+        ],
+        options: {
+          transpileOnly: true,
+          experimentalWatchApi: true,
+        },
       },
     ],
-  };
+  },
+  plugins: [],
+  stats: 'normal',
 };
