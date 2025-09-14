@@ -10,6 +10,7 @@ export class ParamValidationMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     try {
+      this.logger.debug(`${req.method} ${req.path} 请求参数: ${JSON.stringify(req.body)}`);
       // 处理GET请求参数
       if (req.method === 'GET') {
         this.validateQueryParams(req);
@@ -24,6 +25,7 @@ export class ParamValidationMiddleware implements NestMiddleware {
       this.logRequestParams(req);
 
       next();
+      this.logger.debug(`${req.method} ${req.path} 响应参数: ${JSON.stringify(res)}`);
     } catch (error: any) {
       this.logger.error(`参数验证失败: ${error.message}`, error.stack);
       throw new BadRequestException({

@@ -11,7 +11,7 @@ import { CacheController } from './cache.controller';
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
+      useFactory: (async (configService: ConfigService) => {
         const redisConfig = configService.get('redis');
 
         // 检查Redis配置是否存在
@@ -36,7 +36,7 @@ import { CacheController } from './cache.controller';
             ttl: 60 * 60 * 1000, // 默认缓存1小时
           };
         }
-      },
+      }) as any,
     }),
   ],
   controllers: [CacheController],

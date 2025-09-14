@@ -1,9 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { CacheService } from '../cache/cache.service';
 import { ModelProviderFactory } from './factories/model-provider.factory';
-import { ModelProviderType, ModelProvider } from './interfaces/model-provider.interface';
+import { ModelProviderType, ModelProvider, ChatCompletionMessageParam } from './interfaces/model-provider.interface';
 
 @Injectable()
 export class AiService {

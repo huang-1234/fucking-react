@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import OpenAI from 'openai';
-import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
-import { ModelProvider, ModelConfig } from '../interfaces/model-provider.interface';
+import { ModelProvider, ModelConfig, ChatCompletionMessageParam } from '../interfaces/model-provider.interface';
 
 @Injectable()
 export class OpenAiProviderService implements ModelProvider {
@@ -25,7 +24,7 @@ export class OpenAiProviderService implements ModelProvider {
       const model = options?.model || this.config.defaultModel || 'gpt-3.5-turbo';
       const completion = await this.openai.chat.completions.create({
         model,
-        messages,
+        messages: messages as any, // 类型转换以兼容OpenAI API
         temperature: options?.temperature || 0.7,
         max_tokens: options?.maxTokens || 1000,
       });
@@ -44,7 +43,7 @@ export class OpenAiProviderService implements ModelProvider {
       const model = options?.model || this.config.defaultModel || 'gpt-3.5-turbo';
       const stream = await this.openai.chat.completions.create({
         model,
-        messages,
+        messages: messages as any, // 类型转换以兼容OpenAI API
         stream: true,
         temperature: options?.temperature || 0.7,
         max_tokens: options?.maxTokens || 1000,

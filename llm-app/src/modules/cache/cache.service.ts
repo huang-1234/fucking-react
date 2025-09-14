@@ -36,7 +36,7 @@ export class CacheService {
 
   async reset(): Promise<void> {
     try {
-      await this.cacheManager.reset();
+      await this.cacheManager.clear();
     } catch (error: any) {
       this.logger.error(`重置缓存失败: ${error.message}`, error.stack);
     }
