@@ -1,0 +1,50 @@
+// 创建图空间
+CREATE SPACE IF NOT EXISTS basketballplayer (vid_type = FIXED_STRING(30));
+
+// 使用图空间
+USE basketballplayer;
+
+// 等待图空间创建完成
+:sleep 5;
+
+// 创建标签和边类型
+CREATE TAG IF NOT EXISTS player(name string, age int);
+CREATE EDGE IF NOT EXISTS follow(degree int);
+
+// 等待索引创建完成
+:sleep 5;
+
+// 创建索引
+CREATE TAG INDEX IF NOT EXISTS player_name_index ON player(name(20));
+
+// 等待索引创建完成
+:sleep 5;
+
+// 插入球员顶点
+INSERT VERTEX player(name, age) VALUES "player100":("Tim Duncan", 42);
+INSERT VERTEX player(name, age) VALUES "player101":("Tony Parker", 36);
+INSERT VERTEX player(name, age) VALUES "player102":("LaMarcus Aldridge", 33);
+INSERT VERTEX player(name, age) VALUES "player103":("Rudy Gay", 32);
+INSERT VERTEX player(name, age) VALUES "player104":("Marco Belinelli", 32);
+INSERT VERTEX player(name, age) VALUES "player105":("Danny Green", 31);
+INSERT VERTEX player(name, age) VALUES "player106":("Kyle Anderson", 25);
+INSERT VERTEX player(name, age) VALUES "player107":("Aron Baynes", 32);
+INSERT VERTEX player(name, age) VALUES "player108":("Boris Diaw", 36);
+INSERT VERTEX player(name, age) VALUES "player109":("Tiago Splitter", 34);
+
+// 插入关注边
+INSERT EDGE follow(degree) VALUES "player101" -> "player100":(95);
+INSERT EDGE follow(degree) VALUES "player101" -> "player102":(90);
+INSERT EDGE follow(degree) VALUES "player102" -> "player100":(75);
+INSERT EDGE follow(degree) VALUES "player103" -> "player100":(70);
+INSERT EDGE follow(degree) VALUES "player104" -> "player100":(80);
+INSERT EDGE follow(degree) VALUES "player105" -> "player100":(80);
+INSERT EDGE follow(degree) VALUES "player106" -> "player100":(80);
+INSERT EDGE follow(degree) VALUES "player107" -> "player100":(80);
+INSERT EDGE follow(degree) VALUES "player108" -> "player100":(80);
+INSERT EDGE follow(degree) VALUES "player109" -> "player100":(80);
+INSERT EDGE follow(degree) VALUES "player100" -> "player101":(95);
+
+// 查询验证
+MATCH (v:player) RETURN id(v) AS id, v.name AS name, v.age AS age LIMIT 10;
+GO FROM "player101" OVER follow YIELD dst(edge) AS id, properties(edge).degree AS degree;

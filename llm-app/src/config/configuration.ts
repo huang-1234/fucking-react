@@ -3,6 +3,14 @@ export default () => ({
     defaultProvider: process.env.AI_DEFAULT_PROVIDER || 'openai',
   },
   port: parseInt(process.env.PORT || '3000', 10),
+  nebula: {
+    host: process.env.NEBULA_HOST || 'localhost',
+    port: parseInt(process.env.NEBULA_PORT || '9669', 10),
+    username: process.env.NEBULA_USERNAME || 'root',
+    password: process.env.NEBULA_PASSWORD || 'nebula',
+    space: process.env.NEBULA_SPACE || 'basketballplayer',
+    poolSize: parseInt(process.env.NEBULA_POOL_SIZE || '10', 10),
+  },
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
     baseUrl: process.env.OPENAI_BASE_URL,

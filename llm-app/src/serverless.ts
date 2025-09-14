@@ -31,14 +31,16 @@ async function createServer(): Promise<Handler> {
 
   return serverlessExpress({
     app: expressApp,
-    binary: ['application/octet-stream', 'image/*']
+    binaryMimeTypes: ['application/octet-stream', 'image/*']
   });
 }
 
+import { Callback } from 'aws-lambda';
 export const handler: Handler = async (
   event: APIGatewayProxyEvent,
-  context: Context
+  context: Context,
+  callback: Callback
 ) => {
   server = server ?? (await createServer());
-  return server(event, context);
+  return server?.(event, context, callback);
 };

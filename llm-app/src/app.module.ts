@@ -14,6 +14,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FilesModule } from './modules/files/files.module';
 import { RedisCacheModule } from './modules/cache/cache.module';
+import { NebulaModule } from './modules/nebula/nebula.module';
+import { PlayerModule } from './modules/player/player.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -25,8 +27,39 @@ import { HealthController } from './health.controller';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        // 检查是否使用内存数据库
+        const useMemoryDb = configService.get('USE_MEMORY_DB') === 'true';
+
+        if (useMemoryDb) {
+          console.log('使用SQLite内存数据库模式');
+          return {
+            type: 'sqlite',
+            database: ':memory:',
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true,
+            logging: configService.get('NODE_ENV') !== 'production',
+            autoLoadEntities: true,
+          };
+        }
+
+        const dbConfig = configService.get('database');
+        console.log('尝试连接PostgreSQL数据库:', dbConfig.host);
+        return {
+          ...dbConfig,
+          autoLoadEntities: true,
+        };
+      },
+    }),
+    NebulaModule.forRootAsync({
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        ...configService.get('database'),
+        graphdHost: configService.get<string>('nebula.host') || 'localhost',
+        graphdPort: configService.get<number>('nebula.port') || 9669,
+        username: configService.get<string>('nebula.username') || 'root',
+        password: configService.get<string>('nebula.password') || 'nebula',
+        spaceName: configService.get<string>('nebula.space') || 'basketballplayer',
+        poolSize: configService.get<number>('nebula.poolSize') || 10,
       }),
     }),
     AiModule,
@@ -36,6 +69,7 @@ import { HealthController } from './health.controller';
     AuthModule,
     FilesModule,
     RedisCacheModule,
+    PlayerModule,
   ],
   controllers: [HealthController],
   providers: [
