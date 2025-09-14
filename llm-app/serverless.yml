@@ -1,0 +1,44 @@
+service: nestjs-llm-app
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-prune-plugin
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  memorySize: 512
+  timeout: 30
+  environment:
+    NODE_ENV: ${opt:stage, 'dev'}
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY}
+    OPENAI_BASE_URL: ${env:OPENAI_BASE_URL, ''}
+    OPENAI_DEFAULT_MODEL: ${env:OPENAI_DEFAULT_MODEL, 'gpt-3.5-turbo'}
+  apiGateway:
+    binaryMediaTypes:
+      - 'application/octet-stream'
+      - 'image/*'
+
+functions:
+  api:
+    handler: src/serverless.handler
+    events:
+      - http:
+          method: any
+          path: /{proxy+}
+          cors: true
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules: true
+    packager: 'npm'
+  serverless-offline:
+    httpPort: 3000
+  prune:
+    automatic: true
+    number: 3

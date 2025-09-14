@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "dist/server",
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "types": ["node", "jsdom", "koa", "koa-bodyparser", "koa-static", "serverless-http", "serverless-dotenv-plugin", "serverless-prune-plugin", "serverless-webpack", "webpack", "webpack-cli", "webpack-dev-server", "webpack-manifest-plugin", "webpack-node-externals", "redis", "@types/node", "@types/koa", "@types/koa-bodyparser", "@types/koa-static", "@types/serverless-http", "@types/supertest", "@vitest/coverage-v8", "cross-env", "css-loader", "mini-css-extract-plugin", "rimraf", "serverless", "serverless-offline", "supertest"],
+    "skipLibCheck": true
+  },
+  "include": ["src/server/**/*", "src/shared/**/*", "src/types/**/*"],
+  "exclude": ["src/client/**/*", "**/*.test.ts", "**/*.spec.ts"]
+}
