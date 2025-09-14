@@ -18,7 +18,7 @@ export class KnowledgeBaseController {
     try {
       await this.knowledgeBaseService.addDocument(body.content);
       return { success: true, message: '文档已成功添加到知识库' };
-    } catch (error) {
+    } catch (error: any) {
       return { success: false, message: error.message };
     }
   }

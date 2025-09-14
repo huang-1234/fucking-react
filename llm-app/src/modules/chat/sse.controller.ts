@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Sse, MessageEvent } from '@nestjs/common';
-import { Observable, from } from 'rxjs';
+import { Controller, Body, Sse, MessageEvent, Get } from '@nestjs/common';
+import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AiService } from '../ai/ai.service';
 import { Public } from '../../common/decorators/public.decorator';
@@ -26,5 +26,11 @@ export class SseChatController {
         data: JSON.stringify({ type: 'chunk', content: chunk }), // 发送数据块
       })),
     );
+  }
+  @Get('info')
+  async getInfo(): Promise<Observable<MessageEvent>> {
+    return of({
+      data: JSON.stringify({ type: 'info', content: 'info' }),
+    });
   }
 }

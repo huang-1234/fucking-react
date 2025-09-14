@@ -9,9 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "start": "node dist/main.js",
-    "start:dev": "ts-node src/main.ts",
-    "start:simple": "node start-simple.js",
+    "start": "node start.js",
     "start:prod": "node dist/main.js",
     "start:serverless": "serverless offline",
     "build": "tsc -p tsconfig.build.json",
@@ -50,6 +48,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.6",
     "@nestjs/platform-express": "^11.1.6",
+    "@nestjs/platform-socket.io": "^11.1.6",
     "@nestjs/websockets": "^11.1.6",
     "express": "^5.1.0",
     "isomorphic-style-loader": "^5.3.2",

@@ -24,6 +24,7 @@ export class ChatGateway {
   constructor(private readonly aiService: AiService) {}
 
   afterInit(server: Server) {
+    server.emit('info', { content: 'info' });
     this.logger.log('WebSocket服务器已初始化');
   }
 
