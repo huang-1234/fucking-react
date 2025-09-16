@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor, { type Monaco, type OnMount } from '@monaco-editor/react';
 import { Spin, Select, Switch, Button } from 'antd';
-import { CopyOutlined, CheckOutlined } from '@ant-design/icons';
-// import { Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import ResizeWindow from '../ResizeWindow';
 import styles from './MonacaReact.module.less';
 import * as monaco from 'monaco-editor';
-const [Copy, Check] = [CopyOutlined, CheckOutlined]
 // 支持的语言列表
 const LANGUAGES = [
   'javascript',
@@ -179,7 +177,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
           )}
           <Button
             size="small"
-            icon={copied ? <Check /> : <Copy />}
+            icon={copied ? <Check size={14} /> : <Copy size={14} />}
             onClick={copyToClipboard}
             type={copied ? "primary" : "default"}
           >
