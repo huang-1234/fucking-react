@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Tabs, Typography, Layout } from 'antd';
+import { Tabs, Typography } from 'antd';
 import DeepCloneModule from './modules/DeepClone';
 import ArrayFunctionsModule from './modules/ArrayFunctions';
 import LexicalScopeModule from './modules/LexicalScope';
@@ -9,9 +9,7 @@ import EventLoopModule from './modules/EventLoop';
 import PromiseModule from './modules/Promise';
 import AsyncAwaitModule from './modules/AsyncAwait';
 import StringMethodsModule from './modules/StringMethods';
-import stylesLayout from '@/layouts/container.module.less';
 const { Title, Paragraph } = Typography;
-const { Content } = Layout;
 
 const ECMAScriptPage: React.FC = () => {
   const items = [
@@ -70,7 +68,7 @@ const ECMAScriptPage: React.FC = () => {
         // entry.startTime 是 LCP 时间
         console.log(`最大内容绘制 (LCP): ${entry.startTime.toFixed(2)}ms`);
         // entry.element 是触发 LCP 的 DOM 元素
-        console.log("LCP 元素:", entry?.element);
+        console.log("LCP 元素:", entry.element);
       }
     });
 

@@ -3,8 +3,8 @@ packages:
   # - 'libs/*'
   - 'libs/dy-render'
   # - 'libs/dynamic/*'
-  # - 'apps/*'
-  - 'servers/*'
+  - 'apps/*'
+  # - 'servers/*'
   # - 'plugins/*'
   # - 'website'
   # exclude packages that are inside test directories

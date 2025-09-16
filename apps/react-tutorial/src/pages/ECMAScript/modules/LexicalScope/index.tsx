@@ -1,87 +1,10 @@
 import React, { useState } from 'react';
 import { Row, Col, Button, Card, Typography, Divider, Steps } from 'antd';
 import { CodeBlock } from '@/components/CodeBlock';
-
+import { lexicalScopeCode, closureCode, scopeChainCode, blockScopeCode } from './common';
+import CodePreview from '@/components/CodePreview';
 const { Title, Paragraph, Text } = Typography;
 const { Step } = Steps;
-
-// 词法作用域示例代码
-const lexicalScopeCode = `function outer() {
-  const a = 10;
-
-  function inner() {
-    const b = 20;
-    console.log(a + b); // 访问外部作用域变量
-  }
-
-  return inner;
-}
-
-const innerFn = outer();
-innerFn(); // 输出: 30`;
-
-// 闭包示例代码
-const closureCode = `function createCounter() {
-  let count = 0;
-
-  return {
-    increment() {
-      count++;
-      return count;
-    },
-    decrement() {
-      count--;
-      return count;
-    }
-  };
-}
-
-const counter = createCounter();
-console.log(counter.increment()); // 1
-console.log(counter.increment()); // 2
-console.log(counter.decrement()); // 1`;
-
-// 作用域链示例
-const scopeChainCode = `var global = 'global';
-
-function outer() {
-  var outerVar = 'outer';
-
-  function middle() {
-    var middleVar = 'middle';
-
-    function inner() {
-      var innerVar = 'inner';
-
-      console.log(innerVar);   // 'inner' - 当前作用域
-      console.log(middleVar);  // 'middle' - 父级作用域
-      console.log(outerVar);   // 'outer' - 祖父级作用域
-      console.log(global);     // 'global' - 全局作用域
-    }
-
-    inner();
-  }
-
-  middle();
-}
-
-outer();`;
-
-// 块级作用域示例
-const blockScopeCode = `function blockScopeDemo() {
-  // var 声明的变量没有块级作用域
-  if (true) {
-    var varVariable = 'var变量';
-    let letVariable = 'let变量';
-    const constVariable = 'const变量';
-  }
-
-  console.log(varVariable);     // 'var变量' - 可访问
-  console.log(letVariable);     // ReferenceError: letVariable is not defined
-  console.log(constVariable);   // ReferenceError: constVariable is not defined
-}
-
-blockScopeDemo();`;
 
 const LexicalScopeModule: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -193,7 +116,9 @@ const LexicalScopeModule: React.FC = () => {
 
         <Col span={12}>
           <Card title="词法作用域示例">
-            <CodeBlock code={lexicalScopeCode} language="javascript" />
+            <CodePreview lang="javascript">
+              {lexicalScopeCode}
+            </CodePreview>
             <Paragraph style={{ marginTop: 16 }}>
               在这个例子中，inner函数可以访问outer函数中定义的变量a，这就是词法作用域的体现。
               即使inner函数在全局作用域中被调用，它仍然可以访问其定义时所处的词法作用域中的变量。
@@ -203,7 +128,9 @@ const LexicalScopeModule: React.FC = () => {
 
         <Col span={12}>
           <Card title="闭包示例">
-            <CodeBlock code={closureCode} language="javascript" />
+            <CodePreview lang="javascript">
+              {closureCode}
+            </CodePreview>
             <Paragraph style={{ marginTop: 16 }}>
               闭包是词法作用域的实际应用。在这个例子中，increment和decrement函数形成了闭包，
               它们可以访问createCounter函数中的count变量，即使createCounter函数已经执行完毕。
@@ -213,7 +140,9 @@ const LexicalScopeModule: React.FC = () => {
 
         <Col span={24}>
           <Card title="作用域链示例">
-            <CodeBlock code={scopeChainCode} language="javascript" />
+            <CodePreview lang="javascript">
+              {scopeChainCode}
+            </CodePreview>
             <Paragraph style={{ marginTop: 16 }}>
               这个例子展示了嵌套函数中的作用域链。inner函数可以访问其自身作用域、middle作用域、outer作用域以及全局作用域中的变量。
             </Paragraph>
@@ -222,7 +151,9 @@ const LexicalScopeModule: React.FC = () => {
 
         <Col span={24}>
           <Card title="块级作用域（ES6）">
-            <CodeBlock code={blockScopeCode} language="javascript" />
+            <CodePreview lang="javascript">
+              {blockScopeCode}
+            </CodePreview>
             <Paragraph style={{ marginTop: 16 }}>
               ES6引入了let和const关键字，它们声明的变量具有块级作用域。这与var声明的变量不同，var声明的变量只有函数作用域。
             </Paragraph>

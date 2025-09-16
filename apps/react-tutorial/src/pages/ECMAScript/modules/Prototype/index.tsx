@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Card, Typography, Button, Tabs, Alert, Divider } from 'antd';
 import { CodeBlock } from '@/components/CodeBlock';
+import CodePreview from '@/components/CodePreview';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -449,7 +450,9 @@ const PrototypeModule: React.FC = () => {
                       当访问一个对象的属性或方法时，如果对象本身没有这个属性或方法，JavaScript引擎会沿着<Text code>__proto__</Text>链向上查找，
                       这个查找链被称为<Text strong>原型链</Text>。
                     </Paragraph>
-                    <CodeBlock code={prototypeBasicsCode} language="javascript" />
+                    <CodePreview lang="javascript">
+                      {prototypeBasicsCode}
+                    </CodePreview>
                   </Card>
                 </Col>
 
@@ -475,7 +478,9 @@ const PrototypeModule: React.FC = () => {
                       构造函数继承通过在子类构造函数中调用父类构造函数实现继承。这种方式可以解决引用类型共享的问题，
                       但无法继承父类原型上的方法。
                     </Paragraph>
-                    <CodeBlock code={constructorInheritanceCode} language="javascript" />
+                    <CodePreview lang="javascript">
+                      {constructorInheritanceCode}
+                    </CodePreview>
                   </Card>
                 </Col>
 
@@ -485,7 +490,9 @@ const PrototypeModule: React.FC = () => {
                       原型链继承通过将子类的原型指向父类的实例来实现继承。这种方式可以继承父类原型上的方法，
                       但引用类型的属性会被所有实例共享。
                     </Paragraph>
-                    <CodeBlock code={prototypeChainInheritanceCode} language="javascript" />
+                    <CodePreview lang="javascript">
+                      {prototypeChainInheritanceCode}
+                    </CodePreview>
                   </Card>
                 </Col>
 
@@ -495,7 +502,9 @@ const PrototypeModule: React.FC = () => {
                       组合继承结合了构造函数继承和原型链继承的优点，是JavaScript中最常用的继承模式。
                       它的缺点是父类构造函数会被调用两次。
                     </Paragraph>
-                    <CodeBlock code={combinationInheritanceCode} language="javascript" />
+                    <CodePreview lang="javascript">
+                      {combinationInheritanceCode}
+                    </CodePreview>
                   </Card>
                 </Col>
 
@@ -505,7 +514,9 @@ const PrototypeModule: React.FC = () => {
                       寄生组合继承是组合继承的优化版本，通过创建父类原型的副本并修改其constructor属性，
                       避免了调用两次父类构造函数。
                     </Paragraph>
-                    <CodeBlock code={parasiticalCombinationCode} language="javascript" />
+                    <CodePreview lang="javascript">
+                      {parasiticalCombinationCode}
+                    </CodePreview>
                   </Card>
                 </Col>
 
@@ -516,7 +527,9 @@ const PrototypeModule: React.FC = () => {
                     </Paragraph>
                     <Row gutter={16}>
                       <Col span={16}>
-                        <CodeBlock code={es6ClassInheritanceCode} language="javascript" />
+                        <CodePreview lang="javascript">
+                          {es6ClassInheritanceCode}
+                        </CodePreview>
                       </Col>
                       <Col span={8}>
                         <Card title="运行测试" size="small">

@@ -3,7 +3,7 @@
  * 支持 AMD、CJS、ESM、UMD 的多格式 JS 模块加载
  */
 
-import { createSandbox, customRequire, type SandboxContext } from "@dom-proxy/universal-module/Global/base";
+import { createSandbox, customRequire, type SandboxContext, detectModuleType } from "@dom-proxy/universal-module/Global/base";
 import { containsMaliciousCode } from "@dom-proxy/universal-module/Tools/code";
 
 
@@ -17,22 +17,6 @@ export enum ModuleType {
   UMD = 'umd',
   IIFE = 'iife',
 }
-
-/**
- * 通过代码特征识别模块类型
- * @param code 模块代码
- * @returns 模块类型
- */
-export const detectModuleType = (code: string): ModuleType => {
-  // 修改ESM检测正则，使其更准确地匹配export语句
-  if (/\bexport\s+(default\b|\{|\*|const\s+|let\s+|var\s+|function\s+|class\s+)|import\s+/.test(code)) return ModuleType.ESM;
-  if (/define\(.*?function\s*\(/.test(code)) return ModuleType.AMD;
-  // UMD检测需要在CJS之前，因为UMD通常也包含CJS的特征
-  if (/\(function\s*\([^)]*\broot\b[^)]*,\s*\bfactory\b[^)]*\)/.test(code)) return ModuleType.UMD;
-  if (/exports.*?\=|\bmodule\.exports\b/.test(code)) return ModuleType.CJS;
-  return ModuleType.IIFE; // 兜底为立即执行函数
-};
-
 
 /**
  * 执行 AMD 模块

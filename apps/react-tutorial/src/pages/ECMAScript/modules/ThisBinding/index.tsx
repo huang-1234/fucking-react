@@ -2,125 +2,9 @@ import React, { useState } from 'react';
 import { Row, Col, Button, Card, Typography, Divider, Space, Alert, Tabs } from 'antd';
 import { CodeBlock } from '@/components/CodeBlock';
 import CodePreview from '@/components/CodePreview';
-
+import { defaultBindingCode, implicitBindingCode, explicitBindingCode, newBindingCode, arrowFunctionCode, implementationCode, testCode } from './common';
 const { Title, Paragraph, Text } = Typography;
 
-// 默认绑定示例
-const defaultBindingCode = `// 默认绑定
-function foo() {
-  console.log(this.a);
-}
-
-var a = 'global';
-foo(); // 'global' (非严格模式) 或 undefined (严格模式)`;
-
-// 隐式绑定示例
-const implicitBindingCode = `// 隐式绑定
-const obj = {
-  a: 2,
-  foo: function() {
-    console.log(this.a);
-  }
-};
-
-obj.foo(); // 2
-
-// 隐式绑定丢失
-const bar = obj.foo;
-bar(); // undefined (因为this指向全局对象或undefined)`;
-
-// 显式绑定示例
-const explicitBindingCode = `// 显式绑定
-function bar() {
-  console.log(this.a);
-}
-
-const obj2 = { a: 3 };
-bar.call(obj2); // 3
-bar.apply(obj2); // 3
-
-// 硬绑定
-const boundBar = bar.bind(obj2);
-boundBar(); // 3`;
-
-// new绑定示例
-const newBindingCode = `// new 绑定
-function Baz(a) {
-  this.a = a;
-}
-
-const baz = new Baz(4);
-console.log(baz.a); // 4`;
-
-// 箭头函数绑定示例
-const arrowFunctionCode = `// 箭头函数的this
-const obj = {
-  a: 5,
-  foo: function() {
-    // 这里的this指向obj
-    console.log(this.a); // 5
-
-    // 箭头函数的this继承自外层函数
-    const arrowFn = () => {
-      console.log(this.a); // 5
-    };
-    arrowFn();
-
-    // 普通函数的this取决于调用方式
-    function normalFn() {
-      console.log(this.a); // undefined (因为this指向全局对象或undefined)
-    }
-    normalFn();
-  }
-};
-
-obj.foo();`;
-
-// 手动实现call/apply/bind
-const implementationCode = `// call 实现
-Function.prototype.myCall = function(context, ...args) {
-  context = context || window;
-  const fn = Symbol('fn');
-  context[fn] = this;
-  const result = context[fn](...args);
-  delete context[fn];
-  return result;
-};
-
-// apply 实现
-Function.prototype.myApply = function(context, argsArray = []) {
-  context = context || window;
-  const fn = Symbol('fn');
-  context[fn] = this;
-  const result = context[fn](...argsArray);
-  delete context[fn];
-  return result;
-};
-
-// bind 实现
-Function.prototype.myBind = function(context, ...args) {
-  const self = this;
-  return function(...innerArgs) {
-    return self.apply(context, [...args, ...innerArgs]);
-  };
-};`;
-
-// 测试代码
-const testCode = `function greet(greeting, punctuation) {
-  return greeting + ', ' + this.name + punctuation;
-}
-
-const person = { name: 'Alice' };
-
-// 测试 myCall
-console.log(greet.myCall(person, 'Hello', '!')); // "Hello, Alice!"
-
-// 测试 myApply
-console.log(greet.myApply(person, ['Hi', '?'])); // "Hi, Alice?"
-
-// 测试 myBind
-const boundGreet = greet.myBind(person, 'Hey');
-console.log(boundGreet('~')); // "Hey, Alice~"`;
 
 const ThisBindingModule: React.FC = () => {
   const [testResults, setTestResults] = useState<any>(null);
@@ -171,7 +55,9 @@ const ThisBindingModule: React.FC = () => {
       label: '默认绑定',
       children: (
         <Card bordered={false}>
-          <CodeBlock code={defaultBindingCode} language="javascript" />
+          <CodePreview lang="javascript">
+            {defaultBindingCode}
+          </CodePreview>
           <Paragraph style={{ marginTop: 16 }}>
             默认绑定是指当函数独立调用时（没有其他绑定规则），this指向全局对象（非严格模式）或undefined（严格模式）。
           </Paragraph>
@@ -183,7 +69,9 @@ const ThisBindingModule: React.FC = () => {
       label: '隐式绑定',
       children: (
         <Card bordered={false}>
-          <CodeBlock code={implicitBindingCode} language="javascript" />
+          <CodePreview lang="javascript">
+            {implicitBindingCode}
+          </CodePreview>
           <Paragraph style={{ marginTop: 16 }}>
             隐式绑定发生在函数通过对象属性被调用时，this指向调用该函数的对象。但是，当函数被赋值给变量后再调用，隐式绑定会丢失。
           </Paragraph>
@@ -195,7 +83,9 @@ const ThisBindingModule: React.FC = () => {
       label: '显式绑定',
       children: (
         <Card bordered={false}>
-          <CodeBlock code={explicitBindingCode} language="javascript" />
+          <CodePreview lang="javascript">
+            {explicitBindingCode}
+          </CodePreview>
           <Paragraph style={{ marginTop: 16 }}>
             显式绑定通过call、apply或bind方法明确指定函数调用时的this值。bind方法创建一个新函数，其this值被永久绑定到指定对象。
           </Paragraph>
@@ -207,7 +97,9 @@ const ThisBindingModule: React.FC = () => {
       label: 'new绑定',
       children: (
         <Card bordered={false}>
-          <CodeBlock code={newBindingCode} language="javascript" />
+          <CodePreview lang="javascript">
+            {newBindingCode}
+          </CodePreview>
           <Paragraph style={{ marginTop: 16 }}>
             使用new关键字调用函数时，会创建一个新对象，并将函数的this指向这个新对象。这是构造函数模式的基础。
           </Paragraph>
@@ -219,7 +111,9 @@ const ThisBindingModule: React.FC = () => {
       label: '箭头函数',
       children: (
         <Card bordered={false}>
-          <CodeBlock code={arrowFunctionCode} language="javascript" />
+          <CodePreview lang="javascript">
+            {arrowFunctionCode}
+          </CodePreview>
           <Paragraph style={{ marginTop: 16 }}>
             箭头函数没有自己的this，它的this继承自外层作用域。这使得箭头函数特别适合用在回调函数中，因为它会保留外层函数的this值。
           </Paragraph>
@@ -262,7 +156,9 @@ const ThisBindingModule: React.FC = () => {
 
         <Col span={24}>
           <Card title="手动实现call/apply/bind">
-            <CodeBlock code={implementationCode} language="javascript" />
+            <CodePreview lang="javascript">
+              {implementationCode}
+            </CodePreview>
 
             <Divider />
 
