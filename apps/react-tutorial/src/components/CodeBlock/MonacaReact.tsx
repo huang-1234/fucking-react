@@ -162,19 +162,15 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
             onChange={handleLanguageChange}
             style={{ width: 120 }}
             disabled={readOnly}
+            options={LANGUAGES.map(lang => ({ label: lang, value: lang }))}
           >
-            {LANGUAGES.map(lang => (
-              <Option key={lang} value={lang}>{lang}</Option>
-            ))}
           </Select>
           <Select
             value={selectedTheme}
             onChange={handleThemeChange}
             style={{ width: 120 }}
+            options={THEMES.map(t => ({ label: t, value: t }))}
           >
-            {THEMES.map(t => (
-              <Option key={t} value={t}>{t}</Option>
-            ))}
           </Select>
         </div>
         <div className={styles.toolbarRight}>
