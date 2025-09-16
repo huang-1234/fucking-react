@@ -88,7 +88,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
   // 编辑器内容变化时的回调
 
   // 处理编辑器加载完成
-  const handleEditorDidMount: OnMount = (editor, _monaco) => {
+  const handleEditorDidMount: OnMount = (editor: any, _monaco: any) => {
     editorRef.current = editor;
 
     // 配置编辑器
@@ -205,7 +205,8 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
             scrollBeyondLastLine: false,
             fontSize: 14,
             tabSize: 2,
-            automaticLayout: true
+            automaticLayout: true,
+            'semanticHighlighting.enabled': true,
           }}
           loading={<Spin tip="加载编辑器..." />}
         />
