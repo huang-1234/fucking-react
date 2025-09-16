@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE 测试页面</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.5;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #333;
+      }
+
+      h1 {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #eee;
+      }
+
+      #connection-status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+
+      .connected {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .connecting {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .disconnected {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      #events-container {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #eee;
+        padding: 10px;
+        background-color: #f9f9f9;
+      }
+
+      .event-item {
+        padding: 8px;
+        margin-bottom: 5px;
+        border-left: 3px solid #007bff;
+        background-color: #fff;
+      }
+
+      .event-item.system {
+        border-left-color: #28a745;
+      }
+
+      .event-item.error {
+        border-left-color: #dc3545;
+      }
+
+      .event-item.warning {
+        border-left-color: #ffc107;
+      }
+
+      .event-item pre {
+        margin: 0;
+        white-space: pre-wrap;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-right: 10px;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .btn-warning {
+        background-color: #ffc107;
+        color: #212529;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .system-status {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      .status-item {
+        background-color: #e9ecef;
+        padding: 10px;
+        border-radius: 4px;
+        text-align: center;
+      }
+
+      .status-value {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h1>SSE 测试页面</h1>
+
+    <div class="container">
+      <div class="card">
+        <div class="card-header">连接控制</div>
+        <div>
+          <p>状态: <span id="connection-status" class="connecting">连接中...</span></p>
+          <p>连接ID: <span id="connection-id">-</span></p>
+          <button id="connect-btn" class="btn btn-primary">连接</button>
+          <button id="disconnect-btn" class="btn btn-danger" disabled>断开</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">系统状态</div>
+        <div class="system-status">
+          <div class="status-item">
+            <div>CPU 使用率</div>
+            <div id="cpu-usage" class="status-value">-</div>
+          </div>
+          <div class="status-item">
+            <div>内存使用率</div>
+            <div id="memory-usage" class="status-value">-</div>
+          </div>
+          <div class="status-item">
+            <div>活动连接数</div>
+            <div id="active-connections" class="status-value">-</div>
+          </div>
+          <div class="status-item">
+            <div>运行时间</div>
+            <div id="uptime" class="status-value">-</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">发送消息</div>
+        <div>
+          <div class="form-group">
+            <label for="message-type">消息类型</label>
+            <select id="message-type" class="form-control">
+              <option value="info">信息</option>
+              <option value="warning">警告</option>
+              <option value="error">错误</option>
+              <option value="success">成功</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message-content">消息内容</label>
+            <input type="text" id="message-content" class="form-control" placeholder="输入消息内容...">
+          </div>
+          <button id="send-btn" class="btn btn-primary">发送</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">事件生成器</div>
+        <div>
+          <button id="start-generator-btn" class="btn btn-success">启动随机事件</button>
+          <button id="stop-generator-btn" class="btn btn-danger" disabled>停止随机事件</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          接收到的事件
+          <button id="clear-events-btn" class="btn btn-warning" style="float:right;margin:-5px 0;">清空</button>
+        </div>
+        <div id="events-container"></div>
+      </div>
+    </div>
+
+    <script>
+      let eventSource = null;
+
+      // DOM 元素
+      const connectBtn = document.getElementById('connect-btn');
+      const disconnectBtn = document.getElementById('disconnect-btn');
+      const connectionStatus = document.getElementById('connection-status');
+      const connectionId = document.getElementById('connection-id');
+      const eventsContainer = document.getElementById('events-container');
+      const clearEventsBtn = document.getElementById('clear-events-btn');
+      const sendBtn = document.getElementById('send-btn');
+      const messageType = document.getElementById('message-type');
+      const messageContent = document.getElementById('message-content');
+      const startGeneratorBtn = document.getElementById('start-generator-btn');
+      const stopGeneratorBtn = document.getElementById('stop-generator-btn');
+      const cpuUsage = document.getElementById('cpu-usage');
+      const memoryUsage = document.getElementById('memory-usage');
+      const activeConnections = document.getElementById('active-connections');
+      const uptime = document.getElementById('uptime');
+
+      // 添加事件到列表
+      function addEvent(type, data) {
+        const eventItem = document.createElement('div');
+        eventItem.className = `event-item ${type}`;
+
+        const timestamp = new Date().toLocaleTimeString();
+        let content = `<strong>${timestamp} - ${type}</strong>`;
+
+        if (data) {
+          content += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        eventItem.innerHTML = content;
+        eventsContainer.appendChild(eventItem);
+        eventsContainer.scrollTop = eventsContainer.scrollHeight;
+      }
+
+      // 连接到SSE
+      function connectToSSE() {
+        if (eventSource) {
+          eventSource.close();
+        }
+
+        connectionStatus.textContent = '连接中...';
+        connectionStatus.className = 'connecting';
+
+        // 连接到SSE端点
+        eventSource = new EventSource('http://localhost:5176/api/events');
+
+        eventSource.onopen = () => {
+          console.log('SSE连接已打开');
+        };
+
+        // 连接成功事件
+        eventSource.addEventListener('connected', (event) => {
+          const data = JSON.parse(event.data);
+          connectionStatus.textContent = '已连接';
+          connectionStatus.className = 'connected';
+          connectionId.textContent = data.id;
+          connectBtn.disabled = true;
+          disconnectBtn.disabled = false;
+          addEvent('connected', data);
+        });
+
+        // 初始数据事件
+        eventSource.addEventListener('init', (event) => {
+          const data = JSON.parse(event.data);
+          addEvent('init', data);
+        });
+
+        // 消息事件
+        eventSource.addEventListener('message', (event) => {
+          const data = JSON.parse(event.data);
+          addEvent(data.type || 'message', data);
+        });
+
+        // 系统状态事件
+        eventSource.addEventListener('system', (event) => {
+          const data = JSON.parse(event.data);
+          cpuUsage.textContent = `${data.cpu}%`;
+          memoryUsage.textContent = `${data.memory}%`;
+          activeConnections.textContent = data.connections;
+          uptime.textContent = formatUptime(data.uptime);
+          addEvent('system', data);
+        });
+
+        // 错误处理
+        eventSource.onerror = (error) => {
+          console.error('SSE连接错误:', error);
+          connectionStatus.textContent = '连接错误';
+          connectionStatus.className = 'disconnected';
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+          addEvent('error', { message: '连接错误或服务器关闭了连接' });
+
+          // 关闭连接
+          if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+          }
+        };
+      }
+
+      // 断开SSE连接
+      function disconnectSSE() {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+          connectionStatus.textContent = '已断开';
+          connectionStatus.className = 'disconnected';
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+          addEvent('info', { message: '已断开SSE连接' });
+        }
+      }
+
+      // 发送消息
+      function sendMessage() {
+        const type = messageType.value;
+        const content = messageContent.value;
+
+        if (!content) {
+          alert('请输入消息内容');
+          return;
+        }
+
+        fetch('http://localhost:5176/api/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ type, content })
+        })
+          .then(response => response.json())
+          .then(data => {
+            addEvent('info', { message: '消息已发送', data });
+            messageContent.value = '';
+          })
+          .catch(error => {
+            addEvent('error', { message: '发送消息失败', error: error.message });
+          });
+      }
+
+      // 启动随机事件生成器
+      function startGenerator() {
+        fetch('http://localhost:5176/api/events/start-generator', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ interval: 3000 })
+        })
+          .then(response => response.json())
+          .then(data => {
+            addEvent('info', { message: '随机事件生成器已启动', data });
+            startGeneratorBtn.disabled = true;
+            stopGeneratorBtn.disabled = false;
+          })
+          .catch(error => {
+            addEvent('error', { message: '启动随机事件生成器失败', error: error.message });
+          });
+      }
+
+      // 停止随机事件生成器
+      function stopGenerator() {
+        fetch('http://localhost:5176/api/events/stop-generator', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            addEvent('info', { message: '随机事件生成器已停止', data });
+            startGeneratorBtn.disabled = false;
+            stopGeneratorBtn.disabled = true;
+          })
+          .catch(error => {
+            addEvent('error', { message: '停止随机事件生成器失败', error: error.message });
+          });
+      }
+
+      // 格式化运行时间
+      function formatUptime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+
+        return `${hours}h ${minutes}m ${secs}s`;
+      }
+
+      // 事件监听
+      connectBtn.addEventListener('click', connectToSSE);
+      disconnectBtn.addEventListener('click', disconnectSSE);
+      clearEventsBtn.addEventListener('click', () => {
+        eventsContainer.innerHTML = '';
+      });
+      sendBtn.addEventListener('click', sendMessage);
+      startGeneratorBtn.addEventListener('click', startGenerator);
+      stopGeneratorBtn.addEventListener('click', stopGenerator);
+
+      // 页面加载时自动连接
+      window.addEventListener('load', () => {
+        addEvent('info', { message: '页面已加载' });
+        connectToSSE();
+      });
+    </script>
+  </body>
+</html>
