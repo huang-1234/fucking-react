@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Editor, { type OnMount } from '@monaco-editor/react';
+import Editor, { type Monaco, type OnMount } from '@monaco-editor/react';
 import { Spin, Select, Switch, Button } from 'antd';
 import { CopyOutlined, CheckOutlined } from '@ant-design/icons';
 import ResizeWindow from '../ResizeWindow';
 import styles from './MonacaReact.module.less';
-
+import * as monaco from 'monaco-editor';
 const { Option } = Select;
 
 // 支持的语言列表
@@ -88,7 +88,7 @@ const MonacoReact: React.FC<MonacoReactProps> = ({
   // 编辑器内容变化时的回调
 
   // 处理编辑器加载完成
-  const handleEditorDidMount: OnMount = (editor: any, _monaco: any) => {
+  const handleEditorDidMount: OnMount = (editor: monaco.editor.IStandaloneCodeEditor, _monaco: Monaco) => {
     editorRef.current = editor;
 
     // 配置编辑器
