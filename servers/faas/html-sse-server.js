@@ -2,10 +2,17 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { parse as parseUrl } from 'url';
 
 // 获取当前文件目录
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// 存储所有SSE连接
+const sseConnections = new Map();
+
+// 存储消息历史
+const messageHistory = [];
 
 // 创建一个简单的HTTP服务器
 const server = http.createServer((req, res) => {
@@ -18,6 +25,17 @@ const server = http.createServer((req, res) => {
   if (pathname === '/sse') {
     handleSSE(req, res);
     return;
+  }
+
+  // 处理API请求
+  if (pathname === '/api/messages') {
+    if (req.method === 'POST') {
+      handlePostMessage(req, res);
+      return;
+    } else if (req.method === 'GET') {
+      handleGetMessages(req, res);
+      return;
+    }
   }
 
   // 处理静态文件请求
@@ -64,48 +82,155 @@ function handleSSE(req, res) {
   const connectionId = `conn_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   console.log(`新SSE连接: ${connectionId}`);
 
+  // 存储连接
+  sseConnections.set(connectionId, res);
+
   // 发送连接成功事件
   sendEvent(res, 'connected', { id: connectionId });
 
   // 发送初始数据
   sendEvent(res, 'init', {
     message: '连接已初始化',
-    serverTime: new Date().toISOString()
+    serverTime: new Date().toISOString(),
+    messages: messageHistory.slice(-10) // 发送最近10条消息
   });
 
   // 设置心跳
   const heartbeatInterval = setInterval(() => {
-    res.write(': heartbeat\n\n');
+    try {
+      res.write(': heartbeat\n\n');
+    } catch (err) {
+      clearInterval(heartbeatInterval);
+      sseConnections.delete(connectionId);
+      console.log(`心跳失败，连接已关闭: ${connectionId}`);
+    }
   }, 15000);
-
-  // 定期发送消息
-  const messageInterval = setInterval(() => {
-    sendEvent(res, 'message', {
-      id: Date.now(),
-      type: 'update',
-      content: `服务器时间: ${new Date().toISOString()}`,
-      timestamp: Date.now()
-    });
-  }, 5000);
 
   // 定期发送系统状态
   const systemInterval = setInterval(() => {
-    sendEvent(res, 'system', {
-      cpu: Math.round(Math.random() * 100),
-      memory: Math.round(Math.random() * 100),
-      uptime: process.uptime(),
-      connections: 1, // 简化版只有一个连接
-      timestamp: Date.now()
-    });
+    try {
+      sendEvent(res, 'system', {
+        cpu: Math.round(Math.random() * 100),
+        memory: Math.round(Math.random() * 100),
+        uptime: process.uptime(),
+        connections: sseConnections.size,
+        timestamp: Date.now()
+      });
+    } catch (err) {
+      clearInterval(systemInterval);
+    }
   }, 10000);
 
   // 处理连接关闭
   req.on('close', () => {
     console.log(`SSE连接已关闭: ${connectionId}`);
     clearInterval(heartbeatInterval);
-    clearInterval(messageInterval);
     clearInterval(systemInterval);
+    sseConnections.delete(connectionId);
   });
+}
+
+// 处理POST消息请求
+function handlePostMessage(req, res) {
+  let body = '';
+
+  req.on('data', chunk => {
+    body += chunk.toString();
+
+    // 简单的防DoS攻击
+    if (body.length > 1e6) {
+      body = '';
+      res.writeHead(413, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ error: '请求体过大' }));
+      req.connection.destroy();
+    }
+  });
+
+  req.on('end', () => {
+    try {
+      const message = JSON.parse(body);
+
+      // 验证消息格式
+      if (!message.type || !message.content) {
+        res.writeHead(400, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ error: '消息格式不正确，需要type和content字段' }));
+        return;
+      }
+
+      // 添加消息ID和时间戳
+      const newMessage = {
+        id: Date.now(),
+        type: message.type,
+        content: message.content,
+        timestamp: message.timestamp || Date.now()
+      };
+
+      // 存储消息
+      messageHistory.push(newMessage);
+
+      // 限制消息历史大小
+      if (messageHistory.length > 100) {
+        messageHistory.shift();
+      }
+
+      // 广播消息给所有连接
+      broadcastMessage('message', newMessage);
+
+      // 返回成功响应
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ success: true, message: newMessage }));
+
+      console.log(`消息已广播: ${JSON.stringify(newMessage)}`);
+    } catch (err) {
+      res.writeHead(400, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ error: '无效的JSON格式' }));
+    }
+  });
+}
+
+// 处理GET消息请求
+function handleGetMessages(req, res) {
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
+  res.end(JSON.stringify({ messages: messageHistory }));
+}
+
+// 广播消息给所有连接
+function broadcastMessage(event, data) {
+  const message = formatSSEMessage(event, data);
+  let activeConnections = 0;
+
+  for (const [id, res] of sseConnections.entries()) {
+    try {
+      res.write(message);
+      activeConnections++;
+    } catch (err) {
+      console.log(`广播失败，连接已关闭: ${id}`);
+      sseConnections.delete(id);
+    }
+  }
+
+  console.log(`消息已广播给 ${activeConnections} 个连接`);
+  return activeConnections;
+}
+
+// 格式化SSE消息
+function formatSSEMessage(event, data) {
+  let message = '';
+
+  if (event) {
+    message += `event: ${event}\n`;
+  }
+
+  if (data) {
+    const dataStr = typeof data === 'object' ? JSON.stringify(data) : data;
+    message += `data: ${dataStr}\n`;
+  }
+
+  message += '\n';
+  return message;
 }
 
 // 发送SSE事件

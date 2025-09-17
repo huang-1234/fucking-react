@@ -83,6 +83,73 @@
         margin-bottom: 15px;
       }
 
+      /* 消息表单样式 */
+      .message-form {
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 14px;
+      }
+
+      textarea.form-control {
+        resize: vertical;
+        min-height: 60px;
+      }
+
+      /* 消息模板样式 */
+      .message-templates h3 {
+        font-size: 14px;
+        margin: 10px 0;
+        color: #666;
+      }
+
+      .template-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+
+      .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+
+      /* 按钮颜色变体 */
+      .template-btn[data-type="info"] {
+        background-color: #17a2b8;
+      }
+
+      .template-btn[data-type="warning"] {
+        background-color: #ffc107;
+        color: #212529;
+      }
+
+      .template-btn[data-type="error"] {
+        background-color: #dc3545;
+      }
+
+      .template-btn[data-type="success"] {
+        background-color: #28a745;
+      }
+
       /* 按钮样式 */
       .btn {
         display: inline-block;
@@ -324,6 +391,44 @@
                     <button id="clear-btn" class="btn btn-info">清空事件</button>
                 </div>
                 <div id="connection-status" class="status">未连接</div>
+            </div>
+
+            <div class="panel-section">
+                <h2>发送消息</h2>
+                <div class="message-form">
+                    <div class="form-group">
+                        <label for="message-type">消息类型:</label>
+                        <select id="message-type" class="form-control">
+                            <option value="info">信息</option>
+                            <option value="warning">警告</option>
+                            <option value="error">错误</option>
+                            <option value="success">成功</option>
+                            <option value="custom">自定义</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message-content">消息内容:</label>
+                        <textarea id="message-content" class="form-control" rows="3" placeholder="输入消息内容..."></textarea>
+                    </div>
+
+                    <div class="form-group custom-type-container" style="display: none;">
+                        <label for="custom-event-type">自定义事件类型:</label>
+                        <input type="text" id="custom-event-type" class="form-control" placeholder="输入事件类型...">
+                    </div>
+
+                    <button id="send-message-btn" class="btn btn-primary">发送消息</button>
+                </div>
+
+                <div class="message-templates">
+                    <h3>快速模板</h3>
+                    <div class="template-buttons">
+                        <button class="btn btn-sm template-btn" data-type="info" data-content="这是一条信息消息">信息消息</button>
+                        <button class="btn btn-sm template-btn" data-type="warning" data-content="这是一条警告消息">警告消息</button>
+                        <button class="btn btn-sm template-btn" data-type="error" data-content="这是一条错误消息">错误消息</button>
+                        <button class="btn btn-sm template-btn" data-type="success" data-content="操作成功完成">成功消息</button>
+                    </div>
+                </div>
             </div>
 
             <div class="panel-section">
@@ -652,10 +757,93 @@ function closeConnection() {
       disconnectBtn.addEventListener('click', disconnect);
       clearBtn.addEventListener('click', clearEvents);
 
+      // 发送消息功能
+      function setupMessageForm() {
+        const messageTypeSelect = document.getElementById('message-type');
+        const messageContent = document.getElementById('message-content');
+        const customEventType = document.getElementById('custom-event-type');
+        const customTypeContainer = document.querySelector('.custom-type-container');
+        const sendMessageBtn = document.getElementById('send-message-btn');
+        const templateBtns = document.querySelectorAll('.template-btn');
+
+        // 切换自定义事件类型输入框显示状态
+        messageTypeSelect.addEventListener('change', function() {
+          if (this.value === 'custom') {
+            customTypeContainer.style.display = 'block';
+          } else {
+            customTypeContainer.style.display = 'none';
+          }
+        });
+
+        // 发送消息按钮点击事件
+        sendMessageBtn.addEventListener('click', function() {
+          const type = messageTypeSelect.value;
+          const content = messageContent.value.trim();
+
+          if (!content) {
+            alert('请输入消息内容');
+            return;
+          }
+
+          // 准备消息数据
+          const messageData = {
+            type: type === 'custom' ? customEventType.value || 'custom' : type,
+            content: content,
+            timestamp: Date.now()
+          };
+
+          // 发送消息到服务器
+          sendMessageToServer(messageData);
+        });
+
+        // 快速模板按钮点击事件
+        templateBtns.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            const type = this.dataset.type;
+            const content = this.dataset.content;
+
+            messageTypeSelect.value = type;
+            messageContent.value = content;
+
+            // 触发change事件，确保自定义类型输入框状态正确
+            const event = new Event('change');
+            messageTypeSelect.dispatchEvent(event);
+          });
+        });
+      }
+
+      // 发送消息到服务器
+      function sendMessageToServer(messageData) {
+        // 检查连接状态
+        if (!eventSource || eventSource.readyState !== 1) {
+          addEvent('error', { message: '未连接到服务器，无法发送消息' });
+          return;
+        }
+
+        // 发送POST请求到服务器
+        fetch('/api/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(messageData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          addEvent('success', { message: '消息已发送', data: data });
+        })
+        .catch(error => {
+          addEvent('error', { message: '发送消息失败', error: error.toString() });
+        });
+      }
+
       // 初始化
       addEvent('info', '页面已加载');
       addEvent('info', `浏览器: ${navigator.userAgent}`);
       addEvent('info', `EventSource支持: ${typeof EventSource !== 'undefined' ? '是' : '否'}`);
+
+      // 初始化消息表单
+      setupMessageForm();
 
       // 页面卸载时关闭连接
       window.addEventListener('beforeunload', function () {
