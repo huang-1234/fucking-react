@@ -1,9 +1,9 @@
 packages:
   # - 'packages/*'
-  # - 'libs/*'
+  - 'libs/*'
   - 'libs/dy-render'
   # - 'libs/dynamic/*'
-  # - 'apps/*'
+  - 'apps/*'
   - 'servers/*'
   # - 'plugins/*'
   # - 'website'

@@ -2,8 +2,13 @@
   "cSpell.words": [
     "ahooks",
     "ahooksjs",
+    "antd",
     "Appstore",
+    "axios",
+    "classnames",
+    "cropperjs",
     "Deque",
+    "echarts",
     "formily",
     "gantt",
     "hoverable",
@@ -17,9 +22,14 @@
     "perfor",
     "pngquant",
     "proptypes",
+    "protobufjs",
+    "rehype",
+    "rollup",
     "Sider",
     "skiplist",
-    "treemap"
+    "systemjs",
+    "treemap",
+    "vitejs"
   ],
   "apiCenterServerPort": 10000
 }
