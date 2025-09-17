@@ -812,7 +812,7 @@ function closeConnection() {
         });
       }
 
-      // 发送消息到服务器
+        // 发送消息到服务器
       function sendMessageToServer(messageData) {
         // 检查连接状态
         if (!eventSource || eventSource.readyState !== 1) {
@@ -820,19 +820,28 @@ function closeConnection() {
           return;
         }
 
+        console.log('发送消息:', messageData);
+
         // 发送POST请求到服务器
-        fetch('/api/messages', {
+        fetch('/sse/messages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(messageData)
         })
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log('服务器响应:', data);
           addEvent('success', { message: '消息已发送', data: data });
         })
         .catch(error => {
+          console.error('发送消息错误:', error);
           addEvent('error', { message: '发送消息失败', error: error.toString() });
         });
       }

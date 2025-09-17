@@ -28,12 +28,22 @@ const server = http.createServer((req, res) => {
   }
 
   // 处理API请求
-  if (pathname === '/api/messages') {
+  if (pathname === '/api/messages' || pathname === '/sse/messages') {
     if (req.method === 'POST') {
       handlePostMessage(req, res);
       return;
     } else if (req.method === 'GET') {
       handleGetMessages(req, res);
+      return;
+    } else if (req.method === 'OPTIONS') {
+      // 处理预检请求
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '86400'
+      });
+      res.end();
       return;
     }
   }
@@ -132,6 +142,15 @@ function handleSSE(req, res) {
 
 // 处理POST消息请求
 function handlePostMessage(req, res) {
+  console.log('处理消息POST请求:', req.url);
+  console.log('请求头:', JSON.stringify(req.headers));
+
+  // 设置CORS头
+  const origin = req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
   let body = '';
 
   req.on('data', chunk => {
@@ -147,11 +166,21 @@ function handlePostMessage(req, res) {
   });
 
   req.on('end', () => {
+    console.log('收到的消息体:', body);
+
+    if (!body) {
+      res.writeHead(400, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ error: '请求体为空' }));
+      return;
+    }
+
     try {
       const message = JSON.parse(body);
+      console.log('解析后的消息:', message);
 
       // 验证消息格式
       if (!message.type || !message.content) {
+        console.log('消息格式错误:', message);
         res.writeHead(400, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ error: '消息格式不正确，需要type和content字段' }));
         return;
@@ -174,16 +203,21 @@ function handlePostMessage(req, res) {
       }
 
       // 广播消息给所有连接
-      broadcastMessage('message', newMessage);
+      const activeConnections = broadcastMessage('message', newMessage);
 
       // 返回成功响应
       res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({ success: true, message: newMessage }));
+      res.end(JSON.stringify({
+        success: true,
+        message: newMessage,
+        activeConnections: activeConnections
+      }));
 
       console.log(`消息已广播: ${JSON.stringify(newMessage)}`);
     } catch (err) {
+      console.error('解析JSON错误:', err.message);
       res.writeHead(400, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({ error: '无效的JSON格式' }));
+      res.end(JSON.stringify({ error: `无效的JSON格式: ${err.message}` }));
     }
   });
 }
@@ -289,7 +323,7 @@ function getContentType(extname) {
 }
 
 // 启动服务器
-const PORT = 5181;
+const PORT = 5182;
 server.listen(PORT, () => {
   console.log(`HTML SSE服务器运行在 http://localhost:${PORT}`);
   console.log(`SSE端点: http://localhost:${PORT}/sse`);
