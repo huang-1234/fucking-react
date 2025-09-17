@@ -10,6 +10,7 @@ import { reactVersionMenuItems } from './ReactVersionMenu';
 import AlgorithmPage from '@/pages/Algorithm';
 import loadable from '@loadable/component';
 import RichTextHomePage from '@/pages/RichTextHomePage';
+import LLMRichTextPage from '@/pages/RichTextHomePage/subpage/LLMRichTextPage';
 
 // 首页
 const HomePage = loadable(() => import('@/pages/HomePage'));
@@ -118,6 +119,13 @@ export const menuItems: IMenu[] = [
         label: 'Tinymce',
         icon: <CodeOutlined />,
         component: RichTextPage
+      },
+      // sse 大模型流式富文本
+      {
+        key: '/sse-rich-text',
+        label: 'SSE 大模型流式富文本',
+        icon: <CodeOutlined />,
+        component: LLMRichTextPage
       },
     ]
   },

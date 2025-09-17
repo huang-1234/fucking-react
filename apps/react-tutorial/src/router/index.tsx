@@ -4,6 +4,7 @@ import MainLayout from '../layouts/MainLayout';
 import React15Sandbox from '../sandbox/React15Sandbox';
 import APIVersionLayout from '../components/APIVersionLayout';
 import loadable from '@loadable/component';
+import LLMRichTextPage from '@/pages/RichTextHomePage/subpage/LLMRichTextPage';
 // 富文本
 const RichTextHomePage = loadable(/** webpackChunkName: "RichTextHomePage" */() => import('@/pages/RichTextHomePage'));
 // Markdown渲染
@@ -476,6 +477,14 @@ const routerBrowser = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <RichTextHomePage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'sse-rich-text',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <LLMRichTextPage />
               </Suspense>
             )
           }
