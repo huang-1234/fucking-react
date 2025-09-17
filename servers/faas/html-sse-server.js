@@ -53,6 +53,10 @@ function handleSSE(req, res) {
     'Access-Control-Allow-Credentials': 'true'
   });
 
+  // 记录API调用
+  console.log(`API调用: ${req.method} ${req.url}`);
+  console.log(`请求头: ${JSON.stringify(req.headers)}`);
+
   // 发送重试间隔
   res.write('retry: 3000\n\n');
 
@@ -160,7 +164,7 @@ function getContentType(extname) {
 }
 
 // 启动服务器
-const PORT = 5180;
+const PORT = 5181;
 server.listen(PORT, () => {
   console.log(`HTML SSE服务器运行在 http://localhost:${PORT}`);
   console.log(`SSE端点: http://localhost:${PORT}/sse`);
