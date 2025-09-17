@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE 简单测试</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      #status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+
+      .connecting {
+        background-color: #fff3cd;
+      }
+
+      .connected {
+        background-color: #d4edda;
+      }
+
+      .error {
+        background-color: #f8d7da;
+      }
+
+      #events {
+        height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-top: 10px;
+      }
+
+      .event {
+        margin-bottom: 5px;
+        padding: 5px;
+        border-bottom: 1px solid #eee;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h1>SSE 简单测试</h1>
+
+    <div id="status" class="connecting">正在连接...</div>
+
+    <button id="connect">连接</button>
+    <button id="disconnect" disabled>断开</button>
+    <button id="clear">清空日志</button>
+
+    <h2>事件日志</h2>
+    <div id="events"></div>
+
+    <script>
+      const statusDiv = document.getElementById('status');
+      const eventsDiv = document.getElementById('events');
+      const connectBtn = document.getElementById('connect');
+      const disconnectBtn = document.getElementById('disconnect');
+      const clearBtn = document.getElementById('clear');
+
+      let eventSource = null;
+
+      function addEvent(type, data) {
+        const eventDiv = document.createElement('div');
+        eventDiv.className = 'event';
+
+        const now = new Date().toLocaleTimeString();
+        let content = `<strong>${now} - ${type}:</strong> `;
+
+        if (typeof data === 'object') {
+          content += JSON.stringify(data);
+        } else {
+          content += data;
+        }
+
+        eventDiv.innerHTML = content;
+        eventsDiv.appendChild(eventDiv);
+        eventsDiv.scrollTop = eventsDiv.scrollHeight;
+      }
+
+      function connect() {
+        if (eventSource) {
+          eventSource.close();
+        }
+
+        statusDiv.className = 'connecting';
+        statusDiv.textContent = '正在连接...';
+
+        try {
+          // 使用相对路径
+          eventSource = new EventSource('/api/events');
+
+          addEvent('info', '尝试连接到 /api/events');
+
+          eventSource.onopen = function () {
+            addEvent('open', '连接已建立');
+          };
+
+          eventSource.addEventListener('connected', function (e) {
+            const data = JSON.parse(e.data);
+            statusDiv.className = 'connected';
+            statusDiv.textContent = `已连接 (ID: ${data.id})`;
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = false;
+            addEvent('connected', data);
+          });
+
+          eventSource.addEventListener('message', function (e) {
+            addEvent('message', JSON.parse(e.data));
+          });
+
+          eventSource.addEventListener('system', function (e) {
+            addEvent('system', JSON.parse(e.data));
+          });
+
+          eventSource.addEventListener('init', function (e) {
+            addEvent('init', JSON.parse(e.data));
+          });
+
+          eventSource.onerror = function (err) {
+            statusDiv.className = 'error';
+            statusDiv.textContent = '连接错误';
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            addEvent('error', '连接出错或已关闭');
+
+            if (eventSource) {
+              eventSource.close();
+              eventSource = null;
+            }
+          };
+        } catch (err) {
+          statusDiv.className = 'error';
+          statusDiv.textContent = `错误: ${err.message}`;
+          addEvent('exception', err.message);
+        }
+      }
+
+      function disconnect() {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+          statusDiv.className = '';
+          statusDiv.textContent = '已断开连接';
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+          addEvent('info', '已手动断开连接');
+        }
+      }
+
+      connectBtn.addEventListener('click', connect);
+      disconnectBtn.addEventListener('click', disconnect);
+      clearBtn.addEventListener('click', function () {
+        eventsDiv.innerHTML = '';
+      });
+
+      // 页面加载时自动连接
+      window.addEventListener('load', function () {
+        addEvent('info', '页面已加载，准备连接');
+        setTimeout(connect, 500); // 延迟500ms连接
+      });
+    </script>
+  </body>
+</html>

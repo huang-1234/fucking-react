@@ -88,7 +88,9 @@ export default function sseMiddleware(options = {}) {
     // 检查请求是否为SSE请求（通过路径或头部）
     const isSSERequest = ctx.path.includes('/api/events') ||
                          ctx.path.includes('/api/stream') ||
-                         ctx.headers.accept === 'text/event-stream';
+                         (ctx.headers.accept && ctx.headers.accept.includes('text/event-stream'));
+
+    console.log(`请求路径: ${ctx.path}, Accept头: ${ctx.headers.accept}, 是否SSE请求: ${isSSERequest}`);
 
     if (isSSERequest) {
       console.log('SSE request detected:', ctx.url);
@@ -98,9 +100,11 @@ export default function sseMiddleware(options = {}) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no' // 禁用Nginx缓冲
+        'X-Accel-Buffering': 'no', // 禁用Nginx缓冲
+        'Access-Control-Allow-Origin': '*'
       });
       ctx.status = 200;
+      ctx.flushHeaders(); // 立即发送响应头
 
       // 发送SSE头信息
       ctx.res.write(`retry: ${retry}\n\n`);

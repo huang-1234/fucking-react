@@ -283,7 +283,7 @@
         connectionStatus.className = 'connecting';
 
         // 连接到SSE端点
-        eventSource = new EventSource('http://localhost:5176/api/events');
+        eventSource = new EventSource('/api/events');
 
         eventSource.onopen = () => {
           console.log('SSE连接已打开');
@@ -362,7 +362,7 @@
           return;
         }
 
-        fetch('http://localhost:5176/api/messages', {
+        fetch('/api/messages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -381,7 +381,7 @@
 
       // 启动随机事件生成器
       function startGenerator() {
-        fetch('http://localhost:5176/api/events/start-generator', {
+        fetch('/api/events/start-generator', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -401,7 +401,7 @@
 
       // 停止随机事件生成器
       function stopGenerator() {
-        fetch('http://localhost:5176/api/events/stop-generator', {
+        fetch('/api/events/stop-generator', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

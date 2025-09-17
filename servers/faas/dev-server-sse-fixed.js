@@ -36,6 +36,21 @@ async function createServer() {
   // Add logger middleware
   app.use(loggerMiddleware);
 
+  // 添加CORS支持
+  app.use(async (ctx, next) => {
+    ctx.set('Access-Control-Allow-Origin', '*');
+    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+
+    // 处理OPTIONS请求
+    if (ctx.method === 'OPTIONS') {
+      ctx.status = 200;
+      return;
+    }
+
+    await next();
+  });
+
   console.log('Creating Vite server...');
   // Create Vite server in middleware mode with HMR support
   const vite = await createViteServer({
@@ -383,7 +398,7 @@ async function createServer() {
 
 console.log('Starting server...');
 createServer().then(app => {
-  const PORT = 5176;
+  const PORT = 5177;
   app.listen(PORT, () => {
     console.log(`SSR development server with SSE support running at http://localhost:${PORT}`);
     console.log('SSE endpoints available at:');
