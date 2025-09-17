@@ -38,7 +38,17 @@ async function createServer() {
 
   // 添加CORS支持
   app.use(async (ctx, next) => {
-    ctx.set('Access-Control-Allow-Origin', '*');
+    const origin = ctx.get('Origin');
+    if (origin) {
+      // 如果有Origin头，设置为具体的源
+      ctx.set('Access-Control-Allow-Origin', origin);
+      ctx.set('Access-Control-Allow-Credentials', 'true');
+      ctx.set('Vary', 'Origin');
+    } else {
+      // 否则允许所有源
+      ctx.set('Access-Control-Allow-Origin', '*');
+    }
+
     ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 

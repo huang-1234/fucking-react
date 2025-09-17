@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE 调试页面</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .debug-panel {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .log-container {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+        .control-panel {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.connecting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+        .log-entry.info {
+            color: #0f0;
+        }
+        .log-entry.error {
+            color: #f00;
+        }
+        .log-entry.event {
+            color: #0ff;
+        }
+        .log-entry.debug {
+            color: #ff0;
+        }
+        .options-panel {
+            margin-bottom: 15px;
+        }
+        .options-panel label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .options-panel input, .options-panel select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SSE 连接调试</h1>
+
+    <div class="debug-panel">
+        <h2>连接选项</h2>
+        <div class="options-panel">
+            <label for="sse-url">SSE URL:</label>
+            <input type="text" id="sse-url" value="/api/events">
+
+            <label for="reconnect-time">重连时间 (ms):</label>
+            <input type="number" id="reconnect-time" value="3000">
+
+            <label for="with-credentials">使用凭据:</label>
+            <select id="with-credentials">
+                <option value="false" selected>false</option>
+                <option value="true">true</option>
+            </select>
+            <p style="font-size: 12px; color: #666; margin-top: -5px;">注意: 使用withCredentials=true可能会导致CORS错误</p>
+        </div>
+
+        <div class="control-panel">
+            <button id="connect-btn">连接</button>
+            <button id="disconnect-btn" disabled>断开</button>
+            <button id="clear-btn">清空日志</button>
+        </div>
+
+        <div id="connection-status" class="status">未连接</div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>连接日志</h2>
+        <div id="log-container" class="log-container"></div>
+    </div>
+
+    <script>
+        // DOM 元素
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const connectionStatus = document.getElementById('connection-status');
+        const logContainer = document.getElementById('log-container');
+        const sseUrlInput = document.getElementById('sse-url');
+        const reconnectTimeInput = document.getElementById('reconnect-time');
+        const withCredentialsSelect = document.getElementById('with-credentials');
+
+        // 全局变量
+        let eventSource = null;
+        let connectionAttempts = 0;
+        let connectionStartTime = null;
+
+        // 添加日志条目
+        function log(type, message) {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+
+            const timestamp = new Date().toISOString();
+            let content = `[${timestamp}] `;
+
+            if (typeof message === 'object') {
+                content += JSON.stringify(message, null, 2);
+            } else {
+                content += message;
+            }
+
+            entry.textContent = content;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // 连接到SSE
+        function connect() {
+            // 获取选项
+            const url = sseUrlInput.value;
+            const withCredentials = withCredentialsSelect.value === 'true';
+
+            // 重置连接状态
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+
+            // 更新UI
+            connectionStatus.textContent = '正在连接...';
+            connectionStatus.className = 'status connecting';
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = false;
+
+            // 记录连接尝试
+            connectionAttempts++;
+            connectionStartTime = Date.now();
+
+            // 记录日志
+            log('info', `尝试连接到 ${url} (尝试 #${connectionAttempts})`);
+            log('debug', `选项: withCredentials=${withCredentials}`);
+
+            try {
+                // 创建EventSource
+                log('debug', `创建 EventSource: url=${url}, withCredentials=${withCredentials}`);
+
+                // 在某些浏览器中，第二个参数可能会导致问题
+                if (withCredentials) {
+                    eventSource = new EventSource(url, { withCredentials });
+                } else {
+                    eventSource = new EventSource(url);
+                }
+
+                // 设置withCredentials
+                if (eventSource.withCredentials !== undefined) {
+                    eventSource.withCredentials = withCredentials;
+                    log('debug', `设置 withCredentials = ${withCredentials}`);
+                } else {
+                    log('debug', 'withCredentials 属性不可用');
+                }
+
+                // 记录日志
+                log('debug', `EventSource 已创建, readyState = ${eventSource.readyState}`);
+                log('debug', `URL = ${eventSource.url}`);
+
+                // 连接打开
+                eventSource.onopen = function(event) {
+                    const connectionTime = Date.now() - connectionStartTime;
+                    log('info', `连接已打开 (${connectionTime}ms)`);
+                    connectionStatus.textContent = '已连接';
+                    connectionStatus.className = 'status connected';
+                };
+
+                // 连接错误
+                eventSource.onerror = function(event) {
+                    const connectionTime = Date.now() - connectionStartTime;
+                    log('error', `连接错误 (${connectionTime}ms)`);
+                    log('debug', `readyState = ${eventSource.readyState}`);
+
+                    // 记录详细错误信息
+                    const errorInfo = {
+                        type: 'error',
+                        readyState: eventSource.readyState,
+                        url: eventSource.url,
+                        withCredentials: eventSource.withCredentials,
+                        connectionAttempts,
+                        connectionTime
+                    };
+                    log('error', errorInfo);
+
+                    // 更新UI
+                    connectionStatus.textContent = '连接错误';
+                    connectionStatus.className = 'status error';
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+
+                    // 关闭连接
+                    if (eventSource) {
+                        eventSource.close();
+                        eventSource = null;
+                    }
+
+                    // 自动重连
+                    const reconnectTime = parseInt(reconnectTimeInput.value) || 3000;
+                    log('info', `将在 ${reconnectTime}ms 后重新连接...`);
+
+                    setTimeout(function() {
+                        if (!eventSource) {
+                            connect();
+                        }
+                    }, reconnectTime);
+                };
+
+                // 消息事件
+                eventSource.onmessage = function(event) {
+                    log('event', `收到消息: ${event.data}`);
+                };
+
+                // 特定事件
+                const events = ['connected', 'init', 'message', 'system', 'close'];
+                events.forEach(function(eventName) {
+                    eventSource.addEventListener(eventName, function(event) {
+                        try {
+                            const data = JSON.parse(event.data);
+                            log('event', `收到 ${eventName} 事件: ${JSON.stringify(data)}`);
+                        } catch (e) {
+                            log('event', `收到 ${eventName} 事件: ${event.data}`);
+                        }
+                    });
+                });
+
+            } catch (error) {
+                log('error', `创建 EventSource 时出错: ${error.message}`);
+                connectionStatus.textContent = '连接错误';
+                connectionStatus.className = 'status error';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+            }
+        }
+
+        // 断开连接
+        function disconnect() {
+            if (eventSource) {
+                log('info', '手动断开连接');
+                eventSource.close();
+                eventSource = null;
+
+                connectionStatus.textContent = '已断开';
+                connectionStatus.className = 'status';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+            }
+        }
+
+        // 清空日志
+        function clearLog() {
+            logContainer.innerHTML = '';
+            log('info', '日志已清空');
+        }
+
+        // 事件监听
+        connectBtn.addEventListener('click', connect);
+        disconnectBtn.addEventListener('click', disconnect);
+        clearBtn.addEventListener('click', clearLog);
+
+        // 初始化
+        log('info', '调试页面已加载');
+        log('info', `浏览器: ${navigator.userAgent}`);
+        log('info', `EventSource 支持: ${typeof EventSource !== 'undefined'}`);
+
+        // 自动连接
+        setTimeout(connect, 1000);
+    </script>
+</body>
+</html>

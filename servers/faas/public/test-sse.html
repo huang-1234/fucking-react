@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极简SSE测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #log {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #f5f5f5;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 12px;
+        }
+        .controls {
+            margin-bottom: 10px;
+        }
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>极简SSE测试</h1>
+
+    <div class="controls">
+        <button id="connect1">连接方式1</button>
+        <button id="connect2">连接方式2</button>
+        <button id="disconnect" disabled>断开连接</button>
+        <button id="clear">清空日志</button>
+    </div>
+
+    <div class="status" id="status">未连接</div>
+
+    <div id="log"></div>
+
+    <script>
+        // DOM元素
+        const connect1Btn = document.getElementById('connect1');
+        const connect2Btn = document.getElementById('connect2');
+        const disconnectBtn = document.getElementById('disconnect');
+        const clearBtn = document.getElementById('clear');
+        const statusDiv = document.getElementById('status');
+        const logDiv = document.getElementById('log');
+
+        // 全局变量
+        let eventSource = null;
+
+        // 记录日志
+        function log(message) {
+            const now = new Date().toISOString();
+            const entry = `[${now}] ${message}\n`;
+            logDiv.textContent += entry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // 连接方式1：标准EventSource
+        function connectMethod1() {
+            try {
+                log('尝试连接方式1：标准EventSource');
+
+                if (eventSource) {
+                    eventSource.close();
+                }
+
+                statusDiv.textContent = '正在连接...';
+
+                // 使用标准方式创建EventSource
+                eventSource = new EventSource('/api/events');
+
+                log(`EventSource已创建：${eventSource.url}`);
+                log(`readyState: ${eventSource.readyState}`);
+
+                // 基本事件处理
+                eventSource.onopen = function() {
+                    log('连接已打开');
+                    statusDiv.textContent = '已连接';
+                    connect1Btn.disabled = true;
+                    connect2Btn.disabled = true;
+                    disconnectBtn.disabled = false;
+                };
+
+                eventSource.onerror = function(err) {
+                    log(`错误：${JSON.stringify(err)}`);
+                    log(`readyState: ${eventSource.readyState}`);
+
+                    statusDiv.textContent = '连接错误';
+                    connect1Btn.disabled = false;
+                    connect2Btn.disabled = false;
+                    disconnectBtn.disabled = true;
+
+                    if (eventSource) {
+                        eventSource.close();
+                        eventSource = null;
+                    }
+                };
+
+                eventSource.onmessage = function(event) {
+                    log(`收到消息：${event.data}`);
+                };
+
+                // 自定义事件
+                ['connected', 'init', 'system'].forEach(function(eventName) {
+                    eventSource.addEventListener(eventName, function(event) {
+                        log(`收到${eventName}事件：${event.data}`);
+                    });
+                });
+
+            } catch (err) {
+                log(`异常：${err.message}`);
+                statusDiv.textContent = `错误：${err.message}`;
+            }
+        }
+
+        // 连接方式2：使用XMLHttpRequest模拟
+        function connectMethod2() {
+            try {
+                log('尝试连接方式2：使用XMLHttpRequest模拟');
+
+                if (eventSource) {
+                    eventSource.close();
+                }
+
+                statusDiv.textContent = '正在连接...';
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', '/api/events', true);
+                xhr.setRequestHeader('Accept', 'text/event-stream');
+                xhr.onreadystatechange = function() {
+                    log(`XHR readyState变化：${xhr.readyState}`);
+
+                    if (xhr.readyState >= 3) {
+                        log(`XHR状态：${xhr.status}`);
+                        log(`XHR响应头：${xhr.getAllResponseHeaders()}`);
+
+                        if (xhr.status === 200) {
+                            statusDiv.textContent = '已连接(XHR)';
+                            connect1Btn.disabled = true;
+                            connect2Btn.disabled = true;
+                            disconnectBtn.disabled = false;
+                        } else {
+                            statusDiv.textContent = `错误：${xhr.status}`;
+                            connect1Btn.disabled = false;
+                            connect2Btn.disabled = false;
+                            disconnectBtn.disabled = true;
+                        }
+                    }
+                };
+
+                xhr.onprogress = function() {
+                    const newData = xhr.responseText;
+                    log(`收到数据：${newData.length}字节`);
+                    log(`数据片段：${newData.slice(-100)}`);
+                };
+
+                xhr.onerror = function(err) {
+                    log(`XHR错误：${JSON.stringify(err)}`);
+                    statusDiv.textContent = '连接错误';
+                    connect1Btn.disabled = false;
+                    connect2Btn.disabled = false;
+                    disconnectBtn.disabled = true;
+                };
+
+                xhr.send();
+                log('XHR请求已发送');
+
+                // 存储XHR以便后续关闭
+                eventSource = {
+                    xhr: xhr,
+                    close: function() {
+                        log('关闭XHR连接');
+                        xhr.abort();
+                    }
+                };
+
+            } catch (err) {
+                log(`异常：${err.message}`);
+                statusDiv.textContent = `错误：${err.message}`;
+            }
+        }
+
+        // 断开连接
+        function disconnect() {
+            if (eventSource) {
+                log('断开连接');
+                eventSource.close();
+                eventSource = null;
+
+                statusDiv.textContent = '已断开';
+                connect1Btn.disabled = false;
+                connect2Btn.disabled = false;
+                disconnectBtn.disabled = true;
+            }
+        }
+
+        // 清空日志
+        function clearLog() {
+            logDiv.textContent = '';
+            log('日志已清空');
+        }
+
+        // 事件监听
+        connect1Btn.addEventListener('click', connectMethod1);
+        connect2Btn.addEventListener('click', connectMethod2);
+        disconnectBtn.addEventListener('click', disconnect);
+        clearBtn.addEventListener('click', clearLog);
+
+        // 初始化
+        log('页面已加载');
+        log(`浏览器：${navigator.userAgent}`);
+        log(`EventSource支持：${typeof EventSource !== 'undefined'}`);
+    </script>
+</body>
+</html>

@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "dev": "node --watch dev-server.js",
+    "start:sse": "node html-sse-server.js",
     "dev:vite": "vite",
     "dev:webpack": "webpack-dev-server --config webpack.client.js",
     "dev:webpack:ssr": "node dev-server-webpack.js",

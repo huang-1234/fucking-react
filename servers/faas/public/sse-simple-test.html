@@ -129,12 +129,32 @@
             statusDiv.textContent = '连接错误';
             connectBtn.disabled = false;
             disconnectBtn.disabled = true;
-            addEvent('error', '连接出错或已关闭');
+
+            // 记录详细的错误信息
+            console.error('SSE错误对象:', err);
+            console.error('SSE readyState:', eventSource ? eventSource.readyState : 'eventSource为null');
+
+            // 添加更详细的错误信息
+            const errorInfo = {
+              message: '连接出错或已关闭',
+              readyState: eventSource ? eventSource.readyState : 'eventSource为null',
+              url: eventSource ? eventSource.url : '未知',
+              withCredentials: eventSource ? eventSource.withCredentials : '未知',
+              timestamp: new Date().toISOString()
+            };
+
+            addEvent('error', errorInfo);
 
             if (eventSource) {
               eventSource.close();
               eventSource = null;
             }
+
+            // 5秒后自动重连
+            setTimeout(function() {
+              addEvent('info', '尝试重新连接...');
+              connect();
+            }, 5000);
           };
         } catch (err) {
           statusDiv.className = 'error';

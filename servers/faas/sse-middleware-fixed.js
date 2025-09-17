@@ -96,12 +96,17 @@ export default function sseMiddleware(options = {}) {
       console.log('SSE request detected:', ctx.url);
 
       // 设置SSE响应头
+      const origin = ctx.get('Origin') || '*';
+      console.log(`请求来源: ${origin}`);
+
       ctx.set({
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
         'X-Accel-Buffering': 'no', // 禁用Nginx缓冲
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Credentials': 'true',
+        'Vary': 'Origin'
       });
       ctx.status = 200;
       ctx.flushHeaders(); // 立即发送响应头
