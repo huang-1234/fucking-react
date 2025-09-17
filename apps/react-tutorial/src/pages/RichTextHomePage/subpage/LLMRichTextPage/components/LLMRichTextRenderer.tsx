@@ -172,7 +172,7 @@ const LLMRichTextRenderer: React.FC<LLMRichTextRendererProps> = ({
   const renderChunks = () => {
     if (!chunks.length) return null;
 
-    return chunks.slice(0, currentChunkIndex + 1).map((chunk, index) => {
+    return chunks.slice(0, currentChunkIndex + 4).map((chunk, index) => {
       const isCurrentChunk = index === currentChunkIndex;
       const isChunkComplete = index < currentChunkIndex;
 
