@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const pathname = url.pathname;
 
-  console.log(`收到请求: ${req.method} ${pathname}`);
+  console.log(`收到请求: ${req.method} ${pathname}`, req.data);
 
   // 处理SSE请求
   if (pathname === '/sse') {
@@ -323,7 +323,7 @@ function getContentType(extname) {
 }
 
 // 启动服务器
-const PORT = 5182;
+const PORT = 5180;
 server.listen(PORT, () => {
   console.log(`HTML SSE服务器运行在 http://localhost:${PORT}`);
   console.log(`SSE端点: http://localhost:${PORT}/sse`);
