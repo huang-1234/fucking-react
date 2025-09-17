@@ -22,7 +22,9 @@
         min-height: 100vh;
       }
 
-      h1, h2, h3 {
+      h1,
+      h2,
+      h3 {
         color: #2c3e50;
       }
 
@@ -32,7 +34,7 @@
         color: white;
         padding: 15px 20px;
         text-align: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
 
       .main-header h1 {
@@ -43,7 +45,8 @@
       /* 布局容器 */
       .layout-container {
         display: flex;
-        min-height: calc(100vh - 54px); /* 减去header高度 */
+        min-height: calc(100vh - 54px);
+        /* 减去header高度 */
       }
 
       /* 左侧面板 */
@@ -298,7 +301,8 @@
         right: 15px;
         top: 50%;
         transform: translateY(-50%);
-        pointer-events: none; /* 确保点击事件传递到header元素 */
+        pointer-events: none;
+        /* 确保点击事件传递到header元素 */
       }
 
       .accordion-item.active .accordion-header::after {
@@ -315,7 +319,8 @@
 
       .accordion-item.active .accordion-content {
         padding: 15px;
-        max-height: 2000px; /* 增加最大高度，确保内容完全显示 */
+        max-height: 2000px;
+        /* 增加最大高度，确保内容完全显示 */
         opacity: 1;
         transition: max-height 0.5s ease-in, padding 0.3s ease, opacity 0.5s ease;
       }
@@ -377,170 +382,171 @@
   </head>
   <body>
     <header class="main-header">
-        <h1>SSE 事件流模板</h1>
+      <h1>SSE 事件流模板</h1>
     </header>
 
     <div class="layout-container">
-        <!-- 左侧面板 -->
-        <div class="left-panel">
-            <div class="panel-section">
-                <h2>连接控制</h2>
-                <div class="control-buttons">
-                    <button id="connect-btn" class="btn">连接</button>
-                    <button id="disconnect-btn" class="btn btn-danger" disabled>断开</button>
-                    <button id="clear-btn" class="btn btn-info">清空事件</button>
-                </div>
-                <div id="connection-status" class="status">未连接</div>
+      <!-- 左侧面板 -->
+      <div class="left-panel">
+        <div class="panel-section">
+          <h2>连接控制</h2>
+          <div class="control-buttons">
+            <button id="connect-btn" class="btn">连接</button>
+            <button id="disconnect-btn" class="btn btn-danger" disabled>断开</button>
+            <button id="clear-btn" class="btn btn-info">清空事件</button>
+          </div>
+          <div id="connection-status" class="status">未连接</div>
+        </div>
+
+        <div class="panel-section">
+          <h2>发送消息</h2>
+          <div class="message-form">
+            <div class="form-group">
+              <label for="message-type">消息类型:</label>
+              <select id="message-type" class="form-control">
+                <option value="info">信息</option>
+                <option value="warning">警告</option>
+                <option value="error">错误</option>
+                <option value="success">成功</option>
+                <option value="custom">自定义</option>
+              </select>
             </div>
 
-            <div class="panel-section">
-                <h2>发送消息</h2>
-                <div class="message-form">
-                    <div class="form-group">
-                        <label for="message-type">消息类型:</label>
-                        <select id="message-type" class="form-control">
-                            <option value="info">信息</option>
-                            <option value="warning">警告</option>
-                            <option value="error">错误</option>
-                            <option value="success">成功</option>
-                            <option value="custom">自定义</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message-content">消息内容:</label>
-                        <textarea id="message-content" class="form-control" rows="3" placeholder="输入消息内容..."></textarea>
-                    </div>
-
-                    <div class="form-group custom-type-container" style="display: none;">
-                        <label for="custom-event-type">自定义事件类型:</label>
-                        <input type="text" id="custom-event-type" class="form-control" placeholder="输入事件类型...">
-                    </div>
-
-                    <button id="send-message-btn" class="btn btn-primary">发送消息</button>
-                </div>
-
-                <div class="message-templates">
-                    <h3>快速模板</h3>
-                    <div class="template-buttons">
-                        <button class="btn btn-sm template-btn" data-type="info" data-content="这是一条信息消息">信息消息</button>
-                        <button class="btn btn-sm template-btn" data-type="warning" data-content="这是一条警告消息">警告消息</button>
-                        <button class="btn btn-sm template-btn" data-type="error" data-content="这是一条错误消息">错误消息</button>
-                        <button class="btn btn-sm template-btn" data-type="success" data-content="操作成功完成">成功消息</button>
-                    </div>
-                </div>
+            <div class="form-group">
+              <label for="message-content">消息内容:</label>
+              <textarea id="message-content" class="form-control" rows="3" placeholder="输入消息内容..."></textarea>
             </div>
 
-            <div class="panel-section">
-                <h2>接口文档</h2>
-                <div class="api-docs">
-                    <div class="accordion">
-                        <div class="accordion-item">
-                            <h3 class="accordion-header">SSE 接口信息</h3>
-                            <div class="accordion-content">
-                                <table class="api-table">
-                                    <tr>
-                                        <th>接口名称</th>
-                                        <td>服务器发送事件 (SSE) 接口</td>
-                                    </tr>
-                                    <tr>
-                                        <th>接口路径</th>
-                                        <td><code>/sse</code></td>
-                                    </tr>
-                                    <tr>
-                                        <th>请求方法</th>
-                                        <td>GET</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Content-Type</th>
-                                        <td>text/event-stream</td>
-                                    </tr>
-                                    <tr>
-                                        <th>描述</th>
-                                        <td>建立服务器发送事件 (SSE) 连接，接收实时事件推送</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
+            <div class="form-group custom-type-container" style="display: none;">
+              <label for="custom-event-type">自定义事件类型:</label>
+              <input type="text" id="custom-event-type" class="form-control" placeholder="输入事件类型...">
+            </div>
 
-                        <div class="accordion-item">
-                            <h3 class="accordion-header">请求参数</h3>
-                            <div class="accordion-content">
-                                <table class="api-table">
-                                    <tr>
-                                        <th>参数名</th>
-                                        <th>类型</th>
-                                        <th>必填</th>
-                                        <th>描述</th>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">无需请求参数</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
+            <button id="send-message-btn" class="btn btn-primary">发送消息</button>
+          </div>
 
-                        <div class="accordion-item">
-                            <h3 class="accordion-header">响应事件</h3>
-                            <div class="accordion-content">
-                                <table class="api-table">
-                                    <tr>
-                                        <th>事件名</th>
-                                        <th>数据格式</th>
-                                        <th>描述</th>
-                                    </tr>
-                                    <tr>
-                                        <td><code>connected</code></td>
-                                        <td>
-                                            <pre>{
+          <div class="message-templates">
+            <h3>快速模板</h3>
+            <div class="template-buttons">
+              <button class="btn btn-sm template-btn" data-type="info" data-content="这是一条信息消息">信息消息</button>
+              <button class="btn btn-sm template-btn" data-type="warning" data-content="这是一条警告消息">警告消息</button>
+              <button class="btn btn-sm template-btn" data-type="error" data-content="这是一条错误消息">错误消息</button>
+              <button class="btn btn-sm template-btn" data-type="success" data-content="操作成功完成">成功消息</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2>接口文档</h2>
+          <div class="api-docs">
+            <div class="accordion">
+              <div class="accordion-item">
+                <h3 class="accordion-header">SSE 接口信息</h3>
+                <div class="accordion-content">
+                  <table class="api-table">
+                    <tr>
+                      <th>接口名称</th>
+                      <td>服务器发送事件 (SSE) 接口</td>
+                    </tr>
+                    <tr>
+                      <th>接口路径</th>
+                      <td><code>/sse</code></td>
+                    </tr>
+                    <tr>
+                      <th>请求方法</th>
+                      <td>GET</td>
+                    </tr>
+                    <tr>
+                      <th>Content-Type</th>
+                      <td>text/event-stream</td>
+                    </tr>
+                    <tr>
+                      <th>描述</th>
+                      <td>建立服务器发送事件 (SSE) 连接，接收实时事件推送</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header">请求参数</h3>
+                <div class="accordion-content">
+                  <table class="api-table">
+                    <tr>
+                      <th>参数名</th>
+                      <th>类型</th>
+                      <th>必填</th>
+                      <th>描述</th>
+                    </tr>
+                    <tr>
+                      <td colspan="4">无需请求参数</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header">响应事件</h3>
+                <div class="accordion-content">
+                  <table class="api-table">
+                    <tr>
+                      <th>事件名</th>
+                      <th>数据格式</th>
+                      <th>描述</th>
+                    </tr>
+                    <tr>
+                      <td><code>connected</code></td>
+                      <td>
+                        <pre>{
   "id": "连接ID"
 }</pre>
-                                        </td>
-                                        <td>连接建立成功时触发，返回唯一连接ID</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>init</code></td>
-                                        <td>
-                                            <pre>{
+                      </td>
+                      <td>连接建立成功时触发，返回唯一连接ID</td>
+                    </tr>
+                    <tr>
+                      <td><code>init</code></td>
+                      <td>
+                        <pre>{
   "message": "连接已初始化",
   "serverTime": "服务器时间"
 }</pre>
-                                        </td>
-                                        <td>连接初始化时触发，返回初始数据</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>message</code></td>
-                                        <td>
-                                            <pre>{
+                      </td>
+                      <td>连接初始化时触发，返回初始数据</td>
+                    </tr>
+                    <tr>
+                      <td><code>message</code></td>
+                      <td>
+                        <pre>{
   "id": "消息ID",
   "type": "消息类型",
   "content": "消息内容",
   "timestamp": "时间戳"
 }</pre>
-                                        </td>
-                                        <td>服务器推送消息时触发</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>system</code></td>
-                                        <td>
-                                            <pre>{
+                      </td>
+                      <td>服务器推送消息时触发</td>
+                    </tr>
+                    <tr>
+                      <td><code>system</code></td>
+                      <td>
+                        <pre>{
   "cpu": "CPU使用率",
   "memory": "内存使用率",
   "uptime": "运行时间",
   "connections": "连接数",
   "timestamp": "时间戳"
+  "date": "时间日期"
 }</pre>
-                                        </td>
-                                        <td>服务器推送系统状态时触发</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
+                      </td>
+                      <td>服务器推送系统状态时触发</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
 
-                        <div class="accordion-item">
-                            <h3 class="accordion-header">客户端代码示例</h3>
-                            <div class="accordion-content">
-                                <pre class="code-example">// 创建 EventSource 实例
+              <div class="accordion-item">
+                <h3 class="accordion-header">客户端代码示例</h3>
+                <div class="accordion-content">
+                  <pre class="code-example">// 创建 EventSource 实例
 const eventSource = new EventSource('/sse');
 
 // 连接打开
@@ -582,20 +588,20 @@ eventSource.addEventListener('system', function(event) {
 function closeConnection() {
   eventSource.close();
 }</pre>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
-        <!-- 右侧面板 -->
-        <div class="right-panel">
-            <div class="panel-section">
-                <h2>事件流</h2>
-                <div id="events" class="event-container"></div>
-            </div>
+      <!-- 右侧面板 -->
+      <div class="right-panel">
+        <div class="panel-section">
+          <h2>事件流</h2>
+          <div id="events" class="event-container"></div>
         </div>
+      </div>
     </div>
 
     <template id="event-template">
@@ -767,7 +773,7 @@ function closeConnection() {
         const templateBtns = document.querySelectorAll('.template-btn');
 
         // 切换自定义事件类型输入框显示状态
-        messageTypeSelect.addEventListener('change', function() {
+        messageTypeSelect.addEventListener('change', function () {
           if (this.value === 'custom') {
             customTypeContainer.style.display = 'block';
           } else {
@@ -776,7 +782,7 @@ function closeConnection() {
         });
 
         // 发送消息按钮点击事件
-        sendMessageBtn.addEventListener('click', function() {
+        sendMessageBtn.addEventListener('click', function () {
           const type = messageTypeSelect.value;
           const content = messageContent.value.trim();
 
@@ -789,7 +795,8 @@ function closeConnection() {
           const messageData = {
             type: type === 'custom' ? customEventType.value || 'custom' : type,
             content: content,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            date: new Date().toISOString(),
           };
 
           // 发送消息到服务器
@@ -797,8 +804,8 @@ function closeConnection() {
         });
 
         // 快速模板按钮点击事件
-        templateBtns.forEach(function(btn) {
-          btn.addEventListener('click', function() {
+        templateBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
             const type = this.dataset.type;
             const content = this.dataset.content;
 
@@ -812,7 +819,7 @@ function closeConnection() {
         });
       }
 
-        // 发送消息到服务器
+      // 发送消息到服务器
       function sendMessageToServer(messageData) {
         // 检查连接状态
         if (!eventSource || eventSource.readyState !== 1) {
@@ -830,20 +837,20 @@ function closeConnection() {
           },
           body: JSON.stringify(messageData)
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('服务器响应:', data);
-          addEvent('success', { message: '消息已发送', data: data });
-        })
-        .catch(error => {
-          console.error('发送消息错误:', error);
-          addEvent('error', { message: '发送消息失败', error: error.toString() });
-        });
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('服务器响应:', data);
+            addEvent('success', { message: '消息已发送', data: data });
+          })
+          .catch(error => {
+            console.error('发送消息错误:', error);
+            addEvent('error', { message: '发送消息失败', error: error.toString() });
+          });
       }
 
       // 初始化
@@ -878,15 +885,15 @@ function closeConnection() {
         const accordionHeaders = document.querySelectorAll('.accordion-header');
         console.log(`找到 ${accordionHeaders.length} 个手风琴标题`);
 
-        accordionHeaders.forEach(function(header, index) {
-          header.addEventListener('click', function(e) {
+        accordionHeaders.forEach(function (header, index) {
+          header.addEventListener('click', function (e) {
             console.log(`点击了手风琴标题 #${index + 1}`);
 
             const item = this.parentElement;
             const isActive = item.classList.contains('active');
 
             // 关闭所有手风琴项
-            document.querySelectorAll('.accordion-item').forEach(function(accordionItem) {
+            document.querySelectorAll('.accordion-item').forEach(function (accordionItem) {
               accordionItem.classList.remove('active');
             });
 

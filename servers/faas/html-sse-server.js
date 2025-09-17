@@ -191,7 +191,8 @@ function handlePostMessage(req, res) {
         id: Date.now(),
         type: message.type,
         content: message.content,
-        timestamp: message.timestamp || Date.now()
+        timestamp: message.timestamp || Date.now(),
+        date: message.date || new Date().toISOString()
       };
 
       // 存储消息
@@ -210,7 +211,8 @@ function handlePostMessage(req, res) {
       res.end(JSON.stringify({
         success: true,
         message: newMessage,
-        activeConnections: activeConnections
+        activeConnections: activeConnections,
+        date: message.date || new Date().toISOString()
       }));
 
       console.log(`消息已广播: ${JSON.stringify(newMessage)}`);
