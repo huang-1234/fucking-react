@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件上传示例</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"], input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        #filesList {
+            margin-top: 20px;
+        }
+        .file-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .file-actions {
+            margin-top: 10px;
+        }
+        .file-actions button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+        .delete-btn {
+            background-color: #f44336;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        .download-btn {
+            background-color: #2196F3;
+        }
+        .download-btn:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <h1>文件上传示例</h1>
+
+    <div class="form-group">
+        <label for="token">认证令牌 (Bearer Token):</label>
+        <input type="text" id="token" placeholder="输入JWT令牌，格式: eyJhbGciOiJIUzI1...">
+    </div>
+
+    <form id="uploadForm">
+        <div class="form-group">
+            <label for="file">选择文件:</label>
+            <input type="file" id="file" name="file" required>
+        </div>
+        <div class="form-group">
+            <label for="description">文件描述 (可选):</label>
+            <input type="text" id="description" name="description" placeholder="输入文件描述...">
+        </div>
+        <button type="submit">上传文件</button>
+    </form>
+
+    <div id="result"></div>
+
+    <h2>已上传文件列表</h2>
+    <button id="refreshBtn">刷新列表</button>
+    <div id="filesList"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const token = document.getElementById('token').value;
+            if (!token) {
+                alert('请输入认证令牌');
+                return;
+            }
+
+            const fileInput = document.getElementById('file');
+            const description = document.getElementById('description').value;
+
+            if (!fileInput.files.length) {
+                alert('请选择文件');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            if (description) {
+                formData.append('description', description);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/files/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`上传失败: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <h3>上传成功!</h3>
+                    <p>文件ID: ${result.id}</p>
+                    <p>文件名: ${result.filename}</p>
+                    <p>原始文件名: ${result.originalName}</p>
+                    <p>大小: ${formatFileSize(result.size)}</p>
+                    <p>类型: ${result.mimetype}</p>
+                    ${result.description ? `<p>描述: ${result.description}</p>` : ''}
+                `;
+                resultDiv.style.display = 'block';
+
+                // 清空表单
+                document.getElementById('uploadForm').reset();
+
+                // 刷新文件列表
+                fetchFiles();
+
+            } catch (error) {
+                alert(`错误: ${error.message}`);
+            }
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', fetchFiles);
+
+        async function fetchFiles() {
+            const token = document.getElementById('token').value;
+            if (!token) {
+                alert('请输入认证令牌');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/files`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`获取文件列表失败: ${response.status} ${response.statusText}`);
+                }
+
+                const files = await response.json();
+                displayFiles(files);
+
+            } catch (error) {
+                alert(`错误: ${error.message}`);
+            }
+        }
+
+        function displayFiles(files) {
+            const filesList = document.getElementById('filesList');
+            filesList.innerHTML = '';
+
+            if (!files.length) {
+                filesList.innerHTML = '<p>没有上传的文件</p>';
+                return;
+            }
+
+            files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <p><strong>文件名:</strong> ${file.originalName}</p>
+                    <p><strong>大小:</strong> ${formatFileSize(file.size)}</p>
+                    <p><strong>类型:</strong> ${file.mimetype}</p>
+                    ${file.description ? `<p><strong>描述:</strong> ${file.description}</p>` : ''}
+                    <div class="file-actions">
+                        <button class="download-btn" data-id="${file.id}">下载</button>
+                        <button class="delete-btn" data-id="${file.id}">删除</button>
+                    </div>
+                `;
+                filesList.appendChild(fileItem);
+            });
+
+            // 添加下载和删除按钮事件
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', () => downloadFile(btn.dataset.id));
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteFile(btn.dataset.id));
+            });
+        }
+
+        function downloadFile(fileId) {
+            const token = document.getElementById('token').value;
+            if (!token) {
+                alert('请输入认证令牌');
+                return;
+            }
+
+            // 创建一个隐藏的a标签进行下载
+            const a = document.createElement('a');
+            a.href = `${API_BASE_URL}/files/${fileId}?token=${token}`;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        async function deleteFile(fileId) {
+            if (!confirm('确定要删除此文件吗?')) {
+                return;
+            }
+
+            const token = document.getElementById('token').value;
+            if (!token) {
+                alert('请输入认证令牌');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/files/${fileId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`删除失败: ${response.status} ${response.statusText}`);
+                }
+
+                alert('文件已成功删除');
+                fetchFiles();
+
+            } catch (error) {
+                alert(`错误: ${error.message}`);
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 初始加载
+        if (document.getElementById('token').value) {
+            fetchFiles();
+        }
+    </script>
+</body>
+</html>

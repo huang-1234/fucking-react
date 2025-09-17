@@ -1,9 +1,11 @@
 packages:
   # - 'packages/*'
   - 'libs/*'
-  # - 'apps/*'
-  # - 'servers/*'
-  - 'plugins'
-  - 'website'
+  - 'libs/dy-render'
+  # - 'libs/dynamic/*'
+  - 'apps/*'
+  - 'servers/*'
+  # - 'plugins/*'
+  # - 'website'
   # exclude packages that are inside test directories
   - "!**/test/**"

@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "dev": "node --watch dev-server.js",
+    "start:sse": "node html-sse-server.js",
     "dev:vite": "vite",
     "dev:webpack": "webpack-dev-server --config webpack.client.js",
     "dev:webpack:ssr": "node dev-server-webpack.js",
@@ -57,6 +58,7 @@
     "antd": "5.26.7"
   },
   "dependencies": {
+    "koa-router": "13.0.1",
     "isomorphic-style-loader": "^5.3.2",
     "jsdom": "^24.0.0",
     "koa": "3.0.0",
@@ -77,6 +79,7 @@
     "@types/koa": "3.0.0",
     "@types/koa-bodyparser": "4.3.12",
     "@types/koa-static": "4.0.4",
+    "@types/koa-router": "7.4.8",
     "@types/node": "22.13.10",
     "@types/react": "19.1.9",
     "@types/react-dom": "19.1.7",

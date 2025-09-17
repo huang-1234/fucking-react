@@ -1,0 +1,21 @@
+.streamingText {
+  display: inline;
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  .cursor {
+    display: inline-block;
+    animation: blink 1s step-end infinite;
+    margin-left: 1px;
+    color: #1677ff;
+  }
+}
+
+@keyframes blink {
+  from, to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

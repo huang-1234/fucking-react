@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE模板页面</title>
+    <style>
+      /* 基础样式 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+      }
+
+      /* 头部样式 */
+      .main-header {
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px 20px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .main-header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      /* 布局容器 */
+      .layout-container {
+        display: flex;
+        min-height: calc(100vh - 54px);
+        /* 减去header高度 */
+      }
+
+      /* 左侧面板 */
+      .left-panel {
+        width: 40%;
+        background-color: #fff;
+        border-right: 1px solid #e0e0e0;
+        overflow-y: auto;
+        height: calc(100vh - 54px);
+      }
+
+      /* 右侧面板 */
+      .right-panel {
+        width: 60%;
+        background-color: #fff;
+        overflow-y: auto;
+        height: calc(100vh - 54px);
+      }
+
+      /* 面板区块 */
+      .panel-section {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .panel-section h2 {
+        margin-bottom: 15px;
+        font-size: 18px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+      }
+
+      /* 控制按钮容器 */
+      .control-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      /* 消息表单样式 */
+      .message-form {
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 14px;
+      }
+
+      textarea.form-control {
+        resize: vertical;
+        min-height: 60px;
+      }
+
+      /* 消息模板样式 */
+      .message-templates h3 {
+        font-size: 14px;
+        margin: 10px 0;
+        color: #666;
+      }
+
+      .template-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+
+      .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+
+      /* 按钮颜色变体 */
+      .template-btn[data-type="info"] {
+        background-color: #17a2b8;
+      }
+
+      .template-btn[data-type="warning"] {
+        background-color: #ffc107;
+        color: #212529;
+      }
+
+      .template-btn[data-type="error"] {
+        background-color: #dc3545;
+      }
+
+      .template-btn[data-type="success"] {
+        background-color: #28a745;
+      }
+
+      /* 按钮样式 */
+      .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      .btn:hover {
+        background-color: #45a049;
+      }
+
+      .btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      .btn-danger {
+        background-color: #f44336;
+      }
+
+      .btn-danger:hover {
+        background-color: #d32f2f;
+      }
+
+      .btn-info {
+        background-color: #2196F3;
+      }
+
+      .btn-info:hover {
+        background-color: #0b7dda;
+      }
+
+      /* 状态指示器 */
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      .status.connecting {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .status.connected {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .status.error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      /* API文档样式 */
+      .api-docs {
+        margin-bottom: 20px;
+      }
+
+      .api-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      .api-table th,
+      .api-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .api-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      .api-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .code-example {
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 4px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        overflow-x: auto;
+        font-size: 14px;
+        line-height: 1.5;
+        border-left: 4px solid #2196F3;
+      }
+
+      code {
+        background-color: #f5f5f5;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+
+      /* 手风琴样式 */
+      .accordion {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .accordion-item {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .accordion-item:last-child {
+        border-bottom: none;
+      }
+
+      .accordion-header {
+        background-color: #f5f5f5;
+        padding: 12px 15px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s;
+        position: relative;
+      }
+
+      .accordion-header:hover {
+        background-color: #e9e9e9;
+      }
+
+      .accordion-header::after {
+        content: '+';
+        font-size: 18px;
+        font-weight: bold;
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        /* 确保点击事件传递到header元素 */
+      }
+
+      .accordion-item.active .accordion-header::after {
+        content: '-';
+      }
+
+      .accordion-content {
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, padding 0.3s ease;
+        opacity: 0;
+      }
+
+      .accordion-item.active .accordion-content {
+        padding: 15px;
+        max-height: 2000px;
+        /* 增加最大高度，确保内容完全显示 */
+        opacity: 1;
+        transition: max-height 0.5s ease-in, padding 0.3s ease, opacity 0.5s ease;
+      }
+
+      /* 事件列表 */
+      .event-container {
+        height: calc(100vh - 150px);
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+      }
+
+      .event-item {
+        padding: 8px;
+        margin-bottom: 8px;
+        border-radius: 4px;
+        background-color: #fff;
+        border-left: 4px solid #ccc;
+      }
+
+      .event-item.connected {
+        border-left-color: #4CAF50;
+      }
+
+      .event-item.message {
+        border-left-color: #2196F3;
+      }
+
+      .event-item.system {
+        border-left-color: #9C27B0;
+      }
+
+      .event-item.error {
+        border-left-color: #f44336;
+      }
+
+      .event-time {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .event-type {
+        font-weight: bold;
+        margin-right: 5px;
+      }
+
+      .event-data {
+        margin-top: 5px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        background-color: #f8f9fa;
+        padding: 5px;
+        border-radius: 2px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <header class="main-header">
+      <h1>SSE 事件流模板</h1>
+    </header>
+
+    <div class="layout-container">
+      <!-- 左侧面板 -->
+      <div class="left-panel">
+        <div class="panel-section">
+          <h2>连接控制</h2>
+          <div class="control-buttons">
+            <button id="connect-btn" class="btn">连接</button>
+            <button id="disconnect-btn" class="btn btn-danger" disabled>断开</button>
+            <button id="clear-btn" class="btn btn-info">清空事件</button>
+          </div>
+          <div id="connection-status" class="status">未连接</div>
+        </div>
+
+        <div class="panel-section">
+          <h2>发送消息</h2>
+          <div class="message-form">
+            <div class="form-group">
+              <label for="message-type">消息类型:</label>
+              <select id="message-type" class="form-control">
+                <option value="info">信息</option>
+                <option value="warning">警告</option>
+                <option value="error">错误</option>
+                <option value="success">成功</option>
+                <option value="custom">自定义</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message-content">消息内容:</label>
+              <textarea id="message-content" class="form-control" rows="3" placeholder="输入消息内容..."></textarea>
+            </div>
+
+            <div class="form-group custom-type-container" style="display: none;">
+              <label for="custom-event-type">自定义事件类型:</label>
+              <input type="text" id="custom-event-type" class="form-control" placeholder="输入事件类型...">
+            </div>
+
+            <button id="send-message-btn" class="btn btn-primary">发送消息</button>
+          </div>
+
+          <div class="message-templates">
+            <h3>快速模板</h3>
+            <div class="template-buttons">
+              <button class="btn btn-sm template-btn" data-type="info" data-content="这是一条信息消息">信息消息</button>
+              <button class="btn btn-sm template-btn" data-type="warning" data-content="这是一条警告消息">警告消息</button>
+              <button class="btn btn-sm template-btn" data-type="error" data-content="这是一条错误消息">错误消息</button>
+              <button class="btn btn-sm template-btn" data-type="success" data-content="操作成功完成">成功消息</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2>接口文档</h2>
+          <div class="api-docs">
+            <div class="accordion">
+              <div class="accordion-item">
+                <h3 class="accordion-header">SSE 接口信息</h3>
+                <div class="accordion-content">
+                  <table class="api-table">
+                    <tr>
+                      <th>接口名称</th>
+                      <td>服务器发送事件 (SSE) 接口</td>
+                    </tr>
+                    <tr>
+                      <th>接口路径</th>
+                      <td><code>/sse</code></td>
+                    </tr>
+                    <tr>
+                      <th>请求方法</th>
+                      <td>GET</td>
+                    </tr>
+                    <tr>
+                      <th>Content-Type</th>
+                      <td>text/event-stream</td>
+                    </tr>
+                    <tr>
+                      <th>描述</th>
+                      <td>建立服务器发送事件 (SSE) 连接，接收实时事件推送</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header">请求参数</h3>
+                <div class="accordion-content">
+                  <table class="api-table">
+                    <tr>
+                      <th>参数名</th>
+                      <th>类型</th>
+                      <th>必填</th>
+                      <th>描述</th>
+                    </tr>
+                    <tr>
+                      <td colspan="4">无需请求参数</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header">响应事件</h3>
+                <div class="accordion-content">
+                  <table class="api-table">
+                    <tr>
+                      <th>事件名</th>
+                      <th>数据格式</th>
+                      <th>描述</th>
+                    </tr>
+                    <tr>
+                      <td><code>connected</code></td>
+                      <td>
+                        <pre>{
+  "id": "连接ID"
+}</pre>
+                      </td>
+                      <td>连接建立成功时触发，返回唯一连接ID</td>
+                    </tr>
+                    <tr>
+                      <td><code>init</code></td>
+                      <td>
+                        <pre>{
+  "message": "连接已初始化",
+  "serverTime": "服务器时间"
+}</pre>
+                      </td>
+                      <td>连接初始化时触发，返回初始数据</td>
+                    </tr>
+                    <tr>
+                      <td><code>message</code></td>
+                      <td>
+                        <pre>{
+  "id": "消息ID",
+  "type": "消息类型",
+  "content": "消息内容",
+  "timestamp": "时间戳"
+}</pre>
+                      </td>
+                      <td>服务器推送消息时触发</td>
+                    </tr>
+                    <tr>
+                      <td><code>system</code></td>
+                      <td>
+                        <pre>{
+  "cpu": "CPU使用率",
+  "memory": "内存使用率",
+  "uptime": "运行时间",
+  "connections": "连接数",
+  "timestamp": "时间戳"
+  "date": "时间日期"
+}</pre>
+                      </td>
+                      <td>服务器推送系统状态时触发</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header">客户端代码示例</h3>
+                <div class="accordion-content">
+                  <pre class="code-example">// 创建 EventSource 实例
+const eventSource = new EventSource('/sse');
+
+// 连接打开
+eventSource.onopen = function() {
+  console.log('SSE连接已打开');
+};
+
+// 连接错误
+eventSource.onerror = function(event) {
+  console.error('SSE连接错误');
+  eventSource.close();
+};
+
+// 监听connected事件
+eventSource.addEventListener('connected', function(event) {
+  const data = JSON.parse(event.data);
+  console.log('已连接，ID:', data.id);
+});
+
+// 监听init事件
+eventSource.addEventListener('init', function(event) {
+  const data = JSON.parse(event.data);
+  console.log('初始化数据:', data);
+});
+
+// 监听message事件
+eventSource.addEventListener('message', function(event) {
+  const data = JSON.parse(event.data);
+  console.log('收到消息:', data);
+});
+
+// 监听system事件
+eventSource.addEventListener('system', function(event) {
+  const data = JSON.parse(event.data);
+  console.log('系统状态:', data);
+});
+
+// 关闭连接
+function closeConnection() {
+  eventSource.close();
+}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧面板 -->
+      <div class="right-panel">
+        <div class="panel-section">
+          <h2>事件流</h2>
+          <div id="events" class="event-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <template id="event-template">
+      <div class="event-item">
+        <div>
+          <span class="event-time"></span>
+          <span class="event-type"></span>
+        </div>
+        <div class="event-data"></div>
+      </div>
+    </template>
+
+    <script>
+      // DOM元素
+      const connectBtn = document.getElementById('connect-btn');
+      const disconnectBtn = document.getElementById('disconnect-btn');
+      const clearBtn = document.getElementById('clear-btn');
+      const statusEl = document.getElementById('connection-status');
+      const eventsEl = document.getElementById('events');
+      const eventTemplate = document.getElementById('event-template');
+
+      // 全局变量
+      let eventSource = null;
+
+      // 添加事件到列表
+      function addEvent(type, data) {
+        // 克隆模板
+        const eventEl = document.importNode(eventTemplate.content, true).querySelector('.event-item');
+
+        // 添加事件类型样式
+        eventEl.classList.add(type);
+
+        // 设置时间
+        eventEl.querySelector('.event-time').textContent = new Date().toLocaleTimeString();
+
+        // 设置类型
+        eventEl.querySelector('.event-type').textContent = type;
+
+        // 设置数据
+        const dataEl = eventEl.querySelector('.event-data');
+        if (typeof data === 'object') {
+          dataEl.textContent = JSON.stringify(data, null, 2);
+        } else {
+          dataEl.textContent = data;
+        }
+
+        // 添加到容器
+        eventsEl.appendChild(eventEl);
+
+        // 滚动到底部
+        eventsEl.scrollTop = eventsEl.scrollHeight;
+      }
+
+      // 连接到SSE
+      function connect() {
+        // 如果已经有连接，先关闭
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+
+        // 更新状态
+        statusEl.textContent = '正在连接...';
+        statusEl.className = 'status connecting';
+
+        // 禁用/启用按钮
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        try {
+          // 创建EventSource
+          const url = '/sse';
+          addEvent('info', `正在连接到 ${url}`);
+
+          eventSource = new EventSource(url);
+
+          // 连接打开
+          eventSource.onopen = function () {
+            addEvent('info', '连接已打开');
+          };
+
+          // 连接错误
+          eventSource.onerror = function (event) {
+            statusEl.textContent = '连接错误';
+            statusEl.className = 'status error';
+
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+
+            addEvent('error', '连接错误或已关闭');
+
+            // 关闭连接
+            if (eventSource) {
+              eventSource.close();
+              eventSource = null;
+            }
+          };
+
+          // 默认消息
+          eventSource.onmessage = function (event) {
+            addEvent('message', event.data);
+          };
+
+          // 特定事件
+          const events = ['connected', 'init', 'message', 'system'];
+          events.forEach(function (eventName) {
+            eventSource.addEventListener(eventName, function (event) {
+              try {
+                const data = JSON.parse(event.data);
+
+                // 处理连接成功事件
+                if (eventName === 'connected') {
+                  statusEl.textContent = `已连接 (ID: ${data.id})`;
+                  statusEl.className = 'status connected';
+                }
+
+                addEvent(eventName, data);
+              } catch (e) {
+                addEvent(eventName, event.data);
+              }
+            });
+          });
+
+        } catch (error) {
+          statusEl.textContent = `错误: ${error.message}`;
+          statusEl.className = 'status error';
+
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+
+          addEvent('error', error.message);
+        }
+      }
+
+      // 断开连接
+      function disconnect() {
+        if (eventSource) {
+          addEvent('info', '手动断开连接');
+
+          eventSource.close();
+          eventSource = null;
+
+          statusEl.textContent = '已断开连接';
+          statusEl.className = 'status';
+
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+        }
+      }
+
+      // 清空事件
+      function clearEvents() {
+        eventsEl.innerHTML = '';
+        addEvent('info', '已清空事件列表');
+      }
+
+      // 事件监听
+      connectBtn.addEventListener('click', connect);
+      disconnectBtn.addEventListener('click', disconnect);
+      clearBtn.addEventListener('click', clearEvents);
+
+      // 发送消息功能
+      function setupMessageForm() {
+        const messageTypeSelect = document.getElementById('message-type');
+        const messageContent = document.getElementById('message-content');
+        const customEventType = document.getElementById('custom-event-type');
+        const customTypeContainer = document.querySelector('.custom-type-container');
+        const sendMessageBtn = document.getElementById('send-message-btn');
+        const templateBtns = document.querySelectorAll('.template-btn');
+
+        // 切换自定义事件类型输入框显示状态
+        messageTypeSelect.addEventListener('change', function () {
+          if (this.value === 'custom') {
+            customTypeContainer.style.display = 'block';
+          } else {
+            customTypeContainer.style.display = 'none';
+          }
+        });
+
+        // 发送消息按钮点击事件
+        sendMessageBtn.addEventListener('click', function () {
+          const type = messageTypeSelect.value;
+          const content = messageContent.value.trim();
+
+          if (!content) {
+            alert('请输入消息内容');
+            return;
+          }
+
+          // 准备消息数据
+          const messageData = {
+            type: type === 'custom' ? customEventType.value || 'custom' : type,
+            content: content,
+            timestamp: Date.now(),
+            date: new Date().toISOString(),
+          };
+
+          // 发送消息到服务器
+          sendMessageToServer(messageData);
+        });
+
+        // 快速模板按钮点击事件
+        templateBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const type = this.dataset.type;
+            const content = this.dataset.content;
+
+            messageTypeSelect.value = type;
+            messageContent.value = content;
+
+            // 触发change事件，确保自定义类型输入框状态正确
+            const event = new Event('change');
+            messageTypeSelect.dispatchEvent(event);
+          });
+        });
+      }
+
+      // 发送消息到服务器
+      function sendMessageToServer(messageData) {
+        // 检查连接状态
+        if (!eventSource || eventSource.readyState !== 1) {
+          addEvent('error', { message: '未连接到服务器，无法发送消息' });
+          return;
+        }
+
+        console.log('发送消息:', messageData);
+
+        // 发送POST请求到服务器
+        fetch('/sse/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(messageData)
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('服务器响应:', data);
+            addEvent('success', { message: '消息已发送', data: data });
+          })
+          .catch(error => {
+            console.error('发送消息错误:', error);
+            addEvent('error', { message: '发送消息失败', error: error.toString() });
+          });
+      }
+
+      // 初始化
+      addEvent('info', '页面已加载');
+      addEvent('info', `浏览器: ${navigator.userAgent}`);
+      addEvent('info', `EventSource支持: ${typeof EventSource !== 'undefined' ? '是' : '否'}`);
+
+      // 初始化消息表单
+      setupMessageForm();
+
+      // 页面卸载时关闭连接
+      window.addEventListener('beforeunload', function () {
+        if (eventSource) {
+          eventSource.close();
+        }
+      });
+
+      // 手风琴效果
+      function initAccordion() {
+        console.log('初始化手风琴效果');
+
+        // 默认展开第一个手风琴项
+        const firstAccordionItem = document.querySelector('.accordion-item');
+        if (firstAccordionItem) {
+          console.log('找到第一个手风琴项，设置为活动状态');
+          firstAccordionItem.classList.add('active');
+        } else {
+          console.log('未找到手风琴项');
+        }
+
+        // 为所有手风琴标题添加点击事件
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        console.log(`找到 ${accordionHeaders.length} 个手风琴标题`);
+
+        accordionHeaders.forEach(function (header, index) {
+          header.addEventListener('click', function (e) {
+            console.log(`点击了手风琴标题 #${index + 1}`);
+
+            const item = this.parentElement;
+            const isActive = item.classList.contains('active');
+
+            // 关闭所有手风琴项
+            document.querySelectorAll('.accordion-item').forEach(function (accordionItem) {
+              accordionItem.classList.remove('active');
+            });
+
+            // 如果当前项不是活动的，则打开它
+            if (!isActive) {
+              console.log(`打开手风琴项 #${index + 1}`);
+              item.classList.add('active');
+            } else {
+              console.log(`关闭手风琴项 #${index + 1}`);
+            }
+
+            // 阻止事件冒泡
+            e.stopPropagation();
+          });
+
+          console.log(`为手风琴标题 #${index + 1} 添加了点击事件`);
+        });
+      }
+
+      // 页面加载完成后初始化手风琴
+      document.addEventListener('DOMContentLoaded', initAccordion);
+
+      // 立即尝试初始化（如果DOM已经加载完成）
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(initAccordion, 1);
+      }
+    </script>
+  </body>
+</html>

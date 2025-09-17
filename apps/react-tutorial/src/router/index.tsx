@@ -4,6 +4,7 @@ import MainLayout from '../layouts/MainLayout';
 import React15Sandbox from '../sandbox/React15Sandbox';
 import APIVersionLayout from '../components/APIVersionLayout';
 import loadable from '@loadable/component';
+import LLMRichTextPage from '@/pages/RichTextHomePage/subpage/LLMRichTextPage';
 // 富文本
 const RichTextHomePage = loadable(/** webpackChunkName: "RichTextHomePage" */() => import('@/pages/RichTextHomePage'));
 // Markdown渲染
@@ -79,6 +80,9 @@ const ProtobufPage = loadable(/** webpackChunkName: "ProtobufPage" */() => impor
 
 // lodash
 const LodashPage = loadable(/** webpackChunkName: "LodashPage" */() => import('@/pages/lodash'));
+
+// 系统设计
+const SystemDesignPage = loadable(/** webpackChunkName: "SystemDesignPage" */() => import('@/pages/SystemDesign'));
 
 // 加载中组件
 const LoadingComponent = () => <div>加载中...</div>;
@@ -435,7 +439,7 @@ const routerBrowser = createBrowserRouter([
                 <LodashPage />
               </Suspense>
             )
-          },
+          }
         ]
       },
       // 模块加载路由
@@ -473,6 +477,27 @@ const routerBrowser = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <RichTextHomePage />
+              </Suspense>
+            )
+          },
+          {
+            path: 'sse-rich-text',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <LLMRichTextPage />
+              </Suspense>
+            )
+          }
+        ]
+      },
+      {
+        path: 'system-design',
+        children: [
+          {
+            path: 'index',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <SystemDesignPage />
               </Suspense>
             )
           }

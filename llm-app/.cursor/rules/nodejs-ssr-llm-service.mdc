@@ -1,0 +1,75 @@
+---
+description: This is a Node.js service that uses LLM to generate content.
+globs:
+alwaysApply: true
+---
+
+# Node.js SSR & LLM 服务项目规则
+
+## 1. 项目背景与技术栈 (Project Context & Tech Stack)
+- **核心框架**: 本项目是一个使用 **NestJS** 构建的现代化 Node.js 服务端应用[6,7](@ref)。
+- **前端渲染**: 使用 **Next.js** 进行 **React Server-Side Rendering (SSR)**。
+- **实时通信**: 必须支持 **Server-Sent Events (SSE)** 和 **WebSocket** 两种实时通信协议，用于大模型流式输出和双向交互[2](@ref)。
+- **核心功能**: 集成大语言模型（LLM）服务，如 OpenAI 或 讯飞星火（Spark Lite），提供聊天、补全等 AI 功能[2](@ref)。
+- **部署目标**: 应用需具备** Serverless 部署**能力（如 AWS Lambda）。
+- **开发语言**: 严格使用 **TypeScript**，并启用严格模式（`strict: true`）。
+- **包管理器**: 使用 `pnpm`。
+
+## 2. 编码规范与代码风格 (Coding Standards & Style)
+- **代码风格**: 遵循项目配置的 **ESLint** 和 **Prettier** 规则。生成的代码必须能通过 `npm run lint`。
+- **命名约定**:
+    -   **变量、函数、方法**: 使用 `camelCase`。
+    -   **类、接口、类型、装饰器**: 使用 `PascalCase`。
+    -   **常量**: 使用 `UPPER_SNAKE_CASE`。
+    -   **文件名**: 使用 `kebab-case`（例如：`ai-service.ts`, `sse-guard.ts`）。
+- **类型声明**: 禁止使用 `any`。所有函数参数、返回值、变量必须显式声明类型。优先使用接口（`interface`）和类型别名（`type`）定义复杂数据结构。
+- **异步处理**: 统一使用 `async/await`，禁止使用 `.then()`、`.catch()` 的链式写法。
+- **模块导入**: 使用 ES Module 语法（`import/export`）。
+
+## 3. NestJS 架构约束 (NestJS Architectural Constraints)
+- **模块化**: 遵循 NestJS 的模块化架构。按功能划分模块（如 `AiModule`, `ChatModule`, `SSEModule`）。每个模块应包含自己的 `Service`, `Controller`, `DTO` 和 `Entity`（若需要）[7](@ref)。
+- **依赖注入**: 优先使用**构造函数注入**。所有服务（`@Injectable()`）必须在其所属模块的 `providers` 数组中注册[7](@ref)。
+- **分层设计**: 严格遵守**分层架构**：
+    -   **控制器层 (Controller)**: 仅处理 HTTP 请求/响应、参数验证（使用 `class-validator`）和权限检查（使用 Guards）。**禁止**在控制器中编写业务逻辑[7](@ref)。
+    -   **服务层 (Service)**: 承载核心业务逻辑，如调用大模型 API、处理数据、管理会话等。
+    -   **数据访问层 (Repository/DAO)**: 负责所有与数据库或外部存储的交互。
+- **生命周期**: 正确使用 NestJS 生命周期钩子（如 `OnModuleInit` 用于初始化连接）。
+
+## 4. API 与通信协议规范 (API & Communication Protocols)
+- **RESTful API**: 控制器中的路由应遵循 RESTful 设计原则，使用正确的 HTTP 方法（GET, POST, PUT, DELETE）和状态码。
+- **SSE 端点**:
+    -   使用 `@Sse()` 装饰器创建端点。
+    -   返回类型应为 `Observable<MessageEvent>`。
+    -   数据格式推荐为 `{ data: string }\n\n` 或标准 JSON 字符串[2](@ref)。
+    -   **必须**处理连接关闭和客户端超时，避免资源泄漏。
+- **WebSocket 网关**:
+    -   使用 `@WebSocketGateway()`, `@SubscribeMessage()` 等装饰器。
+    -   **必须**实现 `handleConnection` 和 `handleDisconnect` 生命周期方法，用于连接管理和用户追踪。
+- **流式处理**: 所有与大模型交互的、可能产生流式响应的接口，**必须**支持流式传输（如 SSE），不得仅提供非流式接口[2](@ref)。
+
+## 5. 错误处理与日志 (Error Handling & Logging)
+- **全局异常过滤器**: 必须使用 NestJS 的**异常过滤器**（`ExceptionFilter`）统一处理所有未捕获的异常，并返回结构化的错误响应（如 `{ code: number, message: string, timestamp: string }`）。
+- **业务异常**: 自定义业务异常类（如 `BusinessException`），并通过 `throw new BusinessException(...)` 抛出。
+- **日志**: 使用 NestJS 内置的 `Logger` 或集成 `Winston` 等日志库。记录级别应为 `log`, `error`, `warn`, `debug`。记录关键信息，如请求 ID、用户 ID、错误堆栈。
+
+## 6. 安全规范 (Security Practices)
+- **环境变量**: 所有敏感信息（如 API Keys、数据库连接字符串）**必须**通过 `ConfigService` 从环境变量中读取，**严禁**硬编码在代码中[2](@ref)。
+- **输入验证**: 对所有用户输入（请求体、查询参数）使用 `class-validator` 进行**强制验证**。
+- **依赖扫描**: 定期运行 `npm audit` 或 `pnpm audit` 检查依赖项的安全性。
+
+## 7. 性能优化 (Performance Optimization)
+- **缓存**: 在适当的地方（如频繁读取的配置、模型结果）使用缓存（Redis）。
+- **压缩**: 在全局启用 Gzip 压缩（如使用 `compression` 中间件）。
+- **数据库优化**: 优化数据库查询，避免 N+1 查询问题。
+
+## 8. 测试要求 (Testing Requirements)
+- **单元测试**: 为所有 `Service` 和 `Provider` 编写 **Jest** 单元测试，覆盖核心业务逻辑。
+- **API 测试**: 为控制器端点编写 **E2E 测试**（使用 `supertest`），验证 HTTP 状态码和响应体。
+
+## 9. 给 Cursor 的特别指令 (Special Instructions for Cursor)
+- **聚焦上下文**: 当要求修改或生成特定文件的代码时，**必须**使用 `@file` 指令（例如 `@file src/ai/ai.service.ts`）来提供精确的上下文，避免产生无关或错误的代码修改建议[3](@ref)。
+- **增量开发**: 一次只专注于一个小的功能点或文件进行生成和修改。完成并验证后，再继续下一个[3](@ref)。
+- **人工审核**: 你生成的所有代码都必须经过开发者的**人工审查和测试**后才能并入主分支。你是一个强大的助手，但最终的决策和责任在于人类开发者[3](@ref)。
+
+---
+*此规则文件旨在将 Cursor 引导为一个理解项目全貌、遵循最佳实践的资深 Node.js 开发者，确保代码生成的质量和一致性。*

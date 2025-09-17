@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      #events {
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+      }
+
+      .event {
+        margin-bottom: 5px;
+        padding: 5px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .event-connected {
+        background-color: #e6f7ff;
+      }
+
+      .event-system {
+        background-color: #f6ffed;
+      }
+
+      .event-message {
+        background-color: #fff7e6;
+      }
+
+      .event-error {
+        background-color: #fff1f0;
+      }
+
+      button {
+        padding: 8px 16px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h1>SSE Test Client</h1>
+    <p>This page connects to the SSE endpoints and displays events as they arrive.</p>
+
+    <div>
+      <button id="connectBtn">Connect to SSE</button>
+      <button id="disconnectBtn" disabled>Disconnect</button>
+      <button id="clearBtn">Clear Events</button>
+    </div>
+
+    <h2>Events</h2>
+    <div id="events"></div>
+
+    <h2>Send Message</h2>
+    <div>
+      <select id="messageType">
+        <option value="info">Info</option>
+        <option value="warning">Warning</option>
+        <option value="error">Error</option>
+        <option value="success">Success</option>
+      </select>
+      <input type="text" id="messageContent" placeholder="Message content">
+      <button id="sendBtn">Send Message</button>
+    </div>
+
+    <h2>Event Generator</h2>
+    <div>
+      <button id="startGeneratorBtn">Start Random Events</button>
+      <button id="stopGeneratorBtn" disabled>Stop Random Events</button>
+    </div>
+
+    <script>
+      let eventSource = null;
+
+      function addEvent(type, data) {
+        const eventsContainer = document.getElementById('events');
+        const eventDiv = document.createElement('div');
+        eventDiv.className = `event event-${type}`;
+
+        const timestamp = new Date().toLocaleTimeString();
+        let content = `<strong>${timestamp} - ${type}:</strong> `;
+
+        if (typeof data === 'object') {
+          content += JSON.stringify(data);
+        } else {
+          content += data;
+        }
+
+        eventDiv.innerHTML = content;
+        eventsContainer.appendChild(eventDiv);
+        eventsContainer.scrollTop = eventsContainer.scrollHeight;
+      }
+
+      function connectSSE() {
+        if (eventSource) {
+          eventSource.close();
+        }
+
+        // Connect to the SSE endpoint
+        eventSource = new EventSource('http://localhost:5175/api/events');
+
+        eventSource.onopen = () => {
+          addEvent('info', 'SSE connection established');
+          document.getElementById('connectBtn').disabled = true;
+          document.getElementById('disconnectBtn').disabled = false;
+        };
+
+        eventSource.addEventListener('connected', (event) => {
+          const data = JSON.parse(event.data);
+          addEvent('connected', data);
+        });
+
+        eventSource.addEventListener('init', (event) => {
+          const data = JSON.parse(event.data);
+          addEvent('init', data);
+        });
+
+        eventSource.addEventListener('message', (event) => {
+          const data = JSON.parse(event.data);
+          addEvent('message', data);
+        });
+
+        eventSource.addEventListener('system', (event) => {
+          const data = JSON.parse(event.data);
+          addEvent('system', data);
+        });
+
+        eventSource.onerror = (error) => {
+          addEvent('error', 'Connection error or server closed connection');
+          eventSource.close();
+          document.getElementById('connectBtn').disabled = false;
+          document.getElementById('disconnectBtn').disabled = true;
+        };
+      }
+
+      function disconnectSSE() {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+          addEvent('info', 'Disconnected from SSE');
+          document.getElementById('connectBtn').disabled = false;
+          document.getElementById('disconnectBtn').disabled = true;
+        }
+      }
+
+      function sendMessage() {
+        const type = document.getElementById('messageType').value;
+        const content = document.getElementById('messageContent').value;
+
+        if (!content) {
+          alert('Please enter a message content');
+          return;
+        }
+
+        fetch('http://localhost:5175/api/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ type, content })
+        })
+          .then(response => response.json())
+          .then(data => {
+            addEvent('info', `Message sent: ${JSON.stringify(data)}`);
+            document.getElementById('messageContent').value = '';
+          })
+          .catch(error => {
+            addEvent('error', `Failed to send message: ${error}`);
+          });
+      }
+
+      function startGenerator() {
+        fetch('http://localhost:5175/api/events/start-generator', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ interval: 3000 })
+        })
+          .then(response => response.json())
+          .then(data => {
+            addEvent('info', `Generator started: ${JSON.stringify(data)}`);
+            document.getElementById('startGeneratorBtn').disabled = true;
+            document.getElementById('stopGeneratorBtn').disabled = false;
+          })
+          .catch(error => {
+            addEvent('error', `Failed to start generator: ${error}`);
+          });
+      }
+
+      function stopGenerator() {
+        fetch('http://localhost:5175/api/events/stop-generator', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            addEvent('info', `Generator stopped: ${JSON.stringify(data)}`);
+            document.getElementById('startGeneratorBtn').disabled = false;
+            document.getElementById('stopGeneratorBtn').disabled = true;
+          })
+          .catch(error => {
+            addEvent('error', `Failed to stop generator: ${error}`);
+          });
+      }
+
+      document.getElementById('connectBtn').addEventListener('click', connectSSE);
+      document.getElementById('disconnectBtn').addEventListener('click', disconnectSSE);
+      document.getElementById('clearBtn').addEventListener('click', () => {
+        document.getElementById('events').innerHTML = '';
+      });
+      document.getElementById('sendBtn').addEventListener('click', sendMessage);
+      document.getElementById('startGeneratorBtn').addEventListener('click', startGenerator);
+      document.getElementById('stopGeneratorBtn').addEventListener('click', stopGenerator);
+
+      // Connect automatically when the page loads
+      window.addEventListener('load', () => {
+        addEvent('info', 'Page loaded');
+      });
+    </script>
+  </body>
+</html>

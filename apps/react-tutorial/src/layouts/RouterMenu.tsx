@@ -10,6 +10,7 @@ import { reactVersionMenuItems } from './ReactVersionMenu';
 import AlgorithmPage from '@/pages/Algorithm';
 import loadable from '@loadable/component';
 import RichTextHomePage from '@/pages/RichTextHomePage';
+import LLMRichTextPage from '@/pages/RichTextHomePage/subpage/LLMRichTextPage';
 
 // 首页
 const HomePage = loadable(() => import('@/pages/HomePage'));
@@ -46,6 +47,8 @@ const RenderMDPage = loadable(() => import('@/pages/RenderMD'));
 // lodash
 const LodashPage = loadable(() => import('@/pages/lodash'));
 
+// 系统设计
+const SystemDesignPage = loadable(() => import('@/pages/SystemDesign'));
 
 export interface IMenu {
   key: string;
@@ -117,6 +120,13 @@ export const menuItems: IMenu[] = [
         icon: <CodeOutlined />,
         component: RichTextPage
       },
+      // sse 大模型流式富文本
+      {
+        key: '/sse-rich-text',
+        label: 'SSE 大模型流式富文本',
+        icon: <CodeOutlined />,
+        component: LLMRichTextPage
+      },
     ]
   },
   {
@@ -170,5 +180,18 @@ export const menuItems: IMenu[] = [
     label: '性能优化',
     icon: <CodeOutlined />,
     component: PerformancePage
+  },
+  {
+    key: '/system-design',
+    label: '系统设计',
+    icon: <CodeOutlined />,
+    children: [
+      {
+        key: '/index',
+        label: '系统设计',
+        icon: <CodeOutlined />,
+        component: SystemDesignPage
+      },
+    ],
   },
 ];
