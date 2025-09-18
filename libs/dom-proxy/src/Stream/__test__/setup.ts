@@ -2,6 +2,77 @@
  * 测试环境设置和工具函数
  */
 
+import { afterEach, afterAll, vi } from 'vitest';
+
+// 设置Stream测试环境
+export function setupStreamTests() {
+  // 设置测试环境
+  TestEnvironment.setup();
+
+  // 在每个测试后执行清理
+  afterEach(() => {
+    BrowserMock.restoreAll();
+  });
+
+  // 在所有测试完成后执行清理
+  afterAll(() => {
+    TestEnvironment.teardown();
+  });
+}
+
+// 浏览器功能模拟工具
+export class BrowserMock {
+  private static originalFeatures: Record<string, any> = {};
+
+  /**
+   * 模拟浏览器特性
+   */
+  static mockFeature(featureName: string, implementation: any): void {
+    if (!(featureName in this.originalFeatures)) {
+      this.originalFeatures[featureName] = (global as any)[featureName];
+    }
+    (global as any)[featureName] = implementation;
+  }
+
+  /**
+   * 模拟不支持的特性
+   */
+  static mockUnsupportedFeature(featureName: string): void {
+    if (!(featureName in this.originalFeatures)) {
+      this.originalFeatures[featureName] = (global as any)[featureName];
+    }
+    (global as any)[featureName] = undefined;
+  }
+
+  /**
+   * 恢复所有模拟
+   */
+  static restoreAll(): void {
+    Object.entries(this.originalFeatures).forEach(([key, value]) => {
+      if (value === undefined) {
+        delete (global as any)[key];
+      } else {
+        (global as any)[key] = value;
+      }
+    });
+    this.originalFeatures = {};
+  }
+
+  /**
+   * 恢复特定特性
+   */
+  static restore(featureName: string): void {
+    if (featureName in this.originalFeatures) {
+      if (this.originalFeatures[featureName] === undefined) {
+        delete (global as any)[featureName];
+      } else {
+        (global as any)[featureName] = this.originalFeatures[featureName];
+      }
+      delete this.originalFeatures[featureName];
+    }
+  }
+}
+
 // 测试数据生成工具
 export class TestDataGenerator {
   /**
@@ -59,10 +130,10 @@ export class MockUtils {
    */
   static createProgressMock() {
     const progressCalls: any[] = [];
-    const progressCallback = jest.fn((progress: any) => {
+    const progressCallback = vi.fn((progress: any) => {
       progressCalls.push(progress);
     });
-    
+
     return {
       callback: progressCallback,
       calls: progressCalls,
@@ -80,15 +151,15 @@ export class MockUtils {
    */
   static createFetchMock(responses: any[] = []) {
     let callIndex = 0;
-    
-    const mockFetch = jest.fn(async (url: string, options?: any) => {
+
+    const mockFetch = vi.fn(async (url: string, options?: any) => {
       const response = responses[callIndex] || { ok: true, status: 200, data: 'success' };
       callIndex++;
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText || 'Request failed'}`);
       }
-      
+
       return {
         ok: response.ok,
         status: response.status,
@@ -101,7 +172,7 @@ export class MockUtils {
         body: response.body || null
       };
     });
-    
+
     return {
       mock: mockFetch,
       reset: () => {
@@ -120,7 +191,7 @@ export class MockUtils {
    */
   static createReadableStreamMock(chunks: Uint8Array[]) {
     let index = 0;
-    
+
     return new ReadableStream({
       start(controller) {
         // 开始时不做任何事
@@ -166,7 +237,7 @@ export class TestEnvironment {
     if (this.originalFetch) {
       global.fetch = this.originalFetch;
     }
-    
+
     Object.assign(console, this.originalConsole);
   }
 
@@ -213,10 +284,10 @@ export class TestEnvironment {
    */
   private static setupConsoleSuppress() {
     if (process.env.NODE_ENV === 'test') {
-      console.log = jest.fn();
-      console.warn = jest.fn();
-      console.error = jest.fn();
-      console.info = jest.fn();
+      console.log = vi.fn();
+      console.warn = vi.fn();
+      console.error = vi.fn();
+      console.info = vi.fn();
     }
   }
 
@@ -232,29 +303,29 @@ export class TestEnvironment {
    */
   static async waitForCondition(condition: () => boolean, timeout = 5000, interval = 100) {
     const start = Date.now();
-    
+
     while (Date.now() - start < timeout) {
       if (condition()) {
         return true;
       }
       await this.waitForAsync(interval);
     }
-    
+
     throw new Error(`Condition not met within ${timeout}ms`);
   }
 }
 
 // 断言工具
-export class AssertionUtils {
+export class AssertUtils {
   /**
    * 断言ArrayBuffer相等
    */
   static expectArrayBuffersEqual(actual: ArrayBuffer, expected: ArrayBuffer) {
     expect(actual.byteLength).toBe(expected.byteLength);
-    
+
     const actualView = new Uint8Array(actual);
     const expectedView = new Uint8Array(expected);
-    
+
     for (let i = 0; i < actualView.length; i++) {
       expect(actualView[i]).toBe(expectedView[i]);
     }
@@ -265,7 +336,18 @@ export class AssertionUtils {
    */
   static expectUint8ArraysEqual(actual: Uint8Array, expected: Uint8Array) {
     expect(actual.length).toBe(expected.length);
-    
+
+    for (let i = 0; i < actual.length; i++) {
+      expect(actual[i]).toBe(expected[i]);
+    }
+  }
+
+  /**
+   * 断言BinaryData相等
+   */
+  static assertBinaryDataEqual(actual: Uint8Array, expected: Uint8Array) {
+    expect(actual.length).toBe(expected.length);
+
     for (let i = 0; i < actual.length; i++) {
       expect(actual[i]).toBe(expected[i]);
     }
@@ -276,7 +358,7 @@ export class AssertionUtils {
    */
   static expectProgressCalls(progressMock: any, expectedCalls: number) {
     expect(progressMock.getCallCount()).toBe(expectedCalls);
-    
+
     // 验证进度是递增的
     const calls = progressMock.calls;
     for (let i = 1; i < calls.length; i++) {
@@ -294,7 +376,7 @@ export class PerformanceUtils {
     const start = performance.now();
     const result = await fn();
     const duration = performance.now() - start;
-    
+
     return { result, duration };
   }
 

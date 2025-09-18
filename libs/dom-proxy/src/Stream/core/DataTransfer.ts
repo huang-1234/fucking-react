@@ -78,12 +78,12 @@ export class DataTransfer {
 
       if (options.parallel) {
         // 并行传输
-        results.push(...await this.parallelPaginatedTransfer(
+        results.push(...await this.parallelPaginatedTransfer<T>(
           url, data, options, totalPages, progressTracker, stats
         ));
       } else {
         // 串行传输
-        results.push(...await this.serialPaginatedTransfer(
+        results.push(...await this.serialPaginatedTransfer<T>(
           url, data, options, totalPages, progressTracker, stats
         ));
       }
@@ -221,7 +221,7 @@ export class DataTransfer {
   async streamTransfer<T = any>(
     url: string,
     data: BinaryData,
-    options?: StreamTransferOptions
+    options: StreamTransferOptions
   ): Promise<TransferResult<T>> {
     const startTime = Date.now();
     const stats: TransferStats = {
@@ -433,7 +433,7 @@ export class DataTransfer {
       const progressTracker = createProgressTracker();
 
       // 执行分块上传
-      const result = await this.performResumableUpload(
+      const result = await this.performResumableUpload<T>(
         url, data, resumableState, options, progressTracker, stats
       );
 
@@ -606,6 +606,7 @@ export class DataTransfer {
 
   /**
    * 完成断点续传上传
+   * @see
    */
   private async finalizeResumableUpload<T>(
     url: string,

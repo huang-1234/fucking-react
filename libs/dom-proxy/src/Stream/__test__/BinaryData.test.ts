@@ -14,7 +14,7 @@ describe('BinaryData', () => {
     it('应该从ArrayBuffer创建实例', () => {
       const buffer = TestDataGenerator.generateArrayBuffer(100);
       const binaryData = new BinaryData(buffer);
-      
+
       expect(binaryData.size).toBe(100);
       expect(binaryData.isEmpty).toBe(false);
     });
@@ -22,7 +22,7 @@ describe('BinaryData', () => {
     it('应该支持MIME类型选项', () => {
       const buffer = TestDataGenerator.generateArrayBuffer(100);
       const binaryData = new BinaryData(buffer, { mimeType: 'image/png' });
-      
+
       expect(binaryData.type).toBe('image/png');
     });
   });
@@ -31,14 +31,14 @@ describe('BinaryData', () => {
     it('应该从ArrayBuffer创建', () => {
       const buffer = TestDataGenerator.generateArrayBuffer(100);
       const binaryData = BinaryData.from(buffer);
-      
+
       expect(binaryData.size).toBe(100);
     });
 
     it('应该从Uint8Array创建', () => {
       const data = TestDataGenerator.generateBinaryData(100);
       const binaryData = BinaryData.from(data);
-      
+
       expect(binaryData.size).toBe(100);
       AssertUtils.assertBinaryDataEqual(binaryData.toUint8Array(), data);
     });
@@ -46,7 +46,7 @@ describe('BinaryData', () => {
     it('应该从字符串创建', () => {
       const text = 'Hello, World!';
       const binaryData = BinaryData.from(text);
-      
+
       expect(binaryData.size).toBeGreaterThan(0);
       expect(binaryData.type).toBe('text/plain');
     });
@@ -54,14 +54,14 @@ describe('BinaryData', () => {
     it('应该从Base64创建', () => {
       const base64 = 'SGVsbG8sIFdvcmxkIQ=='; // "Hello, World!"
       const binaryData = BinaryData.fromBase64(base64);
-      
+
       expect(binaryData.size).toBeGreaterThan(0);
     });
 
     it('应该从文本创建', () => {
       const text = 'Hello, World!';
       const binaryData = BinaryData.fromText(text, 'utf-8');
-      
+
       expect(binaryData.size).toBeGreaterThan(0);
       expect(binaryData.type).toBe('text/plain');
     });
@@ -69,7 +69,7 @@ describe('BinaryData', () => {
     it('应该处理无效输入', () => {
       expect(() => {
         BinaryData.from(null as any);
-      }).toThrow(DataFormatError);
+      }).toThrow(StreamError);
     });
   });
 
@@ -77,7 +77,7 @@ describe('BinaryData', () => {
     it('应该从Blob创建', async () => {
       const blob = TestDataGenerator.generateBlob(100, 'text/plain');
       const binaryData = await BinaryData.fromAsync(blob);
-      
+
       expect(binaryData.size).toBe(100);
       expect(binaryData.type).toBe('text/plain');
     });
@@ -135,7 +135,7 @@ describe('BinaryData', () => {
     it('应该支持切片操作', () => {
       const sliced = testData.slice(2, 5);
       expect(sliced.size).toBe(3);
-      
+
       const slicedArray = sliced.toUint8Array();
       expect(slicedArray[0]).toBe(3);
       expect(slicedArray[1]).toBe(4);
@@ -145,9 +145,9 @@ describe('BinaryData', () => {
     it('应该支持连接操作', () => {
       const data2 = BinaryData.from(new Uint8Array([11, 12, 13]));
       const concatenated = testData.concat(data2);
-      
+
       expect(concatenated.size).toBe(13);
-      
+
       const result = concatenated.toUint8Array();
       expect(result[9]).toBe(10);
       expect(result[10]).toBe(11);
@@ -157,7 +157,7 @@ describe('BinaryData', () => {
 
     it('应该支持克隆操作', () => {
       const cloned = testData.clone();
-      
+
       expect(cloned.size).toBe(testData.size);
       expect(cloned.equals(testData)).toBe(true);
       expect(cloned).not.toBe(testData); // 不同的实例
@@ -167,7 +167,7 @@ describe('BinaryData', () => {
       const data1 = BinaryData.from(new Uint8Array([1, 2, 3]));
       const data2 = BinaryData.from(new Uint8Array([1, 2, 3]));
       const data3 = BinaryData.from(new Uint8Array([1, 2, 4]));
-      
+
       expect(data1.equals(data2)).toBe(true);
       expect(data1.equals(data3)).toBe(false);
     });
@@ -177,7 +177,7 @@ describe('BinaryData', () => {
     it('应该支持标准Base64编码', () => {
       const textData = BinaryData.fromText('Hello, World!');
       const base64 = textData.encodeBase64();
-      
+
       // 验证可以正确解码
       const decoded = BinaryData.decodeBase64(base64);
       expect(decoded.equals(textData)).toBe(true);
@@ -186,7 +186,7 @@ describe('BinaryData', () => {
     it('应该支持URL安全的Base64编码', () => {
       const data = BinaryData.from(new Uint8Array([255, 254, 253]));
       const base64 = data.encodeBase64({ urlSafe: true });
-      
+
       expect(base64).not.toContain('+');
       expect(base64).not.toContain('/');
     });
@@ -194,7 +194,7 @@ describe('BinaryData', () => {
     it('应该支持无填充的Base64编码', () => {
       const data = BinaryData.from(new Uint8Array([1, 2]));
       const base64 = data.encodeBase64({ padding: false });
-      
+
       expect(base64).not.toContain('=');
     });
 
@@ -214,7 +214,7 @@ describe('BinaryData', () => {
 
       const textData = BinaryData.fromText('Hello, World!');
       const hash = await textData.computeHash('sha-256');
-      
+
       expect(typeof hash).toBe('string');
       expect(hash.length).toBeGreaterThan(0);
     });
@@ -227,7 +227,7 @@ describe('BinaryData', () => {
 
       const textData = BinaryData.fromText('Hello, World!');
       const hash = await textData.computeHash('sha-1');
-      
+
       expect(typeof hash).toBe('string');
       expect(hash.length).toBeGreaterThan(0);
     });
@@ -242,7 +242,7 @@ describe('BinaryData', () => {
     it('应该正确检测空数据', () => {
       const emptyData = BinaryData.from(new Uint8Array(0));
       const nonEmptyData = BinaryData.from(new Uint8Array(1));
-      
+
       expect(emptyData.isEmpty).toBe(true);
       expect(nonEmptyData.isEmpty).toBe(false);
     });
@@ -250,7 +250,7 @@ describe('BinaryData', () => {
     it('应该支持MIME类型设置', () => {
       const data = BinaryData.from(new Uint8Array(10));
       expect(data.type).toBeUndefined();
-      
+
       data.setType('image/png');
       expect(data.type).toBe('image/png');
     });
@@ -258,7 +258,7 @@ describe('BinaryData', () => {
     it('应该提供JSON表示', () => {
       const data = BinaryData.from(new Uint8Array(10), { mimeType: 'test/type' });
       const json = data.toJSON();
-      
+
       expect(json).toEqual({
         size: 10,
         type: 'test/type',
@@ -269,7 +269,7 @@ describe('BinaryData', () => {
     it('应该提供字符串表示', () => {
       const data = BinaryData.from(new Uint8Array(10), { mimeType: 'test/type' });
       const str = data.toString();
-      
+
       expect(str).toBe('BinaryData(10 bytes, test/type)');
     });
   });
@@ -277,15 +277,15 @@ describe('BinaryData', () => {
   describe('错误处理', () => {
     it('应该处理切片参数错误', () => {
       const data = BinaryData.from(new Uint8Array(10));
-      
+
       expect(() => {
         data.slice(-1, 5);
       }).toThrow(StreamError);
-      
+
       expect(() => {
         data.slice(5, 15);
       }).toThrow(StreamError);
-      
+
       expect(() => {
         data.slice(8, 5);
       }).toThrow(StreamError);

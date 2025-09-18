@@ -35,7 +35,7 @@ import { getDefaultCompatibilityManager } from './CompatibilityManager';
  * 二进制数据类
  */
 export class BinaryData {
-  private data: ArrayBuffer | SharedArrayBuffer;
+  private data: ArrayBufferLike;
   private mimeType?: string;
 
   /**
@@ -43,7 +43,7 @@ export class BinaryData {
    * @param data ArrayBuffer数据
    * @param options 选项
    */
-  constructor(data: ArrayBuffer | SharedArrayBuffer, options: BinaryDataOptions = {}) {
+  constructor(data: ArrayBufferLike, options: BinaryDataOptions = {}) {
     this.data = data;
     this.mimeType = options.mimeType;
   }
@@ -55,7 +55,7 @@ export class BinaryData {
    */
   static from(input: BinaryDataInput, options: BinaryDataOptions = {}): BinaryData {
     try {
-      let arrayBuffer: ArrayBuffer | SharedArrayBuffer;
+      let arrayBuffer: ArrayBufferLike;
       let mimeType = options.mimeType;
 
       if (input instanceof ArrayBuffer) {
@@ -152,7 +152,7 @@ export class BinaryData {
   /**
    * 转换为ArrayBuffer
    */
-  toArrayBuffer(): ArrayBuffer {
+  toArrayBuffer() {
     return this.data.slice(0);
   }
 
@@ -171,7 +171,7 @@ export class BinaryData {
     }
 
     const type = mimeType || this.mimeType || 'application/octet-stream';
-    return new Blob([this.data], { type });
+    return new Blob([this.data as BlobPart], { type });
   }
 
   /**
@@ -203,7 +203,7 @@ export class BinaryData {
    * @param ArrayConstructor TypedArray构造函数
    */
   toTypedArray<T extends TypedArray>(ArrayConstructor: TypedArrayConstructor<T>): T {
-    return new ArrayConstructor(this.data) as T;
+    return new ArrayConstructor(this.data as unknown as  Iterable<number>) as T;
   }
 
   /**

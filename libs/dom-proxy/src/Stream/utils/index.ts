@@ -114,7 +114,7 @@ export function getTypedArrayConstructor(value: TypedArray): TypedArrayConstruct
   throw new Error('Unknown typed array type');
 }
 
-export function concatArrayBuffers(...buffers: ArrayBuffer[]): ArrayBuffer {
+export function concatArrayBuffers(...buffers: ArrayBufferLike[]): ArrayBufferLike {
   const totalLength = buffers.reduce((sum, buffer) => sum + buffer.byteLength, 0);
   const result = new ArrayBuffer(totalLength);
   const resultView = new Uint8Array(result);
@@ -128,12 +128,12 @@ export function concatArrayBuffers(...buffers: ArrayBuffer[]): ArrayBuffer {
   return result;
 }
 
-export function sliceArrayBuffer(buffer: ArrayBuffer, start: number, end?: number): ArrayBuffer {
+export function sliceArrayBuffer(buffer: ArrayBufferLike, start: number, end?: number): ArrayBufferLike {
   const actualEnd = end !== undefined ? end : buffer.byteLength;
   return buffer.slice(start, actualEnd);
 }
 
-export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+export function arrayBufferToBase64(buffer: ArrayBufferLike): string {
   const bytes = new Uint8Array(buffer);
   let binary = '';
   for (let i = 0; i < bytes.byteLength; i++) {
@@ -142,7 +142,7 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-export function base64ToArrayBuffer(base64: string): ArrayBuffer {
+export function base64ToArrayBuffer(base64: string): ArrayBufferLike {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
@@ -165,10 +165,10 @@ export function stringToArrayBuffer(str: string, encoding: string = 'utf-8'): Ar
   return bytes.buffer;
 }
 
-export function arrayBufferToString(buffer: ArrayBuffer, encoding: string = 'utf-8'): string {
+export function arrayBufferToString(buffer: ArrayBufferLike, encoding: string = 'utf-8'): string {
   if (typeof TextDecoder !== 'undefined') {
     const decoder = new TextDecoder(encoding);
-    return decoder.decode(buffer);
+    return decoder.decode(buffer as AllowSharedBufferSource);
   }
 
   // 降级方案

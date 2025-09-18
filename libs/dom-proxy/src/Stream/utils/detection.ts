@@ -2,11 +2,11 @@
  * 浏览器特性检测工具
  */
 
-import type { 
-  FeatureSupport, 
-  BrowserInfo, 
+import type {
+  FeatureSupport,
+  BrowserInfo,
   EnvironmentInfo,
-  FeatureDetector 
+  FeatureDetector
 } from '../types/compatibility';
 
 /**
@@ -109,7 +109,7 @@ export const featureDetectors: Record<keyof FeatureSupport, FeatureDetector> = {
  */
 export function detectFeatures(): FeatureSupport {
   const features: FeatureSupport = {} as FeatureSupport;
-  
+
   for (const [feature, detector] of Object.entries(featureDetectors)) {
     try {
       features[feature as keyof FeatureSupport] = detector();
@@ -119,7 +119,7 @@ export function detectFeatures(): FeatureSupport {
       console.warn(`[FeatureDetection] Failed to detect ${feature}:`, error);
     }
   }
-  
+
   return features;
 }
 
@@ -140,13 +140,13 @@ export function detectFeature(feature: keyof FeatureSupport): boolean {
  */
 export function getBrowserInfo(): BrowserInfo {
   const userAgent = navigator.userAgent;
-  
+
   // 简化的浏览器检测
   let name = 'Unknown';
   let version = 'Unknown';
   let engine = 'Unknown';
   let engineVersion = 'Unknown';
-  
+
   // Chrome检测
   if (userAgent.includes('Chrome/')) {
     name = 'Chrome';
@@ -178,7 +178,7 @@ export function getBrowserInfo(): BrowserInfo {
 
   // 移动端检测
   const mobile = /Mobile|Android|iPhone|iPad/.test(userAgent);
-  
+
   // 操作系统检测
   let os = 'Unknown';
   if (userAgent.includes('Windows')) os = 'Windows';
@@ -205,11 +205,13 @@ export function getEnvironmentInfo(): EnvironmentInfo {
   const isNode = typeof process !== 'undefined' && process.versions?.node;
   const isWebWorker = typeof importScripts === 'function' && !isBrowser;
   const isServiceWorker = typeof ServiceWorkerGlobalScope !== 'undefined';
-  
+
   // ES模块支持检测
   const supportsESModules = (() => {
     try {
-      return typeof import === 'function';
+      // 使用间接方式检测ES模块支持
+      new Function('return import("")');
+      return true;
     } catch {
       return false;
     }
@@ -219,7 +221,8 @@ export function getEnvironmentInfo(): EnvironmentInfo {
   const supportsDynamicImport = (() => {
     try {
       // 检查是否支持动态import语法
-      return typeof import === 'function';
+      new Function('return import("")');
+      return true;
     } catch {
       return false;
     }
@@ -239,7 +242,7 @@ export function getEnvironmentInfo(): EnvironmentInfo {
  * 检查最小版本要求
  */
 export function checkMinVersion(
-  browserInfo: BrowserInfo, 
+  browserInfo: BrowserInfo,
   minVersions: Record<string, string>
 ): boolean {
   const minVersion = minVersions[browserInfo.name.toLowerCase()];
@@ -272,7 +275,7 @@ export function generateCompatibilityReport(): {
   const features = detectFeatures();
   const browser = getBrowserInfo();
   const environment = getEnvironmentInfo();
-  
+
   const supportedCount = Object.values(features).filter(Boolean).length;
   const totalCount = Object.keys(features).length;
   const supportPercentage = Math.round((supportedCount / totalCount) * 100);
