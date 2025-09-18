@@ -4,7 +4,7 @@
 
 ## 目录结构
 
-```
+```md
 SkipList/
 ├── index.tsx                    # 主页面组件
 ├── components/                  # UI 组件
