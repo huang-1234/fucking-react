@@ -213,8 +213,13 @@ class TestRunner {
     if (existsSync(reportPath)) {
       console.log('🌐 Opening coverage report in browser...');
 
-      const { default: open } = await import('open');
-      await open(reportPath);
+      try {
+        // const open = require('open');
+        // await open(reportPath);
+        console.log('📊 Coverage report available at:', reportPath);
+      } catch (error) {
+        console.warn('⚠️  Could not open browser. Please open manually:', reportPath);
+      }
     } else {
       console.warn('⚠️  Coverage report not found');
     }

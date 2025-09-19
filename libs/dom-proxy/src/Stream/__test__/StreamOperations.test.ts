@@ -128,7 +128,7 @@ describe('StreamOperations', () => {
       const stream = StreamOperations.binaryToStream(originalBinaryData, 32);
 
       // 转换回BinaryData
-      const resultBinaryData = await StreamOperations.streamToBinary(stream);
+      const resultBinaryData = await StreamOperations.streamToBinary(stream, {});
 
       expect(resultBinaryData.size).toBe(100);
       expect(resultBinaryData.equals(originalBinaryData)).toBe(true);
@@ -207,7 +207,7 @@ describe('StreamOperations', () => {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        if (value) results.push(value);
+        if (value) results.push(String(value));
       }
 
       expect(results).toEqual(['HELLO', 'WORLD']);

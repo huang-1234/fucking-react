@@ -31,9 +31,13 @@ export default defineConfig({
     hookTimeout: 10000,
     
     // 并发设置
-    threads: true,
-    maxThreads: 4,
-    minThreads: 1,
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        maxThreads: 4,
+        minThreads: 1
+      }
+    },
     
     // 覆盖率配置
     coverage: {

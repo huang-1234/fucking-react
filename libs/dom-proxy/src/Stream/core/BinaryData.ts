@@ -152,8 +152,14 @@ export class BinaryData {
   /**
    * 转换为ArrayBuffer
    */
-  toArrayBuffer() {
-    return this.data.slice(0);
+  toArrayBuffer(): ArrayBuffer {
+    if (this.data instanceof ArrayBuffer) {
+      return this.data.slice(0);
+    }
+    // 如果是SharedArrayBuffer，转换为ArrayBuffer
+    const buffer = new ArrayBuffer(this.data.byteLength);
+    new Uint8Array(buffer).set(new Uint8Array(this.data));
+    return buffer;
   }
 
   /**
@@ -171,17 +177,19 @@ export class BinaryData {
     }
 
     const type = mimeType || this.mimeType || 'application/octet-stream';
-    return new Blob([this.data as BlobPart], { type });
-  }
+    // 确保数据是ArrayBuffer类型
+    const arrayBuffer = this.data instanceof ArrayBuffer ? this.data : this.toArrayBuffer();
 
+    return new Blob([arrayBuffer], { type });
+  }
   /**
    * 转换为文本
-   * @param options 转换选项
    */
   async toText(options: TextConversionOptions = {}): Promise<string> {
     try {
       const encoding = options.encoding || 'utf-8';
-      return arrayBufferToString(this.data, encoding);
+      const arrayBuffer = this.data instanceof ArrayBuffer ? this.data : this.toArrayBuffer();
+      return arrayBufferToString(arrayBuffer, encoding);
     } catch (error) {
       throw new StreamError(
         `Failed to convert to text: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -203,7 +211,8 @@ export class BinaryData {
    * @param ArrayConstructor TypedArray构造函数
    */
   toTypedArray<T extends TypedArray>(ArrayConstructor: TypedArrayConstructor<T>): T {
-    return new ArrayConstructor(this.data as unknown as  Iterable<number>) as T;
+    const arrayBuffer = this.data instanceof ArrayBuffer ? this.data : this.toArrayBuffer();
+    return new ArrayConstructor(arrayBuffer) as T;
   }
 
   /**
@@ -218,7 +227,8 @@ export class BinaryData {
         throw new Error('Invalid slice parameters');
       }
 
-      const slicedBuffer = sliceArrayBuffer(this.data, start, actualEnd);
+      const arrayBuffer = this.data instanceof ArrayBuffer ? this.data : this.toArrayBuffer();
+      const slicedBuffer = sliceArrayBuffer(arrayBuffer, start, actualEnd);
       const resultMimeType = mimeType || this.mimeType;
 
       return new BinaryData(slicedBuffer, { mimeType: resultMimeType });
@@ -238,7 +248,10 @@ export class BinaryData {
    */
   concat(...data: BinaryData[]): BinaryData {
     try {
-      const buffers = [this.data, ...data.map(d => d.data)];
+      const buffers = [
+        this.data instanceof ArrayBuffer ? this.data : this.toArrayBuffer(),
+        ...data.map(d => d.data instanceof ArrayBuffer ? d.data : d.toArrayBuffer())
+      ];
       const concatenated = concatArrayBuffers(...buffers);
 
       // 使用第一个数据的MIME类型
@@ -260,7 +273,8 @@ export class BinaryData {
    */
   encodeBase64(options: Base64Options = {}): string {
     try {
-      let base64 = arrayBufferToBase64(this.data);
+      const arrayBuffer = this.data instanceof ArrayBuffer ? this.data : this.toArrayBuffer();
+      let base64 = arrayBufferToBase64(arrayBuffer);
 
       if (options.urlSafe) {
         base64 = base64.replace(/\+/g, '-').replace(/\//g, '_');
@@ -321,7 +335,8 @@ export class BinaryData {
     }
 
     try {
-      const hashBuffer = await crypto.subtle.digest(algorithm.toUpperCase(), this.data);
+      const arrayBuffer = this.data instanceof ArrayBuffer ? this.data : this.toArrayBuffer();
+      const hashBuffer = await crypto.subtle.digest(algorithm.toUpperCase(), arrayBuffer);
       return arrayBufferToBase64(hashBuffer);
     } catch (error) {
       throw new StreamError(

@@ -257,7 +257,7 @@ export class DataTransfer {
 
       return {
         success: true,
-        data: result,
+        data: result as T,
         stats
       };
 

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { 
+import {
   initStreamModule,
   BinaryData,
   DataTransfer,
@@ -97,14 +97,14 @@ describe('Stream模块集成测试', () => {
       );
 
       // 4. 转换回BinaryData
-      const result = await StreamOperations.streamToBinary(processedStream);
+      const result = await StreamOperations.streamToBinary(processedStream as ReadableStream<Uint8Array>, {});
 
       // 5. 验证结果
       expect(result.size).toBe(binaryData.size);
-      
+
       const originalArray = binaryData.toUint8Array();
       const resultArray = result.toUint8Array();
-      
+
       for (let i = 0; i < originalArray.length; i++) {
         expect(resultArray[i]).toBe((originalArray[i] + 1) % 256);
       }
@@ -112,12 +112,12 @@ describe('Stream模块集成测试', () => {
 
     it('应该支持复杂的流处理管道', async () => {
       const textData = BinaryData.fromText('Hello, World! This is a test message.');
-      
+
       // 创建复杂的处理管道
       const sourceStream = StreamOperations.binaryToStream(textData, 10);
-      
+
       const { transform: statsTransform, getStats } = StreamOperations.createStatsCollector<Uint8Array>();
-      
+
       const processedStream = sourceStream
         .pipeThrough(statsTransform)
         .pipeThrough(StreamOperations.createChunkingTransform(5))
@@ -137,11 +137,11 @@ describe('Stream模块集成测试', () => {
           }
         }));
 
-      const result = await StreamOperations.streamToBinary(processedStream);
+      const result = await StreamOperations.streamToBinary(processedStream as ReadableStream<Uint8Array>, {});
       const resultText = await result.toText();
-      
+
       expect(resultText).toBe('HELLO, WORLD! THIS IS A TEST MESSAGE.');
-      
+
       const stats = getStats();
       expect(stats.chunksProcessed).toBeGreaterThan(0);
       expect(stats.bytesRead).toBe(textData.size);
@@ -223,7 +223,7 @@ describe('Stream模块集成测试', () => {
   describe('兼容性管理集成', () => {
     it('应该正确检测和处理兼容性问题', async () => {
       const compatibilityManager = CompatibilityManager.getInstance();
-      
+
       // 检查兼容性
       const compatibilityResult = compatibilityManager.checkCompatibility();
       expect(compatibilityResult).toHaveProperty('compatible');
@@ -240,7 +240,7 @@ describe('Stream模块集成测试', () => {
 
     it('应该支持降级策略', async () => {
       const compatibilityManager = CompatibilityManager.getInstance();
-      
+
       // 测试不存在的特性的降级
       try {
         await compatibilityManager.executeFallback('nonexistent-feature');
@@ -312,10 +312,10 @@ describe('Stream模块集成测试', () => {
 
     it('应该正确处理大数据流', async () => {
       const largeData = BinaryData.from(TestDataGenerator.generateBinaryData(100000));
-      
+
       // 使用小的分块大小来测试分块处理
       const stream = StreamOperations.binaryToStream(largeData, 1024);
-      
+
       let chunkCount = 0;
       const countingTransform = StreamOperations.createTransformStream<Uint8Array, Uint8Array>({
         transform(chunk, controller) {
@@ -338,7 +338,7 @@ describe('Stream模块集成测试', () => {
 
       // 创建背压控制转换流
       const backpressureTransform = StreamOperations.createBackpressureTransform<Uint8Array>(5000);
-      
+
       // 这应该不会触发内存错误，因为数据量在限制内
       const processedStream = stream.pipeThrough(backpressureTransform);
       const result = await StreamOperations.streamToBinary(processedStream);

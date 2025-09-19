@@ -1,76 +1,188 @@
+import { vi, beforeEach, afterEach, expect } from 'vitest';
+
 /**
- * 测试环境设置和工具函数
+ * 测试工具函数和Mock设置
  */
 
-import { afterEach, afterAll, vi } from 'vitest';
+// Mock全局对象
+const mockGlobal = {
+  TextEncoder: class MockTextEncoder {
+    encode(input: string): Uint8Array {
+      return new Uint8Array(Buffer.from(input, 'utf8'));
+    }
+  },
 
-// 设置Stream测试环境
-export function setupStreamTests() {
-  // 设置测试环境
-  TestEnvironment.setup();
+  TextDecoder: class MockTextDecoder {
+    decode(input: ArrayBuffer | Uint8Array): string {
+      if (input instanceof Uint8Array) {
+        return Buffer.from(input).toString('utf8');
+      }
+      return Buffer.from(input).toString('utf8');
+    }
+  },
 
-  // 在每个测试后执行清理
-  afterEach(() => {
-    BrowserMock.restoreAll();
-  });
+  ReadableStream: class MockReadableStream {
+    constructor(source?: any) {
+      // Mock implementation
+    }
+  },
 
-  // 在所有测试完成后执行清理
-  afterAll(() => {
-    TestEnvironment.teardown();
+  WritableStream: class MockWritableStream {
+    constructor(sink?: any) {
+      // Mock implementation
+    }
+  },
+
+  TransformStream: class MockTransformStream {
+    constructor(transformer?: any) {
+      // Mock implementation
+    }
+  },
+
+  crypto: {
+    subtle: {
+      digest: vi.fn().mockImplementation(async (algorithm: string, data: ArrayBuffer | Uint8Array) => {
+        // Mock hash implementation
+        return new ArrayBuffer(32); // Mock SHA-256 result
+      })
+    }
+  },
+
+  fetch: vi.fn(),
+
+  Response: class MockResponse {
+    constructor(body?: any, init?: ResponseInit) {
+      this.body = body;
+      this.status = init?.status || 200;
+      this.headers = new Map(Object.entries(init?.headers || {}));
+    }
+
+    body: any;
+    status: number;
+    headers: Map<string, string>;
+
+    async json() {
+      return JSON.parse(this.body);
+    }
+
+    async text() {
+      return String(this.body);
+    }
+
+    async arrayBuffer() {
+      if (this.body instanceof ArrayBuffer) {
+        return this.body;
+      }
+      return new ArrayBuffer(0);
+    }
+  }
+};
+
+// 设置全局Mock
+Object.assign(global, mockGlobal);
+
+/**
+ * 创建Mock进度回调
+ */
+export function createMockProgressCallback() {
+  return vi.fn((progress: { loaded: number; total: number; percentage: number }) => {
+    console.log('Progress:', progress);
   });
 }
 
-// 浏览器功能模拟工具
-export class BrowserMock {
-  private static originalFeatures: Record<string, any> = {};
-
-  /**
-   * 模拟浏览器特性
-   */
-  static mockFeature(featureName: string, implementation: any): void {
-    if (!(featureName in this.originalFeatures)) {
-      this.originalFeatures[featureName] = (global as any)[featureName];
-    }
-    (global as any)[featureName] = implementation;
+/**
+ * 创建Mock ArrayBuffer
+ */
+export function createMockArrayBuffer(size: number = 1024): ArrayBuffer {
+  const buffer = new ArrayBuffer(size);
+  const view = new Uint8Array(buffer);
+  for (let i = 0; i < size; i++) {
+    view[i] = i % 256;
   }
+  return buffer;
+}
 
-  /**
-   * 模拟不支持的特性
-   */
-  static mockUnsupportedFeature(featureName: string): void {
-    if (!(featureName in this.originalFeatures)) {
-      this.originalFeatures[featureName] = (global as any)[featureName];
-    }
-    (global as any)[featureName] = undefined;
-  }
+/**
+ * 创建Mock Blob
+ */
+export function createMockBlob(data: string = 'test data', type: string = 'text/plain'): Blob {
+  return new Blob([data], { type });
+}
 
-  /**
-   * 恢复所有模拟
-   */
-  static restoreAll(): void {
-    Object.entries(this.originalFeatures).forEach(([key, value]) => {
-      if (value === undefined) {
-        delete (global as any)[key];
+/**
+ * 创建Mock File
+ */
+export function createMockFile(
+  data: string = 'test file content',
+  name: string = 'test.txt',
+  type: string = 'text/plain'
+): File {
+  return new File([data], name, { type });
+}
+
+/**
+ * 创建Mock ReadableStream
+ */
+export function createMockReadableStream(chunks: Uint8Array[]): ReadableStream<Uint8Array> {
+  let index = 0;
+
+  return new ReadableStream({
+    start(controller) {
+      // Stream started
+    },
+    pull(controller) {
+      if (index < chunks.length) {
+        controller.enqueue(chunks[index++]);
       } else {
-        (global as any)[key] = value;
+        controller.close();
       }
-    });
-    this.originalFeatures = {};
-  }
-
-  /**
-   * 恢复特定特性
-   */
-  static restore(featureName: string): void {
-    if (featureName in this.originalFeatures) {
-      if (this.originalFeatures[featureName] === undefined) {
-        delete (global as any)[featureName];
-      } else {
-        (global as any)[featureName] = this.originalFeatures[featureName];
-      }
-      delete this.originalFeatures[featureName];
     }
-  }
+  });
+}
+
+/**
+ * 创建Mock WritableStream
+ */
+export function createMockWritableStream(): WritableStream<Uint8Array> {
+  const chunks: Uint8Array[] = [];
+
+  return new WritableStream({
+    write(chunk) {
+      chunks.push(chunk);
+    },
+    close() {
+      console.log('Stream closed, received chunks:', chunks.length);
+    }
+  });
+}
+
+/**
+ * 创建Mock TransformStream
+ */
+export function createMockTransformStream(): TransformStream<Uint8Array, Uint8Array> {
+  return new TransformStream({
+    transform(chunk, controller) {
+      // 简单的转换：将数据原样传递
+      controller.enqueue(chunk);
+    }
+  });
+}
+
+/**
+ * 创建Mock HTTP Response
+ */
+export function createMockResponse(
+  data: any,
+  status: number = 200,
+  headers: Record<string, string> = {}
+): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers
+    }
+  });
 }
 
 // 测试数据生成工具
@@ -117,9 +229,9 @@ export class TestDataGenerator {
   /**
    * 生成测试ArrayBuffer
    */
-  static generateArrayBuffer(size: number): ArrayBuffer {
+  static generateArrayBuffer(size: number) {
     const data = this.generateBinaryData(size);
-    return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+    return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
   }
 }
 
@@ -211,109 +323,57 @@ export class MockUtils {
   }
 }
 
-// 测试环境设置
-export class TestEnvironment {
-  private static originalFetch: any;
-  private static originalConsole: any;
+/**
+ * 测试环境设置
+ */
+beforeEach(() => {
+  // 重置所有Mock
+  vi.clearAllMocks();
 
-  /**
-   * 设置测试环境
-   */
-  static setup() {
-    // 保存原始函数
-    this.originalFetch = global.fetch;
-    this.originalConsole = { ...console };
+  // 重置fetch Mock
+  global.fetch = vi.fn();
+});
 
-    // 设置全局mocks
-    this.setupGlobalMocks();
-    this.setupConsoleSuppress();
-  }
+afterEach(() => {
+  // 清理测试环境
+  vi.restoreAllMocks();
+});
 
-  /**
-   * 清理测试环境
-   */
-  static teardown() {
-    // 恢复原始函数
-    if (this.originalFetch) {
-      global.fetch = this.originalFetch;
-    }
-
-    Object.assign(console, this.originalConsole);
-  }
-
-  /**
-   * 设置全局Mock
-   */
-  private static setupGlobalMocks() {
-    // Mock fetch if not available
-    if (!global.fetch) {
-      global.fetch = jest.fn();
-    }
-
-    // Mock performance if not available
-    if (!global.performance) {
-      global.performance = {
-        now: jest.fn(() => Date.now()),
-        mark: jest.fn(),
-        measure: jest.fn(),
-        getEntriesByName: jest.fn(() => []),
-        getEntriesByType: jest.fn(() => []),
-        clearMarks: jest.fn(),
-        clearMeasures: jest.fn()
-      } as any;
-    }
-
-    // Mock crypto if not available
-    if (!global.crypto) {
-      global.crypto = {
-        getRandomValues: jest.fn((array: any) => {
-          for (let i = 0; i < array.length; i++) {
-            array[i] = Math.floor(Math.random() * 256);
-          }
-          return array;
-        }),
-        subtle: {
-          digest: jest.fn(async () => new ArrayBuffer(32))
-        }
-      } as any;
-    }
-  }
-
-  /**
-   * 抑制控制台输出（测试时）
-   */
-  private static setupConsoleSuppress() {
-    if (process.env.NODE_ENV === 'test') {
-      console.log = vi.fn();
-      console.warn = vi.fn();
-      console.error = vi.fn();
-      console.info = vi.fn();
-    }
-  }
-
-  /**
-   * 等待异步操作完成
-   */
-  static async waitForAsync(ms = 0) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * 等待条件满足
-   */
-  static async waitForCondition(condition: () => boolean, timeout = 5000, interval = 100) {
+/**
+ * 测试工具函数
+ */
+export const testUtils = {
+  // 等待异步操作完成
+  async waitFor(condition: () => boolean, timeout: number = 5000): Promise<void> {
     const start = Date.now();
-
-    while (Date.now() - start < timeout) {
-      if (condition()) {
-        return true;
-      }
-      await this.waitForAsync(interval);
+    while (!condition() && Date.now() - start < timeout) {
+      await new Promise(resolve => setTimeout(resolve, 10));
     }
+    if (!condition()) {
+      throw new Error('Timeout waiting for condition');
+    }
+  },
 
-    throw new Error(`Condition not met within ${timeout}ms`);
+  // 模拟延迟
+  delay: (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
+
+  // 断言函数
+  expectToBeArrayBuffer: (value: any) => {
+    expect(value).toBeInstanceOf(ArrayBuffer);
+  },
+
+  expectToBeUint8Array: (value: any) => {
+    expect(value).toBeInstanceOf(Uint8Array);
+  },
+
+  expectToBeBlob: (value: any) => {
+    expect(value).toBeInstanceOf(Blob);
+  },
+
+  expectToBeReadableStream: (value: any) => {
+    expect(value).toBeInstanceOf(ReadableStream);
   }
-}
+};
 
 // 断言工具
 export class AssertUtils {
@@ -335,17 +395,6 @@ export class AssertUtils {
    * 断言Uint8Array相等
    */
   static expectUint8ArraysEqual(actual: Uint8Array, expected: Uint8Array) {
-    expect(actual.length).toBe(expected.length);
-
-    for (let i = 0; i < actual.length; i++) {
-      expect(actual[i]).toBe(expected[i]);
-    }
-  }
-
-  /**
-   * 断言BinaryData相等
-   */
-  static assertBinaryDataEqual(actual: Uint8Array, expected: Uint8Array) {
     expect(actual.length).toBe(expected.length);
 
     for (let i = 0; i < actual.length; i++) {
@@ -384,18 +433,20 @@ export class PerformanceUtils {
    * 测量内存使用
    */
   static measureMemory(): number {
-    if (performance.memory) {
-      return performance.memory.usedJSHeapSize;
+    if ((performance as any).memory) {
+      return (performance as any).memory.usedJSHeapSize;
     }
     return 0;
   }
+}
+export function setupStreamTests() {
+
 }
 
 // 导出所有工具
 export {
   TestDataGenerator as TestData,
   MockUtils as Mock,
-  TestEnvironment as Environment,
-  AssertionUtils as Assert,
+  AssertUtils as Assert,
   PerformanceUtils as Performance
 };

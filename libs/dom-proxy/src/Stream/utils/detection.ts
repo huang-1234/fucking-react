@@ -79,10 +79,14 @@ export const featureDetectors: Record<keyof FeatureSupport, FeatureDetector> = {
 
   // 异步迭代器检测
   asyncIterator: () => {
-    return typeof Symbol !== 'undefined' &&
-           typeof Symbol.asyncIterator !== 'undefined' &&
-           typeof globalThis.ReadableStream !== 'undefined' &&
-           typeof globalThis.ReadableStream.prototype[Symbol.asyncIterator] === 'function';
+    try {
+      return typeof Symbol !== 'undefined' &&
+             typeof Symbol.asyncIterator !== 'undefined' &&
+             typeof globalThis.ReadableStream !== 'undefined' &&
+             Symbol.asyncIterator in globalThis.ReadableStream.prototype;
+    } catch {
+      return false;
+    }
   },
 
   // Blob构造函数检测
@@ -209,9 +213,8 @@ export function getEnvironmentInfo(): EnvironmentInfo {
   // ES模块支持检测
   const supportsESModules = (() => {
     try {
-      // 使用间接方式检测ES模块支持
-      new Function('return import("")');
-      return true;
+      // 检查ES模块支持
+      return typeof document !== 'undefined' && 'noModule' in document.createElement('script');
     } catch {
       return false;
     }
@@ -221,8 +224,7 @@ export function getEnvironmentInfo(): EnvironmentInfo {
   const supportsDynamicImport = (() => {
     try {
       // 检查是否支持动态import语法
-      new Function('return import("")');
-      return true;
+      return typeof document !== 'undefined' && 'noModule' in document.createElement('script');
     } catch {
       return false;
     }
@@ -230,7 +232,7 @@ export function getEnvironmentInfo(): EnvironmentInfo {
 
   return {
     isBrowser,
-    isNode: !!isNode,
+    isNode: Boolean(isNode),
     isWebWorker,
     isServiceWorker,
     supportsESModules,

@@ -91,6 +91,8 @@ export interface CompatibilityConfig {
   debug?: boolean;
   /** 最小支持版本 */
   minVersions?: Record<string, string>;
+  /** 兼容性级别 */
+  compatibilityLevel?: 'strict' | 'loose' | 'permissive';
 }
 
 /**

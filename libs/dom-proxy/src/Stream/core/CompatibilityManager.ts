@@ -411,7 +411,7 @@ export class CompatibilityManager {
  * 创建兼容性管理器实例
  */
 export function createCompatibilityManager(config?: CompatibilityConfig): CompatibilityManager {
-  return new CompatibilityManager(config);
+  return CompatibilityManager.getInstance(config);
 }
 
 /**
