@@ -50,6 +50,9 @@ const LodashPage = loadable(() => import('@/pages/lodash'));
 // 系统设计
 const SystemDesignPage = loadable(() => import('@/pages/SystemDesign'));
 
+// Stream
+const StreamDemoPage = loadable(() => import('@/pages/Stream/index'));
+
 export interface IMenu {
   key: string;
   icon: React.ReactNode;
@@ -191,6 +194,20 @@ export const menuItems: IMenu[] = [
         label: '系统设计',
         icon: <CodeOutlined />,
         component: SystemDesignPage
+      },
+    ],
+  },
+  // Stream
+  {
+    key: '/stream',
+    label: 'Stream',
+    icon: <CodeOutlined />,
+    children: [
+      {
+        key: '/demo',
+        label: 'Stream Demo',
+        icon: <CodeOutlined />,
+        component: StreamDemoPage
       },
     ],
   },

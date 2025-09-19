@@ -27,7 +27,8 @@
       "@/*": ["src/*"],
       "@@/global/*": ["../../global/*"],
       "@fucking-algorithm/algorithm/*": ["../../libs/algorithm/src/*"],
-      "@dom-proxy/universal-module/*": ["../../libs/dom-proxy/src/UniversalModule/*"]
+      "@dom-proxy/universal-module/*": ["../../libs/dom-proxy/src/UniversalModule/*"],
+      "@dom-proxy/stream/*": ["../../libs/dom-proxy/src/Stream/*"]
     }
   },
   "include": ["src", "../../global", "vite.config.ts"],

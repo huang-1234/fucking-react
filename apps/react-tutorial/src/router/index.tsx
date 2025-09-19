@@ -5,6 +5,7 @@ import React15Sandbox from '../sandbox/React15Sandbox';
 import APIVersionLayout from '../components/APIVersionLayout';
 import loadable from '@loadable/component';
 import LLMRichTextPage from '@/pages/RichTextHomePage/subpage/LLMRichTextPage';
+import StreamDemoPage from '@/pages/Stream/index';
 // 富文本
 const RichTextHomePage = loadable(/** webpackChunkName: "RichTextHomePage" */() => import('@/pages/RichTextHomePage'));
 // Markdown渲染
@@ -498,6 +499,20 @@ const routerBrowser = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingComponent />}>
                 <SystemDesignPage />
+              </Suspense>
+            )
+          }
+        ]
+      },
+      // Stream路由
+      {
+        path: 'stream',
+        children: [
+          {
+            path: 'demo',
+            element: (
+              <Suspense fallback={<LoadingComponent />}>
+                <StreamDemoPage />
               </Suspense>
             )
           }
