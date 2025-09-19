@@ -2,10 +2,10 @@
  * Polyfill管理工具
  */
 
-import type { 
-  PolyfillInfo, 
-  PolyfillLoadState, 
-  CompatibilityConfig 
+import type {
+  PolyfillInfo,
+  PolyfillLoadState,
+  CompatibilityConfig
 } from '../types/compatibility';
 
 /**
@@ -19,7 +19,7 @@ export const BUILTIN_POLYFILLS: Record<string, PolyfillInfo> = {
     dependencies: [],
     detect: () => typeof globalThis.ReadableStream !== 'undefined'
   },
-  
+
   'text-encoding': {
     name: 'text-encoding-polyfill',
     version: '0.7.0',
@@ -27,7 +27,7 @@ export const BUILTIN_POLYFILLS: Record<string, PolyfillInfo> = {
     dependencies: [],
     detect: () => typeof globalThis.TextEncoder !== 'undefined'
   },
-  
+
   'compression-streams': {
     name: 'compression-streams-polyfill',
     version: '1.0.0',
@@ -35,7 +35,7 @@ export const BUILTIN_POLYFILLS: Record<string, PolyfillInfo> = {
     dependencies: ['web-streams'],
     detect: () => typeof globalThis.CompressionStream !== 'undefined'
   },
-  
+
   'structured-clone': {
     name: 'structured-clone-polyfill',
     version: '1.0.0',
@@ -96,9 +96,9 @@ export class PolyfillLoader {
    * 执行polyfill加载
    */
   private async doLoadPolyfill(name: string, info: PolyfillInfo): Promise<void> {
-    this.setLoadState(name, { 
-      status: 'loading', 
-      startTime: Date.now() 
+    this.setLoadState(name, {
+      status: 'loading',
+      startTime: Date.now()
     });
 
     try {
@@ -115,9 +115,9 @@ export class PolyfillLoader {
         throw new Error(`Polyfill ${name} loaded but feature still not available`);
       }
 
-      this.setLoadState(name, { 
-        status: 'loaded', 
-        endTime: Date.now() 
+      this.setLoadState(name, {
+        status: 'loaded',
+        endTime: Date.now()
       });
 
       if (this.config.debug) {
@@ -125,10 +125,10 @@ export class PolyfillLoader {
       }
 
     } catch (error) {
-      this.setLoadState(name, { 
-        status: 'error', 
+      this.setLoadState(name, {
+        status: 'error',
         error: error as Error,
-        endTime: Date.now() 
+        endTime: Date.now()
       });
 
       if (this.config.debug) {
@@ -155,17 +155,17 @@ export class PolyfillLoader {
       const script = document.createElement('script');
       script.src = url;
       script.async = true;
-      
+
       script.onload = () => {
         document.head.removeChild(script);
         resolve();
       };
-      
+
       script.onerror = () => {
         document.head.removeChild(script);
         reject(new Error(`Failed to load script: ${url}`));
       };
-      
+
       document.head.appendChild(script);
     });
   }
@@ -176,7 +176,8 @@ export class PolyfillLoader {
   private async loadModuleInNode(url: string): Promise<void> {
     try {
       // 尝试使用动态import
-      await import(url);
+      // @ts-ignore
+      await import(/* @vite-ignore */ url);
     } catch (error) {
       // 如果动态import失败，尝试使用require
       if (typeof require !== 'undefined') {
@@ -194,7 +195,7 @@ export class PolyfillLoader {
     if (info.url.startsWith('http')) {
       return info.url;
     }
-    
+
     // 使用配置的CDN
     const baseUrl = this.config.polyfillCDN || 'https://unpkg.com';
     return `${baseUrl}/${info.name}@${info.version}/${info.url}`;
@@ -252,7 +253,7 @@ export class PolyfillLoader {
       if (this.config.debug) {
         console.log(`[PolyfillLoader] Auto-loading polyfills:`, requiredPolyfills);
       }
-      
+
       await this.loadPolyfills(requiredPolyfills);
     }
   }
@@ -281,7 +282,7 @@ export class PolyfillLoader {
  * 条件加载polyfill
  */
 export async function conditionalLoadPolyfill(
-  feature: string, 
+  feature: string,
   polyfillName: string,
   loader: PolyfillLoader
 ): Promise<boolean> {
