@@ -23,8 +23,69 @@ const mockGlobal = {
   },
 
   ReadableStream: class MockReadableStream {
-    constructor(source?: any) {
-      // Mock implementation
+    private underlyingSource: any;
+    private reader: any = null;
+    
+    constructor(underlyingSource?: any) {
+      this.underlyingSource = underlyingSource || {};
+      if (this.underlyingSource.start) {
+        this.underlyingSource.start({
+          enqueue: () => {},
+          close: () => {},
+          error: () => {}
+        });
+      }
+    }
+    
+    getReader() {
+      if (this.reader) {
+        throw new Error('ReadableStream is locked');
+      }
+      
+      let offset = 0;
+      let closed = false;
+      const chunks: Uint8Array[] = [];
+      
+      this.reader = {
+        read: async () => {
+          if (closed) {
+            return { done: true, value: undefined };
+          }
+          
+          if (this.underlyingSource.pull) {
+            const controller = {
+              enqueue: (chunk: any) => {
+                chunks.push(chunk);
+              },
+              close: () => {
+                closed = true;
+              },
+              error: (error: any) => {
+                throw error;
+              }
+            };
+            
+            this.underlyingSource.pull(controller);
+            
+            if (chunks.length > 0) {
+              return { done: false, value: chunks.shift() };
+            }
+            
+            if (closed) {
+              return { done: true, value: undefined };
+            }
+          }
+          
+          // 默认行为：返回空数据表示结束
+          return { done: true, value: undefined };
+        },
+        
+        releaseLock: () => {
+          this.reader = null;
+        }
+      };
+      
+      return this.reader;
     }
   },
 
