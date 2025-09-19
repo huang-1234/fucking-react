@@ -1,4 +1,5 @@
 import { vi, beforeEach, afterEach, expect } from 'vitest';
+import { BinaryData } from '../core/BinaryData';
 
 /**
  * 测试工具函数和Mock设置
@@ -389,6 +390,12 @@ export class AssertUtils {
     for (let i = 0; i < actualView.length; i++) {
       expect(actualView[i]).toBe(expectedView[i]);
     }
+  }
+  /**
+   * @desc assertBinaryDataEqual
+   */
+  static assertBinaryDataEqual(actual: ArrayBuffer, expected: ArrayBuffer) {
+    AssertUtils.expectArrayBuffersEqual(actual, expected);
   }
 
   /**

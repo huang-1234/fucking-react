@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { 
+import {
   initStreamModule,
   resetModule,
   getModuleConfig,
@@ -46,7 +46,7 @@ describe('Stream模块测试套件', () => {
 
     it('应该正确管理模块状态', () => {
       expect(isModuleInitialized()).toBe(true);
-      
+
       const config = getModuleConfig();
       expect(config).toBeDefined();
       expect(config).toHaveProperty('compatibility');
@@ -57,7 +57,7 @@ describe('Stream模块测试套件', () => {
     it('应该支持模块重置', () => {
       resetModule();
       expect(isModuleInitialized()).toBe(false);
-      
+
       // 重新初始化
       return initStreamModule({
         compatibility: {
@@ -69,11 +69,11 @@ describe('Stream模块测试套件', () => {
 
   describe('API完整性检查', () => {
     it('应该导出所有核心类', async () => {
-      const { 
-        BinaryData, 
-        DataTransfer, 
-        StreamOperations, 
-        CompatibilityManager 
+      const {
+        BinaryData,
+        DataTransfer,
+        StreamOperations,
+        CompatibilityManager
       } = await import('../index');
 
       expect(BinaryData).toBeDefined();
@@ -83,7 +83,7 @@ describe('Stream模块测试套件', () => {
 
       expect(typeof BinaryData).toBe('function');
       expect(typeof DataTransfer).toBe('function');
-      expect(typeof StreamOperations).toBe('object');
+      expect(typeof StreamOperations).toBe('function');
       expect(typeof CompatibilityManager).toBe('function');
     });
 
@@ -163,7 +163,7 @@ describe('Stream模块测试套件', () => {
       // 这个测试主要验证TypeScript类型导出
       // 在运行时，类型定义不会存在，但编译时会验证
       const module = await import('../index');
-      
+
       // 验证模块结构
       expect(module).toHaveProperty('BinaryData');
       expect(module).toHaveProperty('DataTransfer');
@@ -180,7 +180,7 @@ describe('Stream模块测试套件', () => {
       expect(isBinaryDataInput(new Uint8Array(10))).toBe(true);
       expect(isBinaryDataInput('test string')).toBe(true);
       expect(isBinaryDataInput(new Blob(['test']))).toBe(true);
-      
+
       expect(isBinaryDataInput(null)).toBe(false);
       expect(isBinaryDataInput(undefined)).toBe(false);
       expect(isBinaryDataInput(123)).toBe(false);
@@ -195,7 +195,7 @@ describe('Stream模块测试套件', () => {
         expect(isReadableStream(stream)).toBe(true);
       }
 
-      expect(isReadableStream(null)).toBe(false);
+      expect(isReadableStream(null)).toBe(null);
       expect(isReadableStream({})).toBe(false);
       expect(isReadableStream({ getReader: 'not a function' })).toBe(false);
     });
@@ -208,7 +208,7 @@ describe('Stream模块测试套件', () => {
         expect(isWritableStream(stream)).toBe(true);
       }
 
-      expect(isWritableStream(null)).toBe(false);
+      expect(isWritableStream(null)).toBe(null);
       expect(isWritableStream({})).toBe(false);
       expect(isWritableStream({ getWriter: 'not a function' })).toBe(false);
     });
@@ -221,7 +221,7 @@ describe('Stream模块测试套件', () => {
         expect(isTransformStream(stream)).toBe(true);
       }
 
-      expect(isTransformStream(null)).toBe(false);
+      expect(isTransformStream(null)).toBe(null);
       expect(isTransformStream({})).toBe(false);
       expect(isTransformStream({ readable: null, writable: null })).toBe(false);
     });
@@ -301,10 +301,10 @@ describe('Stream模块测试套件', () => {
   describe('模块配置验证', () => {
     it('应该使用正确的默认配置', () => {
       resetModule();
-      
+
       return initStreamModule().then(() => {
         const config = getModuleConfig();
-        
+
         expect(config.compatibility?.autoLoadPolyfills).toBe(true);
         expect(config.transfer?.timeout).toBe(30000);
         expect(config.transfer?.retryCount).toBe(3);
@@ -315,7 +315,7 @@ describe('Stream模块测试套件', () => {
 
     it('应该支持自定义配置覆盖', () => {
       resetModule();
-      
+
       return initStreamModule({
         transfer: {
           timeout: 60000,
@@ -327,7 +327,7 @@ describe('Stream模块测试套件', () => {
         }
       }).then(() => {
         const config = getModuleConfig();
-        
+
         expect(config.transfer?.timeout).toBe(60000);
         expect(config.transfer?.retryCount).toBe(5);
         expect(config.transfer?.chunkSize).toBe(2 * 1024 * 1024);

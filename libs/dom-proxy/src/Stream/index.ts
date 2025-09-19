@@ -304,9 +304,10 @@ export function isReadableStream(value: any): value is ReadableStream {
 export function isWritableStream(value: any): value is WritableStream {
   return value && typeof value.getWriter === 'function';
 }
+export function isObjectLike(value: any): value is object {
+  return value !== null && typeof value === 'object';
+}
 
 export function isTransformStream(value: any): value is TransformStream {
-  return value &&
-         typeof value.readable === 'object' &&
-         typeof value.writable === 'object';
+  return value && isObjectLike(value.readable) && isObjectLike(value.writable)
 }
